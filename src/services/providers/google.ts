@@ -17,9 +17,9 @@ export class GoogleProvider {
     
     try {
       const model = this.client.getGenerativeModel({ 
-        model: request.model || 'gemini-1.0-pro',
+        model: request.model || 'gemini-2.5-flash',
         generationConfig: {
-          maxOutputTokens: request.maxTokens || 2048,
+          maxOutputTokens: request.maxTokens || 8192,
           temperature: request.temperature || 0.7,
         }
       });
@@ -47,7 +47,7 @@ export class GoogleProvider {
 
       return {
         content: text,
-        model: request.model || 'gemini-1.0-pro',
+        model: request.model || 'gemini-2.5-flash',
         provider: 'google',
         tokensUsed: {
           input: estimatedInputTokens,
@@ -64,7 +64,7 @@ export class GoogleProvider {
       
       return {
         content: '',
-        model: request.model || 'gemini-1.0-pro',
+        model: request.model || 'gemini-2.5-flash',
         provider: 'google',
         tokensUsed: { input: 0, output: 0, total: 0 },
         cost: 0,

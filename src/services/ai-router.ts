@@ -181,7 +181,7 @@ export class AIRouterService {
       case 'speed':
         // Prefer fastest models (usually smaller ones)
         const fastModels = availableModels.filter(m => 
-          m.name.includes('gpt-3.5') || m.name.includes('haiku') || m.name.includes('gemini-1.0-pro')
+          m.name.includes('gpt-3.5') || m.name.includes('haiku') || m.name.includes('gemini-2.5-flash') || m.name.includes('gemini-2.0-flash')
         );
         console.log('⚡ Selected fastest model:', fastModels[0]?.name || availableModels[0]?.name);
         return fastModels[0] || availableModels[0];
@@ -197,7 +197,7 @@ export class AIRouterService {
       case 'balanced':
         // Balance between cost, speed, and quality
         const balancedModels = availableModels.filter(m => 
-          m.name.includes('gpt-3.5') || m.name.includes('sonnet') || m.name.includes('gemini-1.5-flash-latest')
+          m.name.includes('gpt-3.5') || m.name.includes('sonnet') || m.name.includes('gemini-2.5-flash')
         );
         console.log('⚖️ Selected balanced model:', balancedModels[0]?.name || availableModels[0]?.name);
         return balancedModels[0] || availableModels[0];
@@ -222,7 +222,7 @@ export class AIRouterService {
         // For short messages, prefer faster/cheaper models
         if (messageLength < 200) {
           const quickModels = availableModels.filter(m => 
-            m.name.includes('gpt-3.5') || m.name.includes('haiku') || m.name.includes('gemini-1.5-flash-latest')
+            m.name.includes('gpt-3.5') || m.name.includes('haiku') || m.name.includes('gemini-2.5-flash') || m.name.includes('gemini-2.0-flash')
           );
           if (quickModels.length > 0) {
             console.log('🏃 Selected quick model:', quickModels[0].name);

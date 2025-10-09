@@ -26,12 +26,12 @@ export const AI_PROVIDERS: Record<string, AIProvider> = {
   google: {
     name: 'Google',
     baseUrl: 'https://generativelanguage.googleapis.com',
-    models: ['gemini-1.0-pro', 'gemini-1.0-pro-vision'],
+    models: ['gemini-2.5-flash', 'gemini-2.5-pro', 'gemini-2.0-flash'],
     costPer1kTokens: {
-      input: 0.0005,
-      output: 0.0015
+      input: 0.000075,
+      output: 0.0003
     },
-    maxTokens: 2048,
+    maxTokens: 8192,
     available: !!process.env.GEMINI_API_KEY
   },
   grok: {
@@ -100,21 +100,29 @@ export const MODEL_CONFIGS: ModelConfig[] = [
     available: !!process.env.ANTHROPIC_API_KEY
   },
 
-  // Google Models
+  // Google Models - Updated with available models
   {
-    name: 'gemini-1.0-pro',
+    name: 'gemini-2.5-flash',
     provider: 'google',
-    maxTokens: 4096,
-    costPer1kTokens: { input: 0.0005, output: 0.0015 },
-    priority: 5,
+    maxTokens: 8192,
+    costPer1kTokens: { input: 0.000075, output: 0.0003 },
+    priority: 4,
     available: !!process.env.GEMINI_API_KEY
   },
   {
-    name: 'gemini-1.0-pro-vision',
+    name: 'gemini-2.5-pro',
     provider: 'google',
-    maxTokens: 4096,
-    costPer1kTokens: { input: 0.0005, output: 0.0015 },
-    priority: 6,
+    maxTokens: 8192,
+    costPer1kTokens: { input: 0.00125, output: 0.005 },
+    priority: 2,
+    available: !!process.env.GEMINI_API_KEY
+  },
+  {
+    name: 'gemini-2.0-flash',
+    provider: 'google',
+    maxTokens: 8192,
+    costPer1kTokens: { input: 0.000075, output: 0.0003 },
+    priority: 5,
     available: !!process.env.GEMINI_API_KEY
   },
 
