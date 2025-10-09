@@ -1,9 +1,7 @@
 "use client";
 
-import { AnimatePresence, motion } from 'framer-motion';
-import { ArrowRight, Chrome, Eye, EyeOff, Github } from 'lucide-react';
-import { useRouter } from 'next/navigation';
-import React, { useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
+import { useEffect, useState } from 'react';
 // Ajusta las rutas de importación según tu estructura
 // import { supabase } from '../../config/database';
 // import { OAUTH_CONFIG } from '../../config/oauth';

@@ -73,7 +73,7 @@ export const MODEL_CONFIGS: ModelConfig[] = [
     priority: 5,
     available: !!process.env.OPENAI_API_KEY
   },
-  
+
   // Anthropic Models
   {
     name: 'claude-3-opus',

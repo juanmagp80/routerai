@@ -1,5 +1,5 @@
-import { GoogleGenerativeAI } from '@google/generative-ai';
 import { AIRequest, AIResponse } from '@/types/ai';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 
 export class GoogleProvider {
   private client: GoogleGenerativeAI;
@@ -8,15 +8,15 @@ export class GoogleProvider {
     if (!process.env.GEMINI_API_KEY) {
       throw new Error('Google Gemini API key not configured');
     }
-    
+
     this.client = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
   }
 
   async generateResponse(request: AIRequest): Promise<AIResponse> {
     const startTime = Date.now();
-    
+
     try {
-      const model = this.client.getGenerativeModel({ 
+      const model = this.client.getGenerativeModel({
         model: request.model || 'gemini-2.5-flash',
         generationConfig: {
           maxOutputTokens: request.maxTokens || 8192,
@@ -34,12 +34,12 @@ export class GoogleProvider {
       const text = response.text();
 
       const responseTime = Date.now() - startTime;
-      
+
       // Google doesn't provide token usage in the free tier, so we estimate
       const estimatedInputTokens = Math.ceil(prompt.length / 4);
       const estimatedOutputTokens = Math.ceil(text.length / 4);
       const totalTokens = estimatedInputTokens + estimatedOutputTokens;
-      
+
       // Calculate cost (very low for Gemini)
       const inputCost = 0.0005;
       const outputCost = 0.0015;
@@ -58,10 +58,10 @@ export class GoogleProvider {
         responseTime,
         success: true
       };
-      
+
     } catch (error) {
       const responseTime = Date.now() - startTime;
-      
+
       return {
         content: '',
         model: request.model || 'gemini-2.5-flash',

@@ -1,10 +1,10 @@
-import { AIRequest, AIResponse, ModelConfig } from '@/types/ai';
 import { getAvailableModels, getModelConfig } from '@/config/ai-providers';
-import { OpenAIProvider } from './providers/openai';
+import { supabase } from '@/lib/supabase';
+import { AIRequest, AIResponse, ModelConfig } from '@/types/ai';
 import { AnthropicProvider } from './providers/anthropic';
 import { GoogleProvider } from './providers/google';
 import { GrokProvider } from './providers/grok';
-import { supabase } from '@/lib/supabase';
+import { OpenAIProvider } from './providers/openai';
 
 type AIProviderInstance = OpenAIProvider | AnthropicProvider | GoogleProvider | GrokProvider;
 
@@ -16,41 +16,41 @@ export class AIRouterService {
   constructor() {
     // Initialize available providers
     console.log('🔧 Initializing AI Router with providers:');
-    
+
     if (process.env.OPENAI_API_KEY) {
       this.providers.set('openai', new OpenAIProvider());
       console.log('✅ OpenAI provider initialized');
     } else {
       console.log('❌ OpenAI API key not found');
     }
-    
+
     if (process.env.ANTHROPIC_API_KEY) {
       this.providers.set('anthropic', new AnthropicProvider());
       console.log('✅ Anthropic provider initialized');
     } else {
       console.log('❌ Anthropic API key not found');
     }
-    
+
     if (process.env.GEMINI_API_KEY) {
       this.providers.set('google', new GoogleProvider());
       console.log('✅ Google provider initialized');
     } else {
       console.log('❌ Google API key not found');
     }
-    
+
     if (process.env.GROK_API_KEY) {
       this.providers.set('grok', new GrokProvider());
       console.log('✅ Grok provider initialized');
     } else {
       console.log('❌ Grok API key not found');
     }
-    
+
     console.log(`🎯 Total providers initialized: ${this.providers.size}`);
   }
 
   private async ensureInitialized() {
     if (this.initialized) return;
-    
+
     console.log('🏥 Running initial health check...');
     try {
       await this.getProviderHealth();
@@ -72,10 +72,10 @@ export class AIRouterService {
     try {
       console.log('🤖 AI Router: Starting request processing');
       console.log('🚫 Failed providers:', Array.from(this.failedProviders));
-      
+
       // Get the best model for this request
       selectedModel = this.selectBestModel(request);
-      
+
       if (!selectedModel) {
         console.error('❌ No available models for this request');
         throw new Error('No available models for this request');
@@ -106,9 +106,9 @@ export class AIRouterService {
     } catch (error) {
       // Check if this is a billing/credit error and mark provider as failed
       const errorMessage = error instanceof Error ? error.message : '';
-      if (errorMessage.includes('credit balance') || 
-          errorMessage.includes('billing') ||
-          errorMessage.includes('insufficient')) {
+      if (errorMessage.includes('credit balance') ||
+        errorMessage.includes('billing') ||
+        errorMessage.includes('insufficient')) {
         console.warn(`🚫 Marking provider as failed due to billing issues`);
         if (selectedModel) {
           this.failedProviders.add(selectedModel.provider);
@@ -138,15 +138,15 @@ export class AIRouterService {
 
   private selectBestModel(request: AIRequest): ModelConfig | null {
     const allModels = getAvailableModels();
-    const availableModels = allModels.filter(model => 
+    const availableModels = allModels.filter(model =>
       !this.failedProviders.has(model.provider) && this.providers.has(model.provider)
     );
-    
+
     console.log('🔍 Total models:', allModels.length);
     console.log('🔍 Failed providers:', Array.from(this.failedProviders));
     console.log('🔍 Available providers:', Array.from(this.providers.keys()));
     console.log('🔍 Filtered available models:', availableModels.map(m => `${m.name} (${m.provider})`));
-    
+
     if (availableModels.length === 0) {
       console.error('❌ No models available after filtering');
       return null;
@@ -180,7 +180,7 @@ export class AIRouterService {
 
       case 'speed':
         // Prefer fastest models (usually smaller ones)
-        const fastModels = availableModels.filter(m => 
+        const fastModels = availableModels.filter(m =>
           m.name.includes('gpt-3.5') || m.name.includes('haiku') || m.name.includes('gemini-2.5-flash') || m.name.includes('gemini-2.0-flash')
         );
         console.log('⚡ Selected fastest model:', fastModels[0]?.name || availableModels[0]?.name);
@@ -188,7 +188,7 @@ export class AIRouterService {
 
       case 'quality':
         // Prefer highest quality models
-        const qualityModels = availableModels.filter(m => 
+        const qualityModels = availableModels.filter(m =>
           m.name.includes('gpt-4') || m.name.includes('opus') || m.name.includes('sonnet')
         );
         console.log('🌟 Selected quality model:', qualityModels[0]?.name || availableModels[0]?.name);
@@ -196,7 +196,7 @@ export class AIRouterService {
 
       case 'balanced':
         // Balance between cost, speed, and quality
-        const balancedModels = availableModels.filter(m => 
+        const balancedModels = availableModels.filter(m =>
           m.name.includes('gpt-3.5') || m.name.includes('sonnet') || m.name.includes('gemini-2.5-flash')
         );
         console.log('⚖️ Selected balanced model:', balancedModels[0]?.name || availableModels[0]?.name);
@@ -210,7 +210,7 @@ export class AIRouterService {
 
         // For complex tasks, prefer GPT-4 or Claude-3-Opus
         if (isComplexTask) {
-          const complexModels = availableModels.filter(m => 
+          const complexModels = availableModels.filter(m =>
             m.name.includes('gpt-4') || m.name.includes('opus')
           );
           if (complexModels.length > 0) {
@@ -221,7 +221,7 @@ export class AIRouterService {
 
         // For short messages, prefer faster/cheaper models
         if (messageLength < 200) {
-          const quickModels = availableModels.filter(m => 
+          const quickModels = availableModels.filter(m =>
             m.name.includes('gpt-3.5') || m.name.includes('haiku') || m.name.includes('gemini-2.5-flash') || m.name.includes('gemini-2.0-flash')
           );
           if (quickModels.length > 0) {
@@ -245,19 +245,19 @@ export class AIRouterService {
 
     const lowerMessage = message.toLowerCase();
     return complexKeywords.some(keyword => lowerMessage.includes(keyword)) ||
-           message.length > 500;
+      message.length > 500;
   }
 
   private async handleFallback(request: AIRequest, originalError: Error): Promise<AIResponse | null> {
     console.log('🔄 Starting fallback mechanism');
-    const availableModels = getAvailableModels().filter(model => 
+    const availableModels = getAvailableModels().filter(model =>
       !this.failedProviders.has(model.provider)
     );
-    
+
     console.log('📋 Available models for fallback:', availableModels.map(m => `${m.name} (${m.provider})`));
-    
+
     // Try alternative models (excluding the one that failed)
-    const alternativeModels = availableModels.filter(model => 
+    const alternativeModels = availableModels.filter(model =>
       model.name !== request.model
     );
 
@@ -276,15 +276,15 @@ export class AIRouterService {
         };
 
         const response = await provider.generateResponse(fallbackRequest);
-        
+
         if (response.success) {
           console.log(`✅ Fallback successful with ${model.name}`);
           // Add fallback info to response
           response.error = `Primary model failed (${originalError.message}), used fallback: ${model.name}`;
-          
+
           // Log usage
           await this.logUsage(request.userId, response, request.apiKeyId);
-          
+
           return response;
         } else {
           console.log(`❌ Fallback ${model.name} failed:`, response.error);
@@ -323,7 +323,7 @@ export class AIRouterService {
       try {
         const isHealthy = await provider.isHealthy();
         healthStatus[providerName] = isHealthy;
-        
+
         // If provider is not healthy, mark it as failed
         if (!isHealthy) {
           console.warn(`🚫 Marking ${providerName} as failed due to health check`);
