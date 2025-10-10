@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { CheckIcon, CreditCardIcon, DollarSignIcon, TrendingUpIcon } from "lucide-react";
 import { useSearchParams } from 'next/navigation';
-import { useEffect, useState, Suspense } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 
 interface UserLimits {
   currentPlan: string;
@@ -327,10 +327,10 @@ function BillingPageContent() {
               <div
                 key={plan.stripeId}
                 className={`relative p-6 rounded-lg border-2 ${plan.popular
-                    ? 'border-purple-500 bg-purple-50'
-                    : userLimits?.currentPlan?.toLowerCase() === plan.stripeId
-                      ? 'border-green-500 bg-green-50'
-                      : 'border-gray-200 bg-white'
+                  ? 'border-purple-500 bg-purple-50'
+                  : userLimits?.currentPlan?.toLowerCase() === plan.stripeId
+                    ? 'border-green-500 bg-green-50'
+                    : 'border-gray-200 bg-white'
                   }`}
               >
                 {plan.popular && (
@@ -363,10 +363,10 @@ function BillingPageContent() {
 
                 <Button
                   className={`w-full ${userLimits?.currentPlan?.toLowerCase() === plan.stripeId
-                      ? 'bg-green-600 hover:bg-green-700'
-                      : plan.popular
-                        ? 'bg-purple-600 hover:bg-purple-700'
-                        : 'bg-slate-600 hover:bg-slate-700'
+                    ? 'bg-green-600 hover:bg-green-700'
+                    : plan.popular
+                      ? 'bg-purple-600 hover:bg-purple-700'
+                      : 'bg-slate-600 hover:bg-slate-700'
                     }`}
                   onClick={() => handleUpgrade(plan.stripeId)}
                   disabled={upgradingPlan === plan.stripeId || userLimits?.currentPlan?.toLowerCase() === plan.stripeId}

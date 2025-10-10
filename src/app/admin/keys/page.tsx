@@ -37,10 +37,10 @@ export default function ApiKeysPage() {
   const [newlyCreatedKey, setNewlyCreatedKey] = useState<{ key: string, name: string } | null>(null);
   const [showNewKeyDialog, setShowNewKeyDialog] = useState(false);
   const [userLimits, setUserLimits] = useState<{
-    user: { 
-      plan: string; 
-      isActive: boolean; 
-      createdAt: string; 
+    user: {
+      plan: string;
+      isActive: boolean;
+      createdAt: string;
       trialDaysRemaining: number | null;
     };
     limits: {
@@ -49,19 +49,19 @@ export default function ApiKeysPage() {
       monthly_request_limit: number;
       price_eur: number;
     };
-    usage: { 
-      apiKeys: { 
-        allowed: boolean; 
-        reason?: string;
-        current: number; 
-        limit: number; 
-      }; 
-      requests: { 
+    usage: {
+      apiKeys: {
         allowed: boolean;
-        current: number; 
+        reason?: string;
+        current: number;
+        limit: number;
+      };
+      requests: {
+        allowed: boolean;
+        current: number;
         limit: number;
         percentage: number;
-      }; 
+      };
     };
   } | null>(null);
 

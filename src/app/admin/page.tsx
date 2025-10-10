@@ -3,15 +3,30 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useUserSync } from "@/hooks/useUserSync";
 import { DashboardStats, StatsService } from "@/lib/stats-service";
-import { Activity, BarChart3, Clock, Cpu, TrendingUp, Users } from "lucide-react";
+import { Activity, BarChart3, Clock, Cpu, TrendingUp, Users, Key, Settings, Plus, Zap, Eye } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+
+interface UsageData {
+  currentPlan: string;
+  apiKeysUsed: number;
+  apiKeysLimit: number;
+  requestsUsed: number;
+  requestsLimit: number;
+}
 
 export default function AdminDashboard() {
   const { dbUser, isLoading: userLoading, error: userError } = useUserSync();
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [isLoadingStats, setIsLoadingStats] = useState(true);
+  const [isCreatingApiKey, setIsCreatingApiKey] = useState(false);
+  const [showStatsModal, setShowStatsModal] = useState(false);
+  const [showUsageModal, setShowUsageModal] = useState(false);
+  const [usageData, setUsageData] = useState<UsageData | null>(null);
+  const router = useRouter();
 
   useEffect(() => {
     async function loadStats() {
@@ -30,6 +45,78 @@ export default function AdminDashboard() {
       loadStats();
     }
   }, [dbUser]);
+
+  // Funciones de navegación para acciones rápidas
+  const handleManageUsers = () => {
+    router.push('/admin/users');
+  };
+
+  const handleConfigureModels = () => {
+    router.push('/admin/settings');
+  };
+
+  const handleManageKeys = () => {
+    router.push('/admin/keys');
+  };
+
+  const handleBilling = () => {
+    router.push('/admin/billing');
+  };
+
+  const handleApiTesting = () => {
+    router.push('/admin/chat');
+  };
+
+  const handleCreateApiKey = async () => {
+    try {
+      setIsCreatingApiKey(true);
+      const response = await fetch('/api/user/api-keys', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: `API Key ${new Date().toLocaleDateString()}`
+        })
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        // Redirigir a la página de keys para ver la nueva clave
+        router.push('/admin/keys?highlight=' + result.apiKey.id);
+      } else {
+        console.error('Error creating API key:', result.error);
+        alert(result.error || 'Error al crear la API key');
+      }
+    } catch (error) {
+      console.error('Error creating API key:', error);
+      alert('Error al crear la API key');
+    } finally {
+      setIsCreatingApiKey(false);
+    }
+  };
+
+  const handleQuickStats = () => {
+    setShowStatsModal(true);
+  };
+
+  const handleQuickUsage = async () => {
+    try {
+      const response = await fetch('/api/user/limits');
+      const userLimits = await response.json();
+      
+      if (response.ok) {
+        setUsageData(userLimits);
+        setShowUsageModal(true);
+      } else {
+        alert('Error al obtener información de uso');
+      }
+    } catch (error) {
+      console.error('Error fetching usage:', error);
+      alert('Error al obtener información de uso');
+    }
+  };
 
   if (userLoading || isLoadingStats) {
     return (
@@ -63,8 +150,13 @@ export default function AdminDashboard() {
     console.log(`View details for ${section}`);
   };
 
-  const handleViewAnalytics = (type: string) => {
-    console.log(`View analytics for ${type}`);
+  const handleViewAnalytics = (type?: string) => {
+    if (type) {
+      // Si se especifica un tipo, podríamos agregar query params en el futuro
+      router.push(`/admin/analytics?type=${type}`);
+    } else {
+      router.push('/admin/analytics');
+    }
   };
 
   return (
@@ -230,21 +322,214 @@ export default function AdminDashboard() {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-2">
-            <Button className="w-full justify-start" variant="outline">
-              <Users className="mr-2 h-4 w-4" />
-              Gestionar Usuarios
-            </Button>
-            <Button className="w-full justify-start" variant="outline">
-              <Cpu className="mr-2 h-4 w-4" />
-              Configurar Modelos
-            </Button>
-            <Button className="w-full justify-start" variant="outline">
-              <BarChart3 className="mr-2 h-4 w-4" />
-              Ver Análisis
-            </Button>
+            <div className="space-y-2">
+              <p className="text-sm font-medium text-gray-700 mb-2">Navegación</p>
+              <Button 
+                className="w-full justify-start" 
+                variant="outline"
+                onClick={handleManageUsers}
+              >
+                <Users className="mr-2 h-4 w-4" />
+                Gestionar Usuarios
+              </Button>
+              <Button 
+                className="w-full justify-start" 
+                variant="outline"
+                onClick={handleManageKeys}
+              >
+                <Key className="mr-2 h-4 w-4" />
+                Gestionar API Keys
+              </Button>
+              <Button 
+                className="w-full justify-start" 
+                variant="outline"
+                onClick={handleApiTesting}
+              >
+                <Cpu className="mr-2 h-4 w-4" />
+                Consola de API
+              </Button>
+              <Button 
+                className="w-full justify-start" 
+                variant="outline"
+                onClick={() => handleViewAnalytics('general')}
+              >
+                <BarChart3 className="mr-2 h-4 w-4" />
+                Ver Análisis
+              </Button>
+              <Button 
+                className="w-full justify-start" 
+                variant="outline"
+                onClick={handleBilling}
+              >
+                <TrendingUp className="mr-2 h-4 w-4" />
+                Facturación
+              </Button>
+              <Button 
+                className="w-full justify-start" 
+                variant="outline"
+                onClick={handleConfigureModels}
+              >
+                <Settings className="mr-2 h-4 w-4" />
+                Configuración
+              </Button>
+            </div>
+            
+            <div className="pt-4 border-t">
+              <p className="text-sm font-medium text-gray-700 mb-2">Acciones Rápidas</p>
+              <div className="space-y-2">
+                <Button 
+                  className="w-full justify-start" 
+                  variant="default"
+                  onClick={handleCreateApiKey}
+                  disabled={isCreatingApiKey}
+                >
+                  <Plus className="mr-2 h-4 w-4" />
+                  {isCreatingApiKey ? 'Creando...' : 'Crear Nueva API Key'}
+                </Button>
+                
+                <Button 
+                  className="w-full justify-start" 
+                  variant="outline"
+                  onClick={handleQuickStats}
+                >
+                  <Zap className="mr-2 h-4 w-4" />
+                  Ver Estadísticas Rápidas
+                </Button>
+                
+                <Button 
+                  className="w-full justify-start" 
+                  variant="outline"
+                  onClick={handleQuickUsage}
+                >
+                  <Eye className="mr-2 h-4 w-4" />
+                  Ver Uso Actual
+                </Button>
+              </div>
+            </div>
           </CardContent>
         </Card>
       </div>
+
+      {/* Modal de Estadísticas Rápidas */}
+      <Dialog open={showStatsModal} onOpenChange={setShowStatsModal}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>📊 Estadísticas Rápidas</DialogTitle>
+            <DialogDescription>
+              Resumen de la actividad de tu plataforma
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            {stats ? (
+              <>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="bg-blue-50 p-3 rounded-lg">
+                    <p className="text-sm text-blue-600 font-medium">API Calls</p>
+                    <p className="text-2xl font-bold text-blue-900">{stats.api_calls || 0}</p>
+                  </div>
+                  <div className="bg-green-50 p-3 rounded-lg">
+                    <p className="text-sm text-green-600 font-medium">Usuarios Activos</p>
+                    <p className="text-2xl font-bold text-green-900">{stats.active_users || 0}</p>
+                  </div>
+                  <div className="bg-purple-50 p-3 rounded-lg">
+                    <p className="text-sm text-purple-600 font-medium">Costo Total</p>
+                    <p className="text-2xl font-bold text-purple-900">${(stats.total_cost || 0).toFixed(3)}</p>
+                  </div>
+                  <div className="bg-orange-50 p-3 rounded-lg">
+                    <p className="text-sm text-orange-600 font-medium">Tiempo Respuesta</p>
+                    <p className="text-2xl font-bold text-orange-900">{(stats.avg_response_time || 0).toFixed(0)}ms</p>
+                  </div>
+                </div>
+                <div className="bg-gray-50 p-3 rounded-lg">
+                  <p className="text-sm text-gray-600 font-medium">Tasa de Éxito</p>
+                  <p className="text-xl font-bold text-gray-900">{(stats.success_rate || 0).toFixed(1)}%</p>
+                </div>
+              </>
+            ) : (
+              <p className="text-center py-4">Cargando estadísticas...</p>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Modal de Uso Actual */}
+      <Dialog open={showUsageModal} onOpenChange={setShowUsageModal}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>📊 Uso Actual</DialogTitle>
+            <DialogDescription>
+              Estado de tu plan y límites
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            {usageData ? (
+              <>
+                <div className="bg-blue-50 p-4 rounded-lg">
+                  <h3 className="font-semibold text-blue-900 mb-2">Plan {usageData.currentPlan}</h3>
+                  
+                  <div className="space-y-3">
+                    <div>
+                      <div className="flex justify-between items-center mb-1">
+                        <span className="text-sm text-blue-700">🔑 API Keys</span>
+                        <span className="text-sm font-medium">{usageData.apiKeysUsed}/{usageData.apiKeysLimit}</span>
+                      </div>
+                      <div className="w-full bg-blue-200 rounded-full h-2">
+                        <div 
+                          className="bg-blue-600 h-2 rounded-full transition-all duration-300" 
+                          style={{ width: `${Math.min(100, (usageData.apiKeysUsed / usageData.apiKeysLimit) * 100)}%` }}
+                        ></div>
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <div className="flex justify-between items-center mb-1">
+                        <span className="text-sm text-blue-700">📡 Requests</span>
+                        <span className="text-sm font-medium">{usageData.requestsUsed}/{usageData.requestsLimit}</span>
+                      </div>
+                      <div className="w-full bg-blue-200 rounded-full h-2">
+                        <div 
+                          className="bg-blue-600 h-2 rounded-full transition-all duration-300" 
+                          style={{ width: `${Math.min(100, (usageData.requestsUsed / usageData.requestsLimit) * 100)}%` }}
+                        ></div>
+                      </div>
+                      <p className="text-xs text-blue-600 mt-1">
+                        {((usageData.requestsUsed / usageData.requestsLimit) * 100).toFixed(1)}% utilizado
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="flex gap-2">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={() => {
+                      setShowUsageModal(false);
+                      router.push('/admin/billing');
+                    }}
+                    className="flex-1"
+                  >
+                    Upgrade Plan
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={() => {
+                      setShowUsageModal(false);
+                      router.push('/admin/keys');
+                    }}
+                    className="flex-1"
+                  >
+                    Ver API Keys
+                  </Button>
+                </div>
+              </>
+            ) : (
+              <p className="text-center py-4">Cargando información de uso...</p>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

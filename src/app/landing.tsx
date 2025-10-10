@@ -679,26 +679,26 @@ const DashboardSection = () => {
               {metrics.map((metric, index) => {
                 const metricData = metric as { model?: string; count?: number; sum?: number };
                 return (
-                <div key={index} className="flex items-center justify-between p-4 bg-slate-50 rounded-lg">
-                  <div className="flex items-center">
-                    <div className="w-3 h-3 bg-emerald-500 rounded-full mr-3"></div>
-                    <span className="font-medium text-slate-900">{metricData.model}</span>
+                  <div key={index} className="flex items-center justify-between p-4 bg-slate-50 rounded-lg">
+                    <div className="flex items-center">
+                      <div className="w-3 h-3 bg-emerald-500 rounded-full mr-3"></div>
+                      <span className="font-medium text-slate-900">{metricData.model}</span>
+                    </div>
+                    <div className="flex items-center space-x-4">
+                      <div className="text-sm text-slate-600">
+                        {metricData.count || 0} tareas
+                      </div>
+                      <div className="text-sm font-bold text-emerald-600">
+                        ${metricData.sum?.toFixed(2) || '0.00'}
+                      </div>
+                      <div className="w-32 bg-slate-200 rounded-full h-2">
+                        <div
+                          className="bg-emerald-500 h-2 rounded-full"
+                          style={{ width: `${Math.min(100, (metricData.sum || 0) / (totalCost || 1) * 100)}%` }}
+                        ></div>
+                      </div>
+                    </div>
                   </div>
-                  <div className="flex items-center space-x-4">
-                    <div className="text-sm text-slate-600">
-                      {metricData.count || 0} tareas
-                    </div>
-                    <div className="text-sm font-bold text-emerald-600">
-                      ${metricData.sum?.toFixed(2) || '0.00'}
-                    </div>
-                    <div className="w-32 bg-slate-200 rounded-full h-2">
-                      <div
-                        className="bg-emerald-500 h-2 rounded-full"
-                        style={{ width: `${Math.min(100, (metricData.sum || 0) / (totalCost || 1) * 100)}%` }}
-                      ></div>
-                    </div>
-                  </div>
-                </div>
                 );
               })}
             </div>
@@ -735,19 +735,19 @@ const DashboardSection = () => {
                 {recentTasks.map((task, index) => {
                   const taskData = task as { model?: string; cost?: number; latency?: number; status?: string };
                   return (
-                  <tr key={index} className={index < recentTasks.length - 1 ? "border-b border-slate-100" : ""}>
-                    <td className="py-4 px-4 font-medium text-slate-900 capitalize">{taskData.model}</td>
-                    <td className="py-4 px-4 text-emerald-600 font-bold">${(taskData.cost || 0).toFixed(3)}</td>
-                    <td className="py-4 px-4 text-slate-600">{taskData.latency}ms</td>
-                    <td className="py-4 px-4">
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${taskData.status === 'completed'
-                        ? 'bg-green-100 text-green-800'
-                        : 'bg-yellow-100 text-yellow-800'
-                        }`}>
-                        {taskData.status === 'completed' ? 'Completado' : 'Procesando'}
-                      </span>
-                    </td>
-                  </tr>
+                    <tr key={index} className={index < recentTasks.length - 1 ? "border-b border-slate-100" : ""}>
+                      <td className="py-4 px-4 font-medium text-slate-900 capitalize">{taskData.model}</td>
+                      <td className="py-4 px-4 text-emerald-600 font-bold">${(taskData.cost || 0).toFixed(3)}</td>
+                      <td className="py-4 px-4 text-slate-600">{taskData.latency}ms</td>
+                      <td className="py-4 px-4">
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${taskData.status === 'completed'
+                          ? 'bg-green-100 text-green-800'
+                          : 'bg-yellow-100 text-yellow-800'
+                          }`}>
+                          {taskData.status === 'completed' ? 'Completado' : 'Procesando'}
+                        </span>
+                      </td>
+                    </tr>
                   );
                 })}
               </tbody>
