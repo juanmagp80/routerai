@@ -6,10 +6,10 @@ const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 
 // Cliente tipado específicamente para las tablas que necesitamos
 export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
-  auth: {
-    autoRefreshToken: true,
-    persistSession: true
-  }
+    auth: {
+        autoRefreshToken: true,
+        persistSession: true
+    }
 })
 
 // Tipos específicos para usar en los servicios
