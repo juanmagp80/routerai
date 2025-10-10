@@ -1,22 +1,22 @@
 'use client';
 
+import { cn } from '@/lib/utils';
+import {
+  Activity,
+  BarChart3,
+  Bell,
+  CreditCard,
+  HelpCircle,
+  Key,
+  LayoutDashboard,
+  MessageSquare,
+  Settings,
+  Shield,
+  User,
+  Users
+} from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { 
-  LayoutDashboard, 
-  Key, 
-  BarChart3, 
-  Settings, 
-  Users, 
-  CreditCard, 
-  Bell, 
-  HelpCircle,
-  User,
-  Activity,
-  MessageSquare,
-  Shield
-} from 'lucide-react';
-import { cn } from '@/lib/utils';
 
 const navigation = [
   { name: 'Dashboard', href: '/admin', icon: LayoutDashboard },

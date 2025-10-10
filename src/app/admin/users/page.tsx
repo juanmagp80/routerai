@@ -1,5 +1,6 @@
 'use client';
 
+import RolePromotionButton from "@/components/admin/RolePromotionButton";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -7,7 +8,6 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import RolePromotionButton from "@/components/admin/RolePromotionButton";
 import { Edit, Mail, Plus, Search, Trash2, User, Users as UsersIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -64,7 +64,7 @@ export default function UsersPage() {
       setIsLoading(true);
       const response = await fetch('/api/admin/users');
       const data = await response.json();
-      
+
       if (response.ok) {
         setUsers(data.users || []);
       } else {
@@ -80,10 +80,10 @@ export default function UsersPage() {
   // Filter users based on search and filters
   const filteredUsers = users.filter(user => {
     const matchesSearch = user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         user.email.toLowerCase().includes(searchTerm.toLowerCase());
+      user.email.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesRole = roleFilter === 'all' || user.role === roleFilter;
     const matchesStatus = statusFilter === 'all' || user.status === statusFilter;
-    
+
     return matchesSearch && matchesRole && matchesStatus;
   });
 
@@ -204,7 +204,7 @@ export default function UsersPage() {
 
       if (response.ok) {
         // Actualizar la lista de usuarios localmente
-        setUsers(users.map(user => 
+        setUsers(users.map(user =>
           user.id === userId ? { ...user, role: newRole } : user
         ));
         alert(`User role updated to ${newRole} successfully`);
@@ -400,7 +400,7 @@ export default function UsersPage() {
                       )}
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center space-x-4">
                     <div className="text-right text-sm">
                       <p>{user.apiKeysCount} API Keys</p>

@@ -91,7 +91,7 @@ export default function AdminDashboard() {
       }
     } catch (error) {
       console.error('Error creating API key:', error);
-  alert('Error creating API key');
+      alert('Error creating API key');
     } finally {
       setIsCreatingApiKey(false);
     }
@@ -114,7 +114,7 @@ export default function AdminDashboard() {
       }
     } catch (error) {
       console.error('Error fetching usage:', error);
-  alert('Error fetching usage information');
+      alert('Error fetching usage information');
     }
   };
 
@@ -410,7 +410,7 @@ export default function AdminDashboard() {
         </Card>
       </div>
 
-  {/* Quick Stats Modal */}
+      {/* Quick Stats Modal */}
       <Dialog open={showStatsModal} onOpenChange={setShowStatsModal}>
         <DialogContent className="max-w-md">
           <DialogHeader>
@@ -452,7 +452,7 @@ export default function AdminDashboard() {
         </DialogContent>
       </Dialog>
 
-  {/* Current Usage Modal */}
+      {/* Current Usage Modal */}
       <Dialog open={showUsageModal} onOpenChange={setShowUsageModal}>
         <DialogContent className="max-w-md">
           <DialogHeader>
