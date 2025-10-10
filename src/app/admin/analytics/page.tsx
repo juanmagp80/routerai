@@ -1,10 +1,10 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { TrendingUpIcon, TrendingDownIcon, UsersIcon, DollarSignIcon, ActivityIcon, KeyIcon } from "lucide-react";
+import { ActivityIcon, DollarSignIcon, KeyIcon, TrendingDownIcon, TrendingUpIcon, UsersIcon } from "lucide-react";
+import { useEffect, useState } from 'react';
 
 interface AnalyticsData {
   totalRequests: number;
@@ -132,7 +132,7 @@ export default function AnalyticsPage() {
         </div>
         <div className="text-center py-8">
           <p className="text-red-600">{error}</p>
-          <button 
+          <button
             onClick={fetchAnalytics}
             className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
           >
@@ -281,12 +281,12 @@ export default function AnalyticsPage() {
                     </TableCell>
                   </TableRow>
                 )) || (
-                  <TableRow>
-                    <TableCell colSpan={3} className="text-center text-slate-500">
-                      No hay datos disponibles
-                    </TableCell>
-                  </TableRow>
-                )}
+                    <TableRow>
+                      <TableCell colSpan={3} className="text-center text-slate-500">
+                        No hay datos disponibles
+                      </TableCell>
+                    </TableRow>
+                  )}
               </TableBody>
             </Table>
           </CardContent>
@@ -313,7 +313,7 @@ export default function AnalyticsPage() {
                   </div>
                   <div className="flex items-center space-x-2">
                     <div className="w-20 bg-slate-200 rounded-full h-2">
-                      <div 
+                      <div
                         className="bg-blue-600 h-2 rounded-full"
                         style={{ width: `${model.percentage}%` }}
                       />
@@ -324,10 +324,10 @@ export default function AnalyticsPage() {
                   </div>
                 </div>
               )) || (
-                <p className="text-center text-slate-500">
-                  No hay datos disponibles
-                </p>
-              )}
+                  <p className="text-center text-slate-500">
+                    No hay datos disponibles
+                  </p>
+                )}
             </div>
           </CardContent>
         </Card>
@@ -378,12 +378,12 @@ export default function AnalyticsPage() {
                   </TableCell>
                 </TableRow>
               )) || (
-                <TableRow>
-                  <TableCell colSpan={4} className="text-center text-slate-500">
-                    No hay actividad reciente
-                  </TableCell>
-                </TableRow>
-              )}
+                  <TableRow>
+                    <TableCell colSpan={4} className="text-center text-slate-500">
+                      No hay actividad reciente
+                    </TableCell>
+                  </TableRow>
+                )}
             </TableBody>
           </Table>
         </CardContent>

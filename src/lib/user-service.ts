@@ -76,7 +76,7 @@ export class UserService {
         .from('users')
         .insert([userData])
         .select()
-        
+
       if (error) {
         // Si es error de duplicado, no es un error real
         if (error.code === '23505') {
@@ -128,7 +128,7 @@ export class UserService {
 
     // Verificar si el usuario ya existe
     const existingUser = await this.getUserById(clerkUser.id)
-    
+
     if (existingUser) {
       // Actualizar usuario existente
       return await this.updateUser(clerkUser.id, { name, email })

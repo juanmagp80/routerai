@@ -1,5 +1,5 @@
-import { supabase } from './supabase'
 import { Database } from './database.types'
+import { supabase } from './supabase'
 
 type ApiKey = Database['public']['Tables']['api_keys']['Row']
 type ApiKeyInsert = Database['public']['Tables']['api_keys']['Insert']
@@ -77,8 +77,8 @@ export class ApiKeyService {
   // Generar una nueva API key
   static generateApiKey(): string {
     const prefix = 'rtr_' // router-ai prefix
-    const randomPart = Math.random().toString(36).substring(2, 15) + 
-                      Math.random().toString(36).substring(2, 15)
+    const randomPart = Math.random().toString(36).substring(2, 15) +
+      Math.random().toString(36).substring(2, 15)
     return `${prefix}${randomPart}`
   }
 }

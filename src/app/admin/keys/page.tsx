@@ -1,15 +1,15 @@
 'use client';
 
-import { useAuth } from "@clerk/nextjs";
-import { useEffect, useState } from "react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
 import { ApiKeyService } from "@/lib/api-key-service";
 import { PlanLimitsService } from "@/lib/plan-limits-service";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { PlusIcon, KeyIcon, CopyIcon, TrashIcon, AlertTriangleIcon, EyeIcon, EyeOffIcon, InfoIcon } from "lucide-react";
+import { useAuth } from "@clerk/nextjs";
+import { AlertTriangleIcon, CopyIcon, EyeIcon, EyeOffIcon, InfoIcon, KeyIcon, PlusIcon, TrashIcon } from "lucide-react";
+import { useEffect, useState } from "react";
 
 interface ApiKey {
   id: string;
@@ -34,7 +34,7 @@ export default function ApiKeysPage() {
   const [isCreatingKey, setIsCreatingKey] = useState(false);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
   const [visibleKeys, setVisibleKeys] = useState<Set<string>>(new Set());
-  const [newlyCreatedKey, setNewlyCreatedKey] = useState<{key: string, name: string} | null>(null);
+  const [newlyCreatedKey, setNewlyCreatedKey] = useState<{ key: string, name: string } | null>(null);
   const [showNewKeyDialog, setShowNewKeyDialog] = useState(false);
   const [userLimits, setUserLimits] = useState<any>(null);
 
@@ -64,14 +64,14 @@ export default function ApiKeysPage() {
 
   const createApiKey = async () => {
     if (!userId || !newKeyName.trim()) return;
-    
+
     setIsCreatingKey(true);
     setError(null);
-    
+
     try {
       // Verificar límites antes de crear
       const canCreate = await PlanLimitsService.canCreateApiKey(userId);
-      
+
       if (!canCreate.allowed) {
         setError(canCreate.reason || 'No se puede crear más API keys');
         return;
@@ -79,28 +79,28 @@ export default function ApiKeysPage() {
 
       // Generar una API key realista
       const keyValue = `rtr_${Math.random().toString(36).substring(2, 15)}${Math.random().toString(36).substring(2, 15)}`;
-      
+
       const newKey = await ApiKeyService.createApiKey({
         user_id: userId,
         name: newKeyName.trim(),
         key_hash: keyValue, // Guardamos el valor completo en key_hash
         is_active: true
       });
-      
+
       if (newKey) {
         // Agregar el key_value temporal para mostrar al usuario recién creada
-        const newKeyWithValue: NewApiKey = { 
-          ...newKey, 
-          key_value: keyValue 
+        const newKeyWithValue: NewApiKey = {
+          ...newKey,
+          key_value: keyValue
         };
         setApiKeys([newKeyWithValue, ...apiKeys]);
         setNewKeyName('');
         setShowCreateDialog(false);
-        
+
         // Recargar límites actualizados
         const updatedLimits = await PlanLimitsService.getUserLimitsAndUsage(userId);
         setUserLimits(updatedLimits);
-        
+
         // Mostrar modal especial con la nueva API key
         setNewlyCreatedKey({ key: keyValue, name: newKeyWithValue.name });
         setShowNewKeyDialog(true);
@@ -222,12 +222,10 @@ export default function ApiKeysPage() {
         <Card>
           <CardContent className="p-6">
             <div className="flex items-center">
-              <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                userLimits?.usage.requests.percentage > 80 ? 'bg-red-100' : 'bg-green-100'
-              }`}>
-                <span className={`font-bold ${
-                  userLimits?.usage.requests.percentage > 80 ? 'text-red-600' : 'text-green-600'
+              <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${userLimits?.usage.requests.percentage > 80 ? 'bg-red-100' : 'bg-green-100'
                 }`}>
+                <span className={`font-bold ${userLimits?.usage.requests.percentage > 80 ? 'text-red-600' : 'text-green-600'
+                  }`}>
                   {userLimits?.usage.requests.percentage > 80 ? '⚠️' : '✓'}
                 </span>
               </div>
@@ -271,12 +269,10 @@ export default function ApiKeysPage() {
         <Card>
           <CardContent className="p-6">
             <div className="flex items-center">
-              <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                userLimits?.user.plan === 'free' ? 'bg-orange-100' : 'bg-blue-100'
-              }`}>
-                <AlertTriangleIcon className={`w-5 h-5 ${
-                  userLimits?.user.plan === 'free' ? 'text-orange-600' : 'text-blue-600'
-                }`} />
+              <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${userLimits?.user.plan === 'free' ? 'bg-orange-100' : 'bg-blue-100'
+                }`}>
+                <AlertTriangleIcon className={`w-5 h-5 ${userLimits?.user.plan === 'free' ? 'text-orange-600' : 'text-blue-600'
+                  }`} />
               </div>
               <div className="ml-4">
                 {userLimits?.user.plan === 'free' && userLimits?.user.trialDaysRemaining !== null ? (
@@ -313,8 +309,8 @@ export default function ApiKeysPage() {
                   Te estás acercando al límite de requests
                 </h4>
                 <p className="text-sm text-orange-700">
-                  Has usado {userLimits.usage.requests.current} de {userLimits.usage.requests.limit} requests este mes 
-                  ({userLimits.usage.requests.percentage.toFixed(1)}%). 
+                  Has usado {userLimits.usage.requests.current} de {userLimits.usage.requests.limit} requests este mes
+                  ({userLimits.usage.requests.percentage.toFixed(1)}%).
                   {userLimits.user.plan === 'free' ? (
                     <span> Considera actualizar a un plan de pago para obtener más requests.</span>
                   ) : (
@@ -337,7 +333,7 @@ export default function ApiKeysPage() {
                   Tu prueba gratuita está por expirar
                 </h4>
                 <p className="text-sm text-red-700">
-                  Te quedan {userLimits.user.trialDaysRemaining} días de prueba gratuita. 
+                  Te quedan {userLimits.user.trialDaysRemaining} días de prueba gratuita.
                   Actualiza a un plan de pago para continuar usando RouterAI.
                 </p>
               </div>
@@ -360,12 +356,12 @@ export default function ApiKeysPage() {
             </div>
             <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
               <DialogTrigger asChild>
-                <Button 
+                <Button
                   className="bg-blue-600 hover:bg-blue-700 text-white disabled:bg-slate-400"
                   disabled={!userLimits?.usage.apiKeys.allowed || isCreatingKey}
                   title={
-                    !userLimits?.usage.apiKeys.allowed 
-                      ? userLimits?.usage.apiKeys.reason 
+                    !userLimits?.usage.apiKeys.allowed
+                      ? userLimits?.usage.apiKeys.reason
                       : 'Crear nueva API key'
                   }
                 >
@@ -426,7 +422,7 @@ export default function ApiKeysPage() {
               <p className="text-red-800 text-sm">{error}</p>
             </div>
           )}
-          
+
           {apiKeys.length === 0 ? (
             <div className="text-center py-12">
               <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -447,7 +443,7 @@ export default function ApiKeysPage() {
                     <div className="flex-1">
                       <div className="flex items-center space-x-3">
                         <h3 className="font-medium text-slate-900">{key.name}</h3>
-                        <Badge 
+                        <Badge
                           variant={key.is_active ? "default" : "secondary"}
                           className={key.is_active ? "bg-green-100 text-green-800" : "bg-slate-100 text-slate-600"}
                         >
@@ -514,9 +510,9 @@ export default function ApiKeysPage() {
                       </div>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <Button 
-                        variant="ghost" 
-                        size="sm" 
+                      <Button
+                        variant="ghost"
+                        size="sm"
                         onClick={() => deleteApiKey(key.id)}
                         className="text-red-600 hover:text-red-800 hover:bg-red-50"
                       >
@@ -571,7 +567,7 @@ response = requests.post('https://api.routerai.com/v1/chat', headers=headers)`}
           </div>
         </CardContent>
       </Card>
-      
+
       {/* Modal especial para mostrar la nueva API key */}
       <Dialog open={showNewKeyDialog} onOpenChange={setShowNewKeyDialog}>
         <DialogContent className="sm:max-w-lg">
@@ -586,7 +582,7 @@ response = requests.post('https://api.routerai.com/v1/chat', headers=headers)`}
               Esta es tu nueva API key para "{newlyCreatedKey?.name}". Cópiala ahora - no podrás verla completa después.
             </DialogDescription>
           </DialogHeader>
-          
+
           <div className="space-y-4">
             <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
               <div className="flex items-start space-x-3">
@@ -594,7 +590,7 @@ response = requests.post('https://api.routerai.com/v1/chat', headers=headers)`}
                 <div>
                   <h4 className="text-sm font-medium text-amber-800">¡Importante!</h4>
                   <p className="text-sm text-amber-700 mt-1">
-                    Por razones de seguridad, esta es la única vez que podrás ver tu API key completa. 
+                    Por razones de seguridad, esta es la única vez que podrás ver tu API key completa.
                     Asegúrate de copiarla y guardarla en un lugar seguro.
                   </p>
                 </div>

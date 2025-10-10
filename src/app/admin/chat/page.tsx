@@ -1,15 +1,15 @@
 'use client';
 
-import { useState, useEffect } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Play, Settings, Zap, DollarSign, Star, Eye, EyeOff, Clock, Code, Copy, CheckCircle } from "lucide-react";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 import { ModelConfig } from "@/types/ai";
+import { CheckCircle, Clock, Code, Copy, DollarSign, Eye, EyeOff, Play, Settings, Star, Zap } from "lucide-react";
+import { useEffect, useState } from "react";
 
 type RoutingStrategy = 'auto' | 'cost' | 'speed' | 'quality' | 'balanced';
 
@@ -76,8 +76,8 @@ export default function ApiConsolePage() {
   const getFilteredModels = () => {
     if (userPlan === 'FREE') {
       // Usuarios FREE solo pueden usar GPT-3.5 Turbo
-      return availableModels.filter(model => 
-        model.name.toLowerCase().includes('gpt-3.5') || 
+      return availableModels.filter(model =>
+        model.name.toLowerCase().includes('gpt-3.5') ||
         model.name.toLowerCase().includes('gpt-3.5-turbo')
       );
     }
@@ -145,7 +145,7 @@ export default function ApiConsolePage() {
 
     } catch (error) {
       console.error('Error executing API test:', error);
-      
+
       const errorTest: ApiTest = {
         id: Date.now().toString(),
         timestamp: new Date(),
@@ -436,7 +436,7 @@ export default function ApiConsolePage() {
                     <Code className="h-5 w-5" />
                     Response
                   </span>
-                  <Badge 
+                  <Badge
                     variant={selectedTest.response.status >= 200 && selectedTest.response.status < 300 ? "default" : "destructive"}
                   >
                     {selectedTest.response.status} {selectedTest.response.statusText}
@@ -493,14 +493,13 @@ export default function ApiConsolePage() {
                   testHistory.map((test) => (
                     <div
                       key={test.id}
-                      className={`p-3 border rounded-lg cursor-pointer transition-colors ${
-                        selectedTest?.id === test.id ? 'bg-muted' : 'hover:bg-muted/50'
-                      }`}
+                      className={`p-3 border rounded-lg cursor-pointer transition-colors ${selectedTest?.id === test.id ? 'bg-muted' : 'hover:bg-muted/50'
+                        }`}
                       onClick={() => setSelectedTest(test)}
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
-                          <Badge 
+                          <Badge
                             variant={test.response.status >= 200 && test.response.status < 300 ? "default" : "destructive"}
                             className="text-xs"
                           >
@@ -532,7 +531,7 @@ export default function ApiConsolePage() {
             </Badge>
           </CardTitle>
           <CardDescription>
-            {userPlan === 'FREE' 
+            {userPlan === 'FREE'
               ? 'As a FREE user, you can only use GPT-3.5 Turbo models'
               : 'Current AI models available in the router'
             }

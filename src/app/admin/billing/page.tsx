@@ -1,11 +1,11 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { CreditCardIcon, DollarSignIcon, TrendingUpIcon, CheckIcon } from "lucide-react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { CheckIcon, CreditCardIcon, DollarSignIcon, TrendingUpIcon } from "lucide-react";
+import { useSearchParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 interface UserLimits {
   currentPlan: string;
@@ -120,7 +120,7 @@ export default function BillingPage() {
 
   const handleUpgrade = async (planId: string) => {
     if (planId === 'free') return;
-    
+
     setUpgradingPlan(planId);
     try {
       const response = await fetch('/api/stripe/create-checkout', {
@@ -229,7 +229,7 @@ export default function BillingPage() {
                 </span>
               </div>
               <p className="text-slate-600 mt-2">
-                {userLimits?.apiKeysUsed || 0} de {userLimits?.apiKeysLimit || 0} API Keys • 
+                {userLimits?.apiKeysUsed || 0} de {userLimits?.apiKeysLimit || 0} API Keys •
                 {formatNumber(userLimits?.requestsUsed || 0)} de {formatNumber(userLimits?.requestsLimit || 0)} requests
                 {userLimits?.trialEndsAt && (
                   <span className="text-orange-600 ml-2">
@@ -240,8 +240,8 @@ export default function BillingPage() {
             </div>
             <div className="space-x-2">
               {userLimits?.currentPlan !== 'free' && (
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   onClick={handleManageSubscription}
                   className="mr-2"
                 >
@@ -249,7 +249,7 @@ export default function BillingPage() {
                 </Button>
               )}
               {userLimits?.currentPlan !== 'enterprise' && (
-                <Button 
+                <Button
                   className="bg-blue-600 hover:bg-blue-700"
                   onClick={() => handleUpgrade('pro')}
                   disabled={upgradingPlan === 'pro'}
@@ -326,13 +326,12 @@ export default function BillingPage() {
             {plans.map((plan) => (
               <div
                 key={plan.stripeId}
-                className={`relative p-6 rounded-lg border-2 ${
-                  plan.popular 
-                    ? 'border-purple-500 bg-purple-50' 
+                className={`relative p-6 rounded-lg border-2 ${plan.popular
+                    ? 'border-purple-500 bg-purple-50'
                     : userLimits?.currentPlan?.toLowerCase() === plan.stripeId
-                    ? 'border-green-500 bg-green-50'
-                    : 'border-gray-200 bg-white'
-                }`}
+                      ? 'border-green-500 bg-green-50'
+                      : 'border-gray-200 bg-white'
+                  }`}
               >
                 {plan.popular && (
                   <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
@@ -344,7 +343,7 @@ export default function BillingPage() {
                     <Badge className="bg-green-600 text-white">Plan Actual</Badge>
                   </div>
                 )}
-                
+
                 <div className="text-center mb-4">
                   <h3 className="text-lg font-bold text-slate-900">{plan.name}</h3>
                   <div className="mt-2">
@@ -363,23 +362,22 @@ export default function BillingPage() {
                 </ul>
 
                 <Button
-                  className={`w-full ${
-                    userLimits?.currentPlan?.toLowerCase() === plan.stripeId
+                  className={`w-full ${userLimits?.currentPlan?.toLowerCase() === plan.stripeId
                       ? 'bg-green-600 hover:bg-green-700'
                       : plan.popular
-                      ? 'bg-purple-600 hover:bg-purple-700'
-                      : 'bg-slate-600 hover:bg-slate-700'
-                  }`}
+                        ? 'bg-purple-600 hover:bg-purple-700'
+                        : 'bg-slate-600 hover:bg-slate-700'
+                    }`}
                   onClick={() => handleUpgrade(plan.stripeId)}
                   disabled={upgradingPlan === plan.stripeId || userLimits?.currentPlan?.toLowerCase() === plan.stripeId}
                 >
-                  {userLimits?.currentPlan?.toLowerCase() === plan.stripeId 
-                    ? 'Current Plan' 
-                    : plan.stripeId === 'free' 
-                    ? 'Free Plan'
-                    : upgradingPlan === plan.stripeId 
-                    ? 'Processing...' 
-                    : `Upgrade to ${plan.name}`
+                  {userLimits?.currentPlan?.toLowerCase() === plan.stripeId
+                    ? 'Current Plan'
+                    : plan.stripeId === 'free'
+                      ? 'Free Plan'
+                      : upgradingPlan === plan.stripeId
+                        ? 'Processing...'
+                        : `Upgrade to ${plan.name}`
                   }
                 </Button>
               </div>
@@ -402,10 +400,10 @@ export default function BillingPage() {
                 <span>{userLimits?.requestsUsed || 0} / {formatNumber(userLimits?.requestsLimit || 0)}</span>
               </div>
               <div className="mt-2 h-2 bg-slate-100 rounded-full">
-                <div 
+                <div
                   className="h-2 bg-blue-500 rounded-full transition-all"
-                  style={{ 
-                    width: `${Math.min(((userLimits?.requestsUsed || 0) / (userLimits?.requestsLimit || 1)) * 100, 100)}%` 
+                  style={{
+                    width: `${Math.min(((userLimits?.requestsUsed || 0) / (userLimits?.requestsLimit || 1)) * 100, 100)}%`
                   }}
                 />
               </div>
@@ -416,10 +414,10 @@ export default function BillingPage() {
                 <span>{userLimits?.apiKeysUsed || 0} / {userLimits?.apiKeysLimit || 0}</span>
               </div>
               <div className="mt-2 h-2 bg-slate-100 rounded-full">
-                <div 
+                <div
                   className="h-2 bg-green-500 rounded-full transition-all"
-                  style={{ 
-                    width: `${Math.min(((userLimits?.apiKeysUsed || 0) / (userLimits?.apiKeysLimit || 1)) * 100, 100)}%` 
+                  style={{
+                    width: `${Math.min(((userLimits?.apiKeysUsed || 0) / (userLimits?.apiKeysLimit || 1)) * 100, 100)}%`
                   }}
                 />
               </div>

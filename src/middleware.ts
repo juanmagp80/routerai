@@ -16,7 +16,7 @@ export default clerkMiddleware(async (auth, req) => {
   if (isWebhookRoute(req)) {
     return
   }
-  
+
   if (isProtectedRoute(req)) {
     await auth.protect()
   }

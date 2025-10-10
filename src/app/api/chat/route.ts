@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server';
 import { ApiMiddleware } from '@/lib/api-middleware';
 import { AIRouterService } from '@/services/ai-router';
 import { AIRequest } from '@/types/ai';
+import { NextRequest, NextResponse } from 'next/server';
 
 // Use singleton pattern to maintain state between requests
 let aiRouterInstance: AIRouterService | null = null;
@@ -17,10 +17,10 @@ export async function POST(request: NextRequest) {
   try {
     // Primero necesitamos leer el body para obtener el modelo para validación
     const body = await request.json();
-    
+
     // Usar el nuevo middleware para validar API key y límites
     return await ApiMiddleware.handleApiRequest(request, async (userId: string, req: NextRequest) => {
-      try {        
+      try {
         // Validate required fields
         if (!body.message && !body.messages) {
           return NextResponse.json(
@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
 
         // El modelo es opcional si se usa routing automático
         const useAutoRouting = !body.model || body.model === 'auto';
-        
+
         // Convertir messages array a un solo message si es necesario
         let message = body.message;
         if (!message && body.messages && Array.isArray(body.messages)) {
@@ -71,12 +71,12 @@ export async function POST(request: NextRequest) {
 
         if (!response.success) {
           return NextResponse.json(
-            { 
-              error: { 
-                message: response.error || 'AI request failed', 
+            {
+              error: {
+                message: response.error || 'AI request failed',
                 type: 'ai_error',
-                code: 500 
-              } 
+                code: 500
+              }
             },
             { status: 500 }
           );
@@ -115,27 +115,27 @@ export async function POST(request: NextRequest) {
       } catch (error) {
         console.error('Error processing chat request:', error);
         return NextResponse.json(
-          { 
-            error: { 
-              message: 'Internal server error', 
+          {
+            error: {
+              message: 'Internal server error',
               type: 'internal_error',
-              code: 500 
-            } 
+              code: 500
+            }
           },
           { status: 500 }
         );
       }
     }, body?.model || 'auto'); // Pasar el modelo para validación
-    
+
   } catch (parseError) {
     console.error('Error parsing request body:', parseError);
     return NextResponse.json(
-      { 
-        error: { 
-          message: 'Invalid JSON in request body', 
+      {
+        error: {
+          message: 'Invalid JSON in request body',
           type: 'validation_error',
-          code: 400 
-        } 
+          code: 400
+        }
       },
       { status: 400 }
     );

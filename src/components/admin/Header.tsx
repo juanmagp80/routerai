@@ -1,10 +1,10 @@
 'use client';
 
-import { UserButton } from '@clerk/nextjs';
-import { Bell, Search, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useUserSync } from '@/hooks/useUserSync';
+import { UserButton } from '@clerk/nextjs';
+import { Bell, Search, User } from 'lucide-react';
 import Link from 'next/link';
 
 export function Header() {

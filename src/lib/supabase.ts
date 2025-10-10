@@ -5,7 +5,7 @@ const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 
 // Crear cliente de Supabase sin tipos estrictos para desarrollo
 export const supabase = createClient(
-  supabaseUrl, 
+  supabaseUrl,
   supabaseAnonKey,
   {
     auth: {
@@ -18,11 +18,11 @@ export const supabase = createClient(
 )
 
 // Cliente para el lado del servidor (si tienes service role key)
-export const supabaseAdmin = process.env.SUPABASE_SERVICE_ROLE_KEY 
+export const supabaseAdmin = process.env.SUPABASE_SERVICE_ROLE_KEY
   ? createClient(supabaseUrl, process.env.SUPABASE_SERVICE_ROLE_KEY, {
-      auth: {
-        autoRefreshToken: false,
-        persistSession: false
-      }
-    })
+    auth: {
+      autoRefreshToken: false,
+      persistSession: false
+    }
+  })
   : null

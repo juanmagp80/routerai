@@ -1,11 +1,11 @@
 'use client';
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { BarChart3, Users, Cpu, Clock, TrendingUp, Activity, DollarSign, CheckCircle } from "lucide-react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useUserSync } from "@/hooks/useUserSync";
-import { StatsService, DashboardStats } from "@/lib/stats-service";
+import { DashboardStats, StatsService } from "@/lib/stats-service";
+import { Activity, BarChart3, Clock, Cpu, TrendingUp, Users } from "lucide-react";
 import { useEffect, useState } from "react";
 
 export default function AdminDashboard() {
@@ -77,7 +77,7 @@ export default function AdminDashboard() {
           </p>
         </div>
       </div>
-      
+
       {/* Stats Grid */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
@@ -95,7 +95,7 @@ export default function AdminDashboard() {
             </p>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Usuarios Activos</CardTitle>
@@ -104,8 +104,8 @@ export default function AdminDashboard() {
           <CardContent>
             <div className="text-2xl font-bold">{stats?.active_users || 0}</div>
             <p className="text-xs text-muted-foreground">
-              <Button 
-                variant="link" 
+              <Button
+                variant="link"
                 className="p-0 h-auto"
                 onClick={() => handleViewDetails('users')}
               >
@@ -114,7 +114,7 @@ export default function AdminDashboard() {
             </p>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Modelos Disponibles</CardTitle>
@@ -129,7 +129,7 @@ export default function AdminDashboard() {
             </p>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Tiempo Promedio</CardTitle>
@@ -154,8 +154,8 @@ export default function AdminDashboard() {
           <CardContent>
             <div className="text-2xl font-bold">{stats?.success_rate.toFixed(1) || 0}%</div>
             <p className="text-xs text-muted-foreground">
-              <Button 
-                variant="link" 
+              <Button
+                variant="link"
                 className="p-0 h-auto"
                 onClick={() => handleViewAnalytics('performance')}
               >
@@ -164,7 +164,7 @@ export default function AdminDashboard() {
             </p>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Estado del Sistema</CardTitle>
@@ -221,7 +221,7 @@ export default function AdminDashboard() {
             </div>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardHeader>
             <CardTitle>Acciones Rápidas</CardTitle>
