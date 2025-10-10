@@ -306,10 +306,10 @@ export default function ApiKeysPage() {
                   <>
                     <p className="text-sm font-medium text-slate-600">Prueba restante</p>
                     <p className="text-2xl font-bold text-slate-900">
-                      {userLimits.user.trialDaysRemaining}
+                      {userLimits?.user.trialDaysRemaining}
                     </p>
                     <p className="text-xs text-slate-500">
-                      {userLimits.user.trialDaysRemaining === 1 ? 'día' : 'días'}
+                      {(userLimits?.user.trialDaysRemaining ?? 0) === 1 ? 'día' : 'días'}
                     </p>
                   </>
                 ) : (
@@ -336,9 +336,9 @@ export default function ApiKeysPage() {
                   Te estás acercando al límite de requests
                 </h4>
                 <p className="text-sm text-orange-700">
-                  Has usado {userLimits.usage.requests.current} de {userLimits.usage.requests.limit} requests este mes
-                  ({userLimits.usage.requests.percentage.toFixed(1)}%).
-                  {userLimits.user.plan === 'free' ? (
+                  Has usado {userLimits?.usage.requests.current} de {userLimits?.usage.requests.limit} requests este mes
+                  ({(userLimits?.usage.requests.percentage ?? 0).toFixed(1)}%).
+                  {userLimits?.user.plan === 'free' ? (
                     <span> Considera actualizar a un plan de pago para obtener más requests.</span>
                   ) : (
                     <span> El contador se reiniciará el próximo mes.</span>
@@ -360,7 +360,7 @@ export default function ApiKeysPage() {
                   Tu prueba gratuita está por expirar
                 </h4>
                 <p className="text-sm text-red-700">
-                  Te quedan {userLimits.user.trialDaysRemaining} días de prueba gratuita.
+                  Te quedan {userLimits?.user.trialDaysRemaining} días de prueba gratuita.
                   Actualiza a un plan de pago para continuar usando RouterAI.
                 </p>
               </div>
@@ -396,7 +396,7 @@ export default function ApiKeysPage() {
                   Nueva API Key
                   {userLimits?.usage.apiKeys.allowed === false && (
                     <span className="ml-2 text-xs">
-                      ({userLimits.usage.apiKeys.current}/{userLimits.usage.apiKeys.limit})
+                      ({userLimits?.usage.apiKeys.current}/{userLimits?.usage.apiKeys.limit})
                     </span>
                   )}
                 </Button>

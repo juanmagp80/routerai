@@ -189,7 +189,7 @@ export default function ApiConsolePage() {
       maxTokens: maxTokens
     };
 
-    return `curl -X ${method} "${window.location.origin}${endpoint}" \\
+    return `curl -X ${method} "${typeof window !== 'undefined' ? window.location.origin : 'https://yourdomain.com'}${endpoint}" \\
   -H "Content-Type: application/json" \\
   -H "Authorization: Bearer ${apiKey}" \\
   -d '${JSON.stringify(requestData, null, 2)}'`;

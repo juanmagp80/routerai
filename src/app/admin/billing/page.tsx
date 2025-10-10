@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { CheckIcon, CreditCardIcon, DollarSignIcon, TrendingUpIcon } from "lucide-react";
 import { useSearchParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 
 interface UserLimits {
   currentPlan: string;
@@ -84,7 +84,7 @@ const plans: Plan[] = [
   }
 ];
 
-export default function BillingPage() {
+function BillingPageContent() {
   const [userLimits, setUserLimits] = useState<UserLimits | null>(null);
   const [loading, setLoading] = useState(true);
   const [upgradingPlan, setUpgradingPlan] = useState<string | null>(null);
@@ -426,5 +426,13 @@ export default function BillingPage() {
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+export default function BillingPage() {
+  return (
+    <Suspense fallback={<div className="p-8">Cargando...</div>}>
+      <BillingPageContent />
+    </Suspense>
   );
 }
