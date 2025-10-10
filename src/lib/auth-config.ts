@@ -2,7 +2,7 @@
 // El admin puede luego crear otros usuarios con roles específicos
 
 // Función para determinar el rol basado en email
-export function determineUserRole(email: string): 'admin' | 'developer' | 'viewer' {
+export function determineUserRole(): 'admin' | 'developer' | 'viewer' {
     // Todos los usuarios que se registren automáticamente son admin
     // Esto permite que el primer usuario configure el sistema
     // y luego cree otros usuarios con roles específicos

@@ -9,7 +9,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Edit, Mail, Plus, Search, Trash2, User, Users as UsersIcon } from "lucide-react";
-import { useEffect, useState } from "react";
+import Image from 'next/image';
+import { useState, useEffect } from 'react';
 
 interface User {
   id: string;
@@ -217,15 +218,6 @@ export default function UsersPage() {
     }
   };
 
-  const getRoleColor = (role: string) => {
-    switch (role) {
-      case 'admin': return 'bg-red-100 text-red-800';
-      case 'developer': return 'bg-blue-100 text-blue-800';
-      case 'viewer': return 'bg-gray-100 text-gray-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
-  };
-
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'active': return 'bg-green-100 text-green-800';
@@ -387,7 +379,7 @@ export default function UsersPage() {
                   <div className="flex items-center space-x-4">
                     <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center">
                       {user.avatar ? (
-                        <img src={user.avatar} alt={user.name} className="w-10 h-10 rounded-full" />
+                        <Image src={user.avatar} alt={user.name} width={40} height={40} className="w-10 h-10 rounded-full" />
                       ) : (
                         <User className="h-5 w-5 text-gray-500" />
                       )}
@@ -408,7 +400,6 @@ export default function UsersPage() {
                     </div>
                     <div className="flex space-x-2">
                       <RolePromotionButton
-                        userId={user.id}
                         currentRole={user.role}
                         onRoleChange={(newRole) => handlePromoteUser(user.id, newRole)}
                       />

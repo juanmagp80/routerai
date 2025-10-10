@@ -12,7 +12,6 @@ import { Crown, Eye, Shield } from 'lucide-react';
 import { useState } from 'react';
 
 interface RolePromotionButtonProps {
-    userId: string;
     currentRole: 'admin' | 'developer' | 'viewer';
     onRoleChange: (newRole: 'admin' | 'developer' | 'viewer') => Promise<void>;
     disabled?: boolean;
@@ -40,7 +39,6 @@ const roleConfig = {
 };
 
 export default function RolePromotionButton({
-    userId,
     currentRole,
     onRoleChange,
     disabled = false

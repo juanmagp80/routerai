@@ -61,7 +61,7 @@ export async function POST(req: NextRequest) {
                 const name = `${first_name || ''} ${last_name || ''}`.trim() || email;
 
                 // Determinar rol automáticamente
-                const role = determineUserRole(email);
+                const role = determineUserRole();
 
                 // Crear usuario en nuestra base de datos
                 if (supabaseAdmin) {
