@@ -55,7 +55,7 @@ export class ApiKeyService {
     const { data, error } = await supabase
       .from('api_keys')
       .select('*')
-      .eq('key_value', keyValue)
+      .eq('key_hash', keyValue) // Cambiado de key_value a key_hash
       .eq('is_active', true)
       .single()
 
@@ -76,7 +76,7 @@ export class ApiKeyService {
 
   // Generar una nueva API key
   static generateApiKey(): string {
-    const prefix = 'ra_' // router-ai prefix
+    const prefix = 'rtr_' // router-ai prefix
     const randomPart = Math.random().toString(36).substring(2, 15) + 
                       Math.random().toString(36).substring(2, 15)
     return `${prefix}${randomPart}`

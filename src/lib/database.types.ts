@@ -44,7 +44,7 @@ export interface Database {
           id: string
           user_id: string
           name: string
-          key_value: string
+          key_hash: string
           is_active: boolean
           created_at: string
           last_used_at?: string
@@ -53,7 +53,7 @@ export interface Database {
           id?: string
           user_id: string
           name: string
-          key_value: string
+          key_hash: string
           is_active?: boolean
           created_at?: string
           last_used_at?: string
@@ -62,7 +62,7 @@ export interface Database {
           id?: string
           user_id?: string
           name?: string
-          key_value?: string
+          key_hash?: string
           is_active?: boolean
           created_at?: string
           last_used_at?: string

@@ -1,9 +1,43 @@
 import { supabase } from './supabase'
-import { Database } from './database.types'
 
-type User = Database['public']['Tables']['users']['Row']
-type UserInsert = Database['public']['Tables']['users']['Insert']
-type UserUpdate = Database['public']['Tables']['users']['Update']
+interface User {
+  id: string
+  name: string
+  email: string
+  company?: string
+  plan: string
+  api_key_limit: number
+  is_active: boolean
+  email_verified: boolean
+  created_at: string
+  updated_at: string
+}
+
+interface UserInsert {
+  id?: string
+  name: string
+  email: string
+  company?: string
+  plan?: string
+  api_key_limit?: number
+  is_active?: boolean
+  email_verified?: boolean
+  created_at?: string
+  updated_at?: string
+}
+
+interface UserUpdate {
+  id?: string
+  name?: string
+  email?: string
+  company?: string
+  plan?: string
+  api_key_limit?: number
+  is_active?: boolean
+  email_verified?: boolean
+  created_at?: string
+  updated_at?: string
+}
 
 export class UserService {
   static async getUserById(id: string): Promise<User | null> {
@@ -26,7 +60,7 @@ export class UserService {
       .from('users')
       .select('*')
       .eq('email', email)
-      .single()
+      .maybeSingle() // Cambiado de .single() a .maybeSingle()
 
     if (error) {
       console.error('Error fetching user by email:', error)
@@ -37,34 +71,47 @@ export class UserService {
   }
 
   static async createUser(userData: UserInsert): Promise<User | null> {
-    const { data, error } = await supabase
-      .from('users')
-      .insert(userData)
-      .select()
-      .single()
+    try {
+      const { data, error } = await supabase
+        .from('users')
+        .insert([userData])
+        .select()
+        
+      if (error) {
+        // Si es error de duplicado, no es un error real
+        if (error.code === '23505') {
+          console.log('Usuario ya existe, esto es normal')
+          return null
+        }
+        console.error('Error creating user:', error)
+        return null
+      }
 
-    if (error) {
-      console.error('Error creating user:', error)
+      return data?.[0] || null
+    } catch (err) {
+      console.error('Error in createUser:', err)
       return null
     }
-
-    return data
   }
 
   static async updateUser(id: string, updates: UserUpdate): Promise<User | null> {
-    const { data, error } = await supabase
-      .from('users')
-      .update({ ...updates, updated_at: new Date().toISOString() })
-      .eq('id', id)
-      .select()
-      .single()
+    try {
+      const { data, error } = await supabase
+        .from('users')
+        .update({ ...updates, updated_at: new Date().toISOString() })
+        .eq('id', id)
+        .select()
 
-    if (error) {
-      console.error('Error updating user:', error)
+      if (error) {
+        console.error('Error updating user:', error)
+        return null
+      }
+
+      return data?.[0] || null
+    } catch (err) {
+      console.error('Error in updateUser:', err)
       return null
     }
-
-    return data
   }
 
   // Crear o actualizar usuario desde Clerk

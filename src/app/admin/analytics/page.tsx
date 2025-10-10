@@ -1,35 +1,175 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { BarChart3Icon, TrendingUpIcon, ClockIcon, DollarSignIcon, ActivityIcon, Users2Icon } from "lucide-react";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { TrendingUpIcon, TrendingDownIcon, UsersIcon, DollarSignIcon, ActivityIcon, KeyIcon } from "lucide-react";
+
+interface AnalyticsData {
+  totalRequests: number;
+  totalUsers: number;
+  totalApiKeys: number;
+  totalRevenue: number;
+  requestsGrowth: number;
+  usersGrowth: number;
+  revenueGrowth: number;
+  topUsers: Array<{
+    userId: string;
+    email: string;
+    requests: number;
+    plan: string;
+  }>;
+  topModels: Array<{
+    model: string;
+    requests: number;
+    percentage: number;
+  }>;
+  recentActivity: Array<{
+    timestamp: string;
+    userId: string;
+    email: string;
+    action: string;
+    details: string;
+  }>;
+}
 
 export default function AnalyticsPage() {
+  const [data, setData] = useState<AnalyticsData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetchAnalytics();
+  }, []);
+
+  const fetchAnalytics = async () => {
+    try {
+      const response = await fetch('/api/admin/analytics');
+      if (response.ok) {
+        const analyticsData = await response.json();
+        setData(analyticsData);
+      } else {
+        setError('Error al cargar datos de analytics');
+      }
+    } catch (error) {
+      console.error('Error fetching analytics:', error);
+      setError('Error de conexión');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const formatNumber = (num: number) => {
+    if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`;
+    if (num >= 1000) return `${(num / 1000).toFixed(1)}K`;
+    return num.toString();
+  };
+
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('es-ES', {
+      style: 'currency',
+      currency: 'EUR'
+    }).format(amount);
+  };
+
+  const getGrowthIcon = (growth: number) => {
+    return growth >= 0 ? (
+      <TrendingUpIcon className="h-4 w-4 text-green-600" />
+    ) : (
+      <TrendingDownIcon className="h-4 w-4 text-red-600" />
+    );
+  };
+
+  const getGrowthColor = (growth: number) => {
+    return growth >= 0 ? 'text-green-600' : 'text-red-600';
+  };
+
+  const getPlanBadge = (plan: string) => {
+    switch (plan.toLowerCase()) {
+      case 'free':
+        return <Badge className="bg-gray-100 text-gray-800">FREE</Badge>;
+      case 'starter':
+        return <Badge className="bg-blue-100 text-blue-800">STARTER</Badge>;
+      case 'pro':
+        return <Badge className="bg-purple-100 text-purple-800">PRO</Badge>;
+      case 'enterprise':
+        return <Badge className="bg-orange-100 text-orange-800">ENTERPRISE</Badge>;
+      default:
+        return <Badge className="bg-gray-100 text-gray-800">FREE</Badge>;
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <div className="border-b border-slate-200 pb-6">
+          <h1 className="text-2xl font-bold text-slate-900">Analytics</h1>
+          <p className="text-slate-600 mt-1">Cargando datos de analytics...</p>
+        </div>
+        <div className="animate-pulse space-y-4">
+          <div className="grid grid-cols-4 gap-4">
+            <div className="h-24 bg-gray-200 rounded"></div>
+            <div className="h-24 bg-gray-200 rounded"></div>
+            <div className="h-24 bg-gray-200 rounded"></div>
+            <div className="h-24 bg-gray-200 rounded"></div>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="h-64 bg-gray-200 rounded"></div>
+            <div className="h-64 bg-gray-200 rounded"></div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="space-y-6">
+        <div className="border-b border-slate-200 pb-6">
+          <h1 className="text-2xl font-bold text-slate-900">Analytics</h1>
+          <p className="text-slate-600 mt-1">Error al cargar datos</p>
+        </div>
+        <div className="text-center py-8">
+          <p className="text-red-600">{error}</p>
+          <button 
+            onClick={fetchAnalytics}
+            className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+          >
+            Reintentar
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
-      {/* Page Header */}
       <div className="border-b border-slate-200 pb-6">
         <h1 className="text-2xl font-bold text-slate-900">Analytics</h1>
         <p className="text-slate-600 mt-1">
-          Monitorea el uso y rendimiento de tus API calls
+          Métricas y estadísticas de uso de RouterAI
         </p>
       </div>
 
-      {/* Quick Stats */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <Card>
           <CardContent className="p-6">
             <div className="flex items-center">
-              <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                <ActivityIcon className="w-5 h-5 text-blue-600" />
+              <div className="p-3 rounded-full bg-blue-100 mr-4">
+                <ActivityIcon className="h-6 w-6 text-blue-600" />
               </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-slate-600">Requests Hoy</p>
-                <p className="text-2xl font-bold text-slate-900">2,847</p>
-                <p className="text-xs text-green-600 flex items-center mt-1">
-                  <TrendingUpIcon className="w-3 h-3 mr-1" />
-                  +12% vs ayer
+              <div className="flex-1">
+                <p className="text-sm font-medium text-slate-600">Total Requests</p>
+                <p className="text-2xl font-bold text-slate-900">
+                  {formatNumber(data?.totalRequests || 0)}
                 </p>
+                <div className="flex items-center mt-1">
+                  {getGrowthIcon(data?.requestsGrowth || 0)}
+                  <span className={`text-sm ml-1 ${getGrowthColor(data?.requestsGrowth || 0)}`}>
+                    {data?.requestsGrowth?.toFixed(1) || 0}%
+                  </span>
+                </div>
               </div>
             </div>
           </CardContent>
@@ -38,16 +178,20 @@ export default function AnalyticsPage() {
         <Card>
           <CardContent className="p-6">
             <div className="flex items-center">
-              <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                <ClockIcon className="w-5 h-5 text-green-600" />
+              <div className="p-3 rounded-full bg-green-100 mr-4">
+                <UsersIcon className="h-6 w-6 text-green-600" />
               </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-slate-600">Tiempo Respuesta</p>
-                <p className="text-2xl font-bold text-slate-900">247ms</p>
-                <p className="text-xs text-green-600 flex items-center mt-1">
-                  <TrendingUpIcon className="w-3 h-3 mr-1" />
-                  -5ms vs ayer
+              <div className="flex-1">
+                <p className="text-sm font-medium text-slate-600">Total Users</p>
+                <p className="text-2xl font-bold text-slate-900">
+                  {formatNumber(data?.totalUsers || 0)}
                 </p>
+                <div className="flex items-center mt-1">
+                  {getGrowthIcon(data?.usersGrowth || 0)}
+                  <span className={`text-sm ml-1 ${getGrowthColor(data?.usersGrowth || 0)}`}>
+                    {data?.usersGrowth?.toFixed(1) || 0}%
+                  </span>
+                </div>
               </div>
             </div>
           </CardContent>
@@ -56,16 +200,19 @@ export default function AnalyticsPage() {
         <Card>
           <CardContent className="p-6">
             <div className="flex items-center">
-              <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-                <DollarSignIcon className="w-5 h-5 text-purple-600" />
+              <div className="p-3 rounded-full bg-purple-100 mr-4">
+                <KeyIcon className="h-6 w-6 text-purple-600" />
               </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-slate-600">Costo Hoy</p>
-                <p className="text-2xl font-bold text-slate-900">$12.34</p>
-                <p className="text-xs text-red-600 flex items-center mt-1">
-                  <TrendingUpIcon className="w-3 h-3 mr-1" />
-                  +8% vs ayer
+              <div className="flex-1">
+                <p className="text-sm font-medium text-slate-600">API Keys</p>
+                <p className="text-2xl font-bold text-slate-900">
+                  {formatNumber(data?.totalApiKeys || 0)}
                 </p>
+                <div className="flex items-center mt-1">
+                  <span className="text-sm text-slate-500">
+                    Total activas
+                  </span>
+                </div>
               </div>
             </div>
           </CardContent>
@@ -74,41 +221,74 @@ export default function AnalyticsPage() {
         <Card>
           <CardContent className="p-6">
             <div className="flex items-center">
-              <div className="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
-                <Users2Icon className="w-5 h-5 text-orange-600" />
+              <div className="p-3 rounded-full bg-yellow-100 mr-4">
+                <DollarSignIcon className="h-6 w-6 text-yellow-600" />
               </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-slate-600">Tasa de Éxito</p>
-                <p className="text-2xl font-bold text-slate-900">99.8%</p>
-                <p className="text-xs text-green-600 flex items-center mt-1">
-                  <TrendingUpIcon className="w-3 h-3 mr-1" />
-                  +0.2% vs ayer
+              <div className="flex-1">
+                <p className="text-sm font-medium text-slate-600">Revenue</p>
+                <p className="text-2xl font-bold text-slate-900">
+                  {formatCurrency(data?.totalRevenue || 0)}
                 </p>
+                <div className="flex items-center mt-1">
+                  {getGrowthIcon(data?.revenueGrowth || 0)}
+                  <span className={`text-sm ml-1 ${getGrowthColor(data?.revenueGrowth || 0)}`}>
+                    {data?.revenueGrowth?.toFixed(1) || 0}%
+                  </span>
+                </div>
               </div>
             </div>
           </CardContent>
         </Card>
       </div>
 
-      {/* Charts Section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
           <CardHeader>
             <CardTitle className="text-lg font-semibold text-slate-900">
-              Requests por Hora
+              Top Users
             </CardTitle>
             <CardDescription>
-              Últimas 24 horas
+              Usuarios con más requests este mes
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="h-64 flex items-center justify-center border-2 border-dashed border-slate-200 rounded-lg">
-              <div className="text-center">
-                <BarChart3Icon className="w-12 h-12 text-slate-400 mx-auto mb-2" />
-                <p className="text-slate-600">Gráfico de Requests por Hora</p>
-                <p className="text-sm text-slate-400">Próximamente disponible</p>
-              </div>
-            </div>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Usuario</TableHead>
+                  <TableHead>Plan</TableHead>
+                  <TableHead>Requests</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {data?.topUsers?.map((user, index) => (
+                  <TableRow key={user.userId}>
+                    <TableCell>
+                      <div>
+                        <p className="font-medium text-slate-900">
+                          {user.email}
+                        </p>
+                        <p className="text-sm text-slate-500">
+                          #{index + 1}
+                        </p>
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      {getPlanBadge(user.plan)}
+                    </TableCell>
+                    <TableCell className="font-medium">
+                      {formatNumber(user.requests)}
+                    </TableCell>
+                  </TableRow>
+                )) || (
+                  <TableRow>
+                    <TableCell colSpan={3} className="text-center text-slate-500">
+                      No hay datos disponibles
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
           </CardContent>
         </Card>
 
@@ -118,165 +298,96 @@ export default function AnalyticsPage() {
               Modelos Más Utilizados
             </CardTitle>
             <CardDescription>
-              Distribución del último mes
+              Distribución de uso por modelo de IA
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-3">
-                  <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-                  <span className="text-sm font-medium text-slate-900">GPT-4</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <div className="w-20 bg-slate-200 rounded-full h-2">
-                    <div className="bg-blue-500 h-2 rounded-full" style={{ width: '65%' }}></div>
+              {data?.topModels?.map((model) => (
+                <div key={model.model} className="flex items-center justify-between">
+                  <div>
+                    <p className="font-medium text-slate-900">{model.model}</p>
+                    <p className="text-sm text-slate-500">
+                      {formatNumber(model.requests)} requests
+                    </p>
                   </div>
-                  <span className="text-sm text-slate-600">65%</span>
-                </div>
-              </div>
-              
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-3">
-                  <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                  <span className="text-sm font-medium text-slate-900">Claude-3</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <div className="w-20 bg-slate-200 rounded-full h-2">
-                    <div className="bg-green-500 h-2 rounded-full" style={{ width: '25%' }}></div>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-20 bg-slate-200 rounded-full h-2">
+                      <div 
+                        className="bg-blue-600 h-2 rounded-full"
+                        style={{ width: `${model.percentage}%` }}
+                      />
+                    </div>
+                    <span className="text-sm font-medium text-slate-900">
+                      {model.percentage.toFixed(1)}%
+                    </span>
                   </div>
-                  <span className="text-sm text-slate-600">25%</span>
                 </div>
-              </div>
-              
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-3">
-                  <div className="w-3 h-3 bg-purple-500 rounded-full"></div>
-                  <span className="text-sm font-medium text-slate-900">Gemini</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <div className="w-20 bg-slate-200 rounded-full h-2">
-                    <div className="bg-purple-500 h-2 rounded-full" style={{ width: '10%' }}></div>
-                  </div>
-                  <span className="text-sm text-slate-600">10%</span>
-                </div>
-              </div>
+              )) || (
+                <p className="text-center text-slate-500">
+                  No hay datos disponibles
+                </p>
+              )}
             </div>
           </CardContent>
         </Card>
       </div>
 
-      {/* Recent Activity */}
       <Card>
         <CardHeader>
           <CardTitle className="text-lg font-semibold text-slate-900">
             Actividad Reciente
           </CardTitle>
           <CardDescription>
-            Últimos requests a la API
+            Últimas acciones realizadas en el sistema
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="space-y-4">
-            {[
-              { time: '10:34 AM', model: 'GPT-4', status: 'success', response: '287ms', cost: '$0.045' },
-              { time: '10:32 AM', model: 'Claude-3', status: 'success', response: '412ms', cost: '$0.032' },
-              { time: '10:29 AM', model: 'GPT-4', status: 'error', response: '1.2s', cost: '$0.000' },
-              { time: '10:25 AM', model: 'Gemini', status: 'success', response: '156ms', cost: '$0.018' },
-              { time: '10:22 AM', model: 'GPT-4', status: 'success', response: '324ms', cost: '$0.051' },
-            ].map((request, index) => (
-              <div key={index} className="flex items-center justify-between py-3 border-b border-slate-100 last:border-0">
-                <div className="flex items-center space-x-4">
-                  <div className="text-sm text-slate-600 w-16">{request.time}</div>
-                  <Badge variant="outline" className="text-xs">
-                    {request.model}
-                  </Badge>
-                  <Badge 
-                    variant={request.status === 'success' ? 'default' : 'destructive'}
-                    className={`text-xs ${
-                      request.status === 'success' 
-                        ? 'bg-green-100 text-green-800 hover:bg-green-100' 
-                        : 'bg-red-100 text-red-800 hover:bg-red-100'
-                    }`}
-                  >
-                    {request.status === 'success' ? 'Éxito' : 'Error'}
-                  </Badge>
-                </div>
-                <div className="flex items-center space-x-6 text-sm text-slate-600">
-                  <span>{request.response}</span>
-                  <span className="font-medium">{request.cost}</span>
-                </div>
-              </div>
-            ))}
-          </div>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Timestamp</TableHead>
+                <TableHead>Usuario</TableHead>
+                <TableHead>Acción</TableHead>
+                <TableHead>Detalles</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {data?.recentActivity?.map((activity, index) => (
+                <TableRow key={index}>
+                  <TableCell className="text-sm text-slate-500">
+                    {new Date(activity.timestamp).toLocaleString()}
+                  </TableCell>
+                  <TableCell>
+                    <div>
+                      <p className="font-medium text-slate-900">
+                        {activity.email}
+                      </p>
+                      <p className="text-sm text-slate-500">
+                        {activity.userId}
+                      </p>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant="secondary">
+                      {activity.action}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-sm text-slate-600">
+                    {activity.details}
+                  </TableCell>
+                </TableRow>
+              )) || (
+                <TableRow>
+                  <TableCell colSpan={4} className="text-center text-slate-500">
+                    No hay actividad reciente
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
         </CardContent>
       </Card>
-
-      {/* Performance Metrics */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg font-semibold text-slate-900">
-              Uptime
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold text-green-600 mb-2">99.98%</div>
-            <p className="text-sm text-slate-600">Últimos 30 días</p>
-            <div className="mt-4">
-              <div className="flex justify-between text-xs text-slate-500 mb-1">
-                <span>Este mes</span>
-                <span>99.98%</span>
-              </div>
-              <div className="w-full bg-slate-200 rounded-full h-2">
-                <div className="bg-green-500 h-2 rounded-full" style={{ width: '99.98%' }}></div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg font-semibold text-slate-900">
-              Latencia Promedio
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold text-blue-600 mb-2">247ms</div>
-            <p className="text-sm text-slate-600">Tiempo de respuesta</p>
-            <div className="mt-4">
-              <div className="flex justify-between text-xs text-slate-500 mb-1">
-                <span>Objetivo: &lt;500ms</span>
-                <span>Cumplido</span>
-              </div>
-              <div className="w-full bg-slate-200 rounded-full h-2">
-                <div className="bg-blue-500 h-2 rounded-full" style={{ width: '49.4%' }}></div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg font-semibold text-slate-900">
-              Requests Totales
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold text-purple-600 mb-2">847K</div>
-            <p className="text-sm text-slate-600">Este mes</p>
-            <div className="mt-4">
-              <div className="flex justify-between text-xs text-slate-500 mb-1">
-                <span>vs mes anterior</span>
-                <span className="text-green-600">+23%</span>
-              </div>
-              <div className="w-full bg-slate-200 rounded-full h-2">
-                <div className="bg-purple-500 h-2 rounded-full" style={{ width: '75%' }}></div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
     </div>
   );
 }

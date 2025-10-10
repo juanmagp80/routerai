@@ -1,12 +1,14 @@
 'use client';
 
-import { UserButton, useUser } from '@clerk/nextjs';
-import { Bell, Search } from 'lucide-react';
+import { UserButton } from '@clerk/nextjs';
+import { Bell, Search, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { useUserSync } from '@/hooks/useUserSync';
+import Link from 'next/link';
 
 export function Header() {
-  const { user } = useUser();
+  const { dbUser, clerkUser, isLoading } = useUserSync();
 
   return (
     <header className="bg-white border-b border-slate-200">
@@ -21,7 +23,7 @@ export function Header() {
                 </div>
                 <Input
                   className="block w-full rounded-md border-slate-300 pl-10 pr-3 py-2 text-sm placeholder-slate-400 focus:border-blue-500 focus:ring-blue-500"
-                  placeholder="Search..."
+                  placeholder="Buscar..."
                   type="search"
                 />
               </div>
@@ -34,20 +36,34 @@ export function Header() {
             <Button variant="ghost" size="sm" className="relative">
               <Bell className="h-5 w-5 text-slate-500" />
               <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-red-500 text-xs text-white flex items-center justify-center">
-                3
+                {dbUser ? '1' : '0'}
               </span>
             </Button>
 
             {/* User info */}
             <div className="flex items-center space-x-3">
-              <div className="text-right">
-                <p className="text-sm font-medium text-slate-900">
-                  {user?.firstName} {user?.lastName}
-                </p>
-                <p className="text-xs text-slate-500">
-                  {user?.emailAddresses[0]?.emailAddress}
-                </p>
-              </div>
+              {isLoading ? (
+                <div className="animate-pulse">
+                  <div className="h-4 w-32 bg-gray-200 rounded"></div>
+                  <div className="h-3 w-24 bg-gray-200 rounded mt-1"></div>
+                </div>
+              ) : (
+                <div className="text-right">
+                  <p className="text-sm font-medium text-slate-900">
+                    {dbUser?.name || 'Usuario'}
+                  </p>
+                  <p className="text-xs text-slate-500">
+                    {dbUser?.email || clerkUser?.emailAddresses[0]?.emailAddress}
+                  </p>
+                </div>
+              )}
+
+              {/* Profile Button */}
+              <Link href="/admin/profile">
+                <Button variant="ghost" size="sm">
+                  <User className="h-4 w-4" />
+                </Button>
+              </Link>
               <UserButton afterSignOutUrl="/" />
             </div>
           </div>
