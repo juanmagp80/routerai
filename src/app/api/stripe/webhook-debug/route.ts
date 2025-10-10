@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
                 if (parsed.data?.object?.metadata) {
                     console.log('Metadata:', parsed.data.object.metadata)
                 }
-            } catch (e) {
+            } catch {
                 console.log('Could not parse body as JSON')
             }
         }

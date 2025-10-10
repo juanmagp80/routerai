@@ -19,12 +19,12 @@ interface ApiTest {
   request: {
     endpoint: string;
     headers: Record<string, string>;
-    body: any;
+    body: unknown;
   };
   response: {
     status: number;
     statusText: string;
-    data: any;
+    data: unknown;
     time: number;
   };
 }

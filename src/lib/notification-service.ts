@@ -6,7 +6,7 @@ export interface NotificationData {
     type: 'limit_warning' | 'limit_reached' | 'trial_expiring' | 'trial_expired' | 'upgrade_suggestion'
     title: string
     message: string
-    metadata?: Record<string, any>
+    metadata?: Record<string, unknown>
 }
 
 export class NotificationService {
@@ -134,7 +134,7 @@ export class NotificationService {
             const limitsData = await PlanLimitsService.getUserLimitsAndUsage(userId)
             if (!limitsData) return
 
-            const { user, limits, usage } = limitsData
+            const { user, usage } = limitsData
 
             // Alerta de límite de requests al 80%
             if (usage.requests.percentage >= 80 && usage.requests.percentage < 100) {

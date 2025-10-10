@@ -352,8 +352,8 @@ export class StripeService {
             return {
                 plan: user.plan,
                 status: subscription.status,
-                currentPeriodEnd: (subscription as any).current_period_end * 1000, // Convert to milliseconds
-                cancelAtPeriodEnd: (subscription as any).cancel_at_period_end
+                currentPeriodEnd: (subscription as unknown as { current_period_end: number }).current_period_end * 1000,
+                cancelAtPeriodEnd: (subscription as unknown as { cancel_at_period_end: boolean }).cancel_at_period_end
             }
         } catch (error) {
             console.error('Error getting user subscription:', error)

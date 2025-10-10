@@ -1,8 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 import { auth } from '@clerk/nextjs/server'
 import { StripeService } from '@/lib/stripe-service'
 
-export async function POST(request: NextRequest) {
+export async function POST() {
   try {
     const { userId } = await auth()
     
@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Crear portal de cliente para gestionar suscripción
-    const portalUrl = await StripeService.createCustomerPortal(
+    const portalUrl = await StripeService.createCustomerPortalSession(
       userId,
       process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
     )

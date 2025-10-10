@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
 
     // Usar el nuevo middleware para validar API key y límites
-    return await ApiMiddleware.handleApiRequest(request, async (userId: string, req: NextRequest) => {
+    return await ApiMiddleware.handleApiRequest(request, async (userId: string) => {
       try {
         // Validate required fields
         if (!body.message && !body.messages) {
@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
         let message = body.message;
         if (!message && body.messages && Array.isArray(body.messages)) {
           // Tomar el último mensaje del usuario
-          const userMessages = body.messages.filter((msg: any) => msg.role === 'user');
+          const userMessages = body.messages.filter((msg: { role: string; content: string }) => msg.role === 'user');
           message = userMessages[userMessages.length - 1]?.content || '';
         }
 

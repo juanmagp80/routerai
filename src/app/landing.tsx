@@ -255,7 +255,7 @@ const HeroSection = () => {
                   >
                     <div className="text-emerald-400 text-xs mb-2">RESPONSE</div>
                     <div className="text-white">
-                      "Resumen del documento generado exitosamente..."
+                      &quot;Resumen del documento generado exitosamente...&quot;
                     </div>
                     <div className="text-slate-400 text-xs mt-2">
                       Cost: $0.003 • Model: Claude-3 • Time: 89ms
@@ -373,13 +373,6 @@ const RouterSection = () => {
 
 // Sección de ahorro con estilo financiero
 const SavingsSection = () => {
-  const [selectedModel, setSelectedModel] = useState("gpt4");
-
-  const models = {
-    gpt4: { name: "Solo GPT-4", cost: 1000, color: "text-red-500" },
-    mixed: { name: "Con RouterAI", cost: 320, color: "text-emerald-500" }
-  };
-
   return (
     <section id="ahorro" className="py-24 bg-white">
       <div className="max-w-6xl mx-auto px-6">
@@ -489,9 +482,9 @@ const SavingsSection = () => {
 
 // Componente de Dashboard con métricas en tiempo real
 const DashboardSection = () => {
-  const [metrics, setMetrics] = useState<any[]>([]);
-  const [summary, setSummary] = useState<any>({});
-  const [recentTasks, setRecentTasks] = useState<any[]>([]);
+  const [metrics, setMetrics] = useState<unknown[]>([]);
+  const [summary, setSummary] = useState<Record<string, unknown>>({});
+  const [recentTasks, setRecentTasks] = useState<unknown[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
@@ -950,7 +943,7 @@ const TestimonialsSection = () => {
               </div>
 
               <blockquote className="text-slate-700 mb-6 italic border-l-4 border-emerald-500 pl-4">
-                "{testimonial.content}"
+                &quot;{testimonial.content}&quot;
               </blockquote>
 
               <div className="bg-emerald-100 border border-emerald-200 rounded-lg p-4 text-center">

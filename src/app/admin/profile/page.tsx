@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { BarChart3, Key, DollarSign, Activity, Calendar, TrendingUp } from "lucide-react";
+import { BarChart3, Key, DollarSign, Activity, TrendingUp } from "lucide-react";
 import { useUserSync } from "@/hooks/useUserSync";
 import { StatsService, UserStats } from "@/lib/stats-service";
 import { useEffect, useState } from "react";

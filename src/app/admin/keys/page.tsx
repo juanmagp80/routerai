@@ -36,7 +36,34 @@ export default function ApiKeysPage() {
   const [visibleKeys, setVisibleKeys] = useState<Set<string>>(new Set());
   const [newlyCreatedKey, setNewlyCreatedKey] = useState<{ key: string, name: string } | null>(null);
   const [showNewKeyDialog, setShowNewKeyDialog] = useState(false);
-  const [userLimits, setUserLimits] = useState<any>(null);
+  const [userLimits, setUserLimits] = useState<{
+    user: { 
+      plan: string; 
+      isActive: boolean; 
+      createdAt: string; 
+      trialDaysRemaining: number | null;
+    };
+    limits: {
+      plan_name: string;
+      api_key_limit: number;
+      monthly_request_limit: number;
+      price_eur: number;
+    };
+    usage: { 
+      apiKeys: { 
+        allowed: boolean; 
+        reason?: string;
+        current: number; 
+        limit: number; 
+      }; 
+      requests: { 
+        allowed: boolean;
+        current: number; 
+        limit: number;
+        percentage: number;
+      }; 
+    };
+  } | null>(null);
 
   useEffect(() => {
     if (!isLoaded || !userId) return;
@@ -222,11 +249,11 @@ export default function ApiKeysPage() {
         <Card>
           <CardContent className="p-6">
             <div className="flex items-center">
-              <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${userLimits?.usage.requests.percentage > 80 ? 'bg-red-100' : 'bg-green-100'
+              <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${(userLimits?.usage.requests.percentage ?? 0) > 80 ? 'bg-red-100' : 'bg-green-100'
                 }`}>
-                <span className={`font-bold ${userLimits?.usage.requests.percentage > 80 ? 'text-red-600' : 'text-green-600'
+                <span className={`font-bold ${(userLimits?.usage.requests.percentage ?? 0) > 80 ? 'text-red-600' : 'text-green-600'
                   }`}>
-                  {userLimits?.usage.requests.percentage > 80 ? '⚠️' : '✓'}
+                  {(userLimits?.usage.requests.percentage ?? 0) > 80 ? '⚠️' : '✓'}
                 </span>
               </div>
               <div className="ml-4">
@@ -238,7 +265,7 @@ export default function ApiKeysPage() {
                   </span>
                 </p>
                 <p className="text-xs text-slate-500">
-                  {userLimits?.usage.requests.percentage.toFixed(1) || 0}% usado
+                  {(userLimits?.usage.requests.percentage ?? 0).toFixed(1)}% usado
                 </p>
               </div>
             </div>
@@ -256,9 +283,9 @@ export default function ApiKeysPage() {
                 <p className="text-2xl font-bold text-slate-900 capitalize">
                   {userLimits?.user.plan || 'Free'}
                 </p>
-                {userLimits?.limits.price_eur > 0 && (
+                {(userLimits?.limits.price_eur ?? 0) > 0 && (
                   <p className="text-xs text-slate-500">
-                    €{userLimits.limits.price_eur}/mes
+                    €{userLimits?.limits.price_eur}/mes
                   </p>
                 )}
               </div>
@@ -299,7 +326,7 @@ export default function ApiKeysPage() {
       </div>
 
       {/* Alertas de límites */}
-      {userLimits?.usage.requests.percentage > 80 && (
+      {(userLimits?.usage.requests.percentage ?? 0) > 80 && (
         <Card className="border-orange-200 bg-orange-50">
           <CardContent className="p-4">
             <div className="flex items-center space-x-3">
@@ -323,7 +350,7 @@ export default function ApiKeysPage() {
         </Card>
       )}
 
-      {userLimits?.user.plan === 'free' && userLimits?.user.trialDaysRemaining <= 2 && (
+      {userLimits?.user.plan === 'free' && (userLimits?.user.trialDaysRemaining ?? 0) <= 2 && (
         <Card className="border-red-200 bg-red-50">
           <CardContent className="p-4">
             <div className="flex items-center space-x-3">
@@ -540,7 +567,7 @@ export default function ApiKeysPage() {
               <h4 className="text-sm font-medium text-slate-900 mb-2">Autenticación HTTP</h4>
               <div className="bg-slate-50 rounded-md p-3">
                 <code className="text-sm text-slate-800">
-                  curl -H "Authorization: Bearer YOUR_API_KEY" https://api.routerai.com/v1/chat
+                  curl -H &quot;Authorization: Bearer YOUR_API_KEY&quot; https://api.routerai.com/v1/chat
                 </code>
               </div>
             </div>
@@ -579,7 +606,7 @@ response = requests.post('https://api.routerai.com/v1/chat', headers=headers)`}
               <span>¡API Key creada exitosamente!</span>
             </DialogTitle>
             <DialogDescription>
-              Esta es tu nueva API key para "{newlyCreatedKey?.name}". Cópiala ahora - no podrás verla completa después.
+              Esta es tu nueva API key para &quot;{newlyCreatedKey?.name}&quot;. Cópiala ahora - no podrás verla completa después.
             </DialogDescription>
           </DialogHeader>
 
@@ -620,7 +647,7 @@ response = requests.post('https://api.routerai.com/v1/chat', headers=headers)`}
             <div className="bg-slate-50 rounded-lg p-4">
               <h4 className="text-sm font-medium text-slate-800 mb-2">Ejemplo de uso rápido:</h4>
               <code className="text-xs text-slate-600 break-all">
-                curl -H "Authorization: Bearer {newlyCreatedKey?.key || 'YOUR_API_KEY'}" https://api.routerai.com/v1/chat
+                curl -H &quot;Authorization: Bearer {newlyCreatedKey?.key || 'YOUR_API_KEY'}&quot; https://api.routerai.com/v1/chat
               </code>
             </div>
 
