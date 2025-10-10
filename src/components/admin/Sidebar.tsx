@@ -13,7 +13,8 @@ import {
   HelpCircle,
   User,
   Activity,
-  MessageSquare
+  MessageSquare,
+  Shield
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -23,6 +24,7 @@ const navigation = [
   { name: 'API Keys', href: '/admin/keys', icon: Key },
   { name: 'Analytics', href: '/admin/analytics', icon: BarChart3 },
   { name: 'Users', href: '/admin/users', icon: Users },
+  { name: 'System Status', href: '/admin/system', icon: Shield },
   { name: 'Billing', href: '/admin/billing', icon: CreditCard },
   { name: 'Notifications', href: '/admin/notifications', icon: Bell },
   { name: 'Profile', href: '/admin/profile', icon: User },

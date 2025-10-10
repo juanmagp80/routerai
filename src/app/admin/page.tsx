@@ -35,7 +35,7 @@ export default function AdminDashboard() {
         const dashboardStats = await StatsService.getDashboardStats();
         setStats(dashboardStats);
       } catch (error) {
-        console.error('Error cargando estadísticas:', error);
+        console.error('Error loading statistics:', error);
       } finally {
         setIsLoadingStats(false);
       }
@@ -87,11 +87,11 @@ export default function AdminDashboard() {
         router.push('/admin/keys?highlight=' + result.apiKey.id);
       } else {
         console.error('Error creating API key:', result.error);
-        alert(result.error || 'Error al crear la API key');
+        alert(result.error || 'Error creating API key');
       }
     } catch (error) {
       console.error('Error creating API key:', error);
-      alert('Error al crear la API key');
+  alert('Error creating API key');
     } finally {
       setIsCreatingApiKey(false);
     }
@@ -110,11 +110,11 @@ export default function AdminDashboard() {
         setUsageData(userLimits);
         setShowUsageModal(true);
       } else {
-        alert('Error al obtener información de uso');
+        alert('Error fetching usage information');
       }
     } catch (error) {
       console.error('Error fetching usage:', error);
-      alert('Error al obtener información de uso');
+  alert('Error fetching usage information');
     }
   };
 
@@ -124,7 +124,7 @@ export default function AdminDashboard() {
         <div className="flex items-center justify-center h-64">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto"></div>
-            <p className="mt-4 text-gray-600">Cargando dashboard...</p>
+            <p className="mt-4 text-gray-600">Loading dashboard...</p>
           </div>
         </div>
       </div>
@@ -138,7 +138,7 @@ export default function AdminDashboard() {
           <div className="text-center">
             <p className="text-red-600">Error: {userError}</p>
             <Button onClick={() => window.location.reload()} className="mt-4">
-              Reintentar
+              Retry
             </Button>
           </div>
         </div>
@@ -165,7 +165,7 @@ export default function AdminDashboard() {
         <div>
           <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
           <p className="text-muted-foreground">
-            Bienvenido de vuelta, {dbUser?.name}
+            Welcome back, {dbUser?.name}
           </p>
         </div>
       </div>
@@ -174,7 +174,7 @@ export default function AdminDashboard() {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Llamadas API Totales</CardTitle>
+            <CardTitle className="text-sm font-medium">Total API Calls</CardTitle>
             <BarChart3 className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -183,14 +183,14 @@ export default function AdminDashboard() {
               <Badge variant="secondary" className={stats && stats.usage_trend >= 0 ? "text-green-600" : "text-red-600"}>
                 {stats && stats.usage_trend >= 0 ? '+' : ''}{stats?.usage_trend.toFixed(1) || 0}%
               </Badge>
-              {" "}desde el mes pasado
+              {" "}since last month
             </p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Usuarios Activos</CardTitle>
+            <CardTitle className="text-sm font-medium">Active Users</CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -201,7 +201,7 @@ export default function AdminDashboard() {
                 className="p-0 h-auto"
                 onClick={() => handleViewDetails('users')}
               >
-                Ver detalles
+                View details
               </Button>
             </p>
           </CardContent>
@@ -209,14 +209,14 @@ export default function AdminDashboard() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Modelos Disponibles</CardTitle>
+            <CardTitle className="text-sm font-medium">Available Models</CardTitle>
             <Cpu className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats?.models_available || 0}</div>
             <p className="text-xs text-muted-foreground">
               <Badge variant="outline" className="text-green-600">
-                {stats?.active_models || 0} activos
+                {stats?.active_models || 0} active
               </Badge>
             </p>
           </CardContent>
@@ -224,13 +224,13 @@ export default function AdminDashboard() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Tiempo Promedio</CardTitle>
+            <CardTitle className="text-sm font-medium">Average Response Time</CardTitle>
             <Clock className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats?.avg_response_time.toFixed(2) || 0}s</div>
             <p className="text-xs text-muted-foreground">
-              En todos los modelos
+              Across all models
             </p>
           </CardContent>
         </Card>
@@ -240,7 +240,7 @@ export default function AdminDashboard() {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-2">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Rendimiento</CardTitle>
+            <CardTitle className="text-sm font-medium">Performance</CardTitle>
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -251,7 +251,7 @@ export default function AdminDashboard() {
                 className="p-0 h-auto"
                 onClick={() => handleViewAnalytics('performance')}
               >
-                Ver análisis
+                View analytics
               </Button>
             </p>
           </CardContent>
@@ -259,17 +259,17 @@ export default function AdminDashboard() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Estado del Sistema</CardTitle>
+            <CardTitle className="text-sm font-medium">System Status</CardTitle>
             <Activity className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
               <Badge variant="secondary" className="text-green-600">
-                Operativo
+                Operational
               </Badge>
             </div>
             <p className="text-xs text-muted-foreground">
-              Todos los sistemas funcionando
+              All systems running
             </p>
           </CardContent>
         </Card>
@@ -279,9 +279,9 @@ export default function AdminDashboard() {
       <div className="grid gap-4 md:grid-cols-2">
         <Card>
           <CardHeader>
-            <CardTitle>Actividad Reciente</CardTitle>
+            <CardTitle>Recent Activity</CardTitle>
             <CardDescription>
-              Últimas llamadas API y eventos del sistema
+              Latest API calls and system events
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -289,22 +289,22 @@ export default function AdminDashboard() {
               {stats?.api_calls === 0 ? (
                 <div className="text-center py-8 text-muted-foreground">
                   <Activity className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                  <p>No hay actividad reciente</p>
-                  <p className="text-xs mt-1">Las llamadas API aparecerán aquí</p>
+                  <p>No recent activity</p>
+                  <p className="text-xs mt-1">API calls will appear here</p>
                 </div>
               ) : (
                 <>
                   <div className="flex items-center space-x-4">
                     <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                     <div className="flex-1">
-                      <p className="text-sm font-medium">Llamada API exitosa</p>
-                      <p className="text-xs text-muted-foreground">Datos reales disponibles</p>
+                      <p className="text-sm font-medium">Successful API call</p>
+                      <p className="text-xs text-muted-foreground">Real data available</p>
                     </div>
                   </div>
                   <div className="flex items-center space-x-4">
                     <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
                     <div className="flex-1">
-                      <p className="text-sm font-medium">Usuario sincronizado</p>
+                      <p className="text-sm font-medium">User synchronized</p>
                       <p className="text-xs text-muted-foreground">{dbUser?.name}</p>
                     </div>
                   </div>
@@ -316,21 +316,21 @@ export default function AdminDashboard() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Acciones Rápidas</CardTitle>
+            <CardTitle>Quick Actions</CardTitle>
             <CardDescription>
-              Tareas administrativas comunes
+              Common administrative tasks
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-2">
             <div className="space-y-2">
-              <p className="text-sm font-medium text-gray-700 mb-2">Navegación</p>
+              <p className="text-sm font-medium text-gray-700 mb-2">Navigation</p>
               <Button
                 className="w-full justify-start"
                 variant="outline"
                 onClick={handleManageUsers}
               >
                 <Users className="mr-2 h-4 w-4" />
-                Gestionar Usuarios
+                Manage Users
               </Button>
               <Button
                 className="w-full justify-start"
@@ -338,7 +338,7 @@ export default function AdminDashboard() {
                 onClick={handleManageKeys}
               >
                 <Key className="mr-2 h-4 w-4" />
-                Gestionar API Keys
+                Manage API Keys
               </Button>
               <Button
                 className="w-full justify-start"
@@ -346,7 +346,7 @@ export default function AdminDashboard() {
                 onClick={handleApiTesting}
               >
                 <Cpu className="mr-2 h-4 w-4" />
-                Consola de API
+                API Console
               </Button>
               <Button
                 className="w-full justify-start"
@@ -354,7 +354,7 @@ export default function AdminDashboard() {
                 onClick={() => handleViewAnalytics('general')}
               >
                 <BarChart3 className="mr-2 h-4 w-4" />
-                Ver Análisis
+                View Analytics
               </Button>
               <Button
                 className="w-full justify-start"
@@ -362,7 +362,7 @@ export default function AdminDashboard() {
                 onClick={handleBilling}
               >
                 <TrendingUp className="mr-2 h-4 w-4" />
-                Facturación
+                Billing
               </Button>
               <Button
                 className="w-full justify-start"
@@ -370,12 +370,12 @@ export default function AdminDashboard() {
                 onClick={handleConfigureModels}
               >
                 <Settings className="mr-2 h-4 w-4" />
-                Configuración
+                Settings
               </Button>
             </div>
 
             <div className="pt-4 border-t">
-              <p className="text-sm font-medium text-gray-700 mb-2">Acciones Rápidas</p>
+              <p className="text-sm font-medium text-gray-700 mb-2">Quick Actions</p>
               <div className="space-y-2">
                 <Button
                   className="w-full justify-start"
@@ -384,7 +384,7 @@ export default function AdminDashboard() {
                   disabled={isCreatingApiKey}
                 >
                   <Plus className="mr-2 h-4 w-4" />
-                  {isCreatingApiKey ? 'Creando...' : 'Crear Nueva API Key'}
+                  {isCreatingApiKey ? 'Creating...' : 'Create New API Key'}
                 </Button>
 
                 <Button
@@ -393,7 +393,7 @@ export default function AdminDashboard() {
                   onClick={handleQuickStats}
                 >
                   <Zap className="mr-2 h-4 w-4" />
-                  Ver Estadísticas Rápidas
+                  View Quick Stats
                 </Button>
 
                 <Button
@@ -402,7 +402,7 @@ export default function AdminDashboard() {
                   onClick={handleQuickUsage}
                 >
                   <Eye className="mr-2 h-4 w-4" />
-                  Ver Uso Actual
+                  View Current Usage
                 </Button>
               </div>
             </div>
@@ -410,13 +410,13 @@ export default function AdminDashboard() {
         </Card>
       </div>
 
-      {/* Modal de Estadísticas Rápidas */}
+  {/* Quick Stats Modal */}
       <Dialog open={showStatsModal} onOpenChange={setShowStatsModal}>
         <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle>📊 Estadísticas Rápidas</DialogTitle>
+            <DialogTitle>📊 Quick Stats</DialogTitle>
             <DialogDescription>
-              Resumen de la actividad de tu plataforma
+              Platform activity summary
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
@@ -428,37 +428,37 @@ export default function AdminDashboard() {
                     <p className="text-2xl font-bold text-blue-900">{stats.api_calls || 0}</p>
                   </div>
                   <div className="bg-green-50 p-3 rounded-lg">
-                    <p className="text-sm text-green-600 font-medium">Usuarios Activos</p>
+                    <p className="text-sm text-green-600 font-medium">Active Users</p>
                     <p className="text-2xl font-bold text-green-900">{stats.active_users || 0}</p>
                   </div>
                   <div className="bg-purple-50 p-3 rounded-lg">
-                    <p className="text-sm text-purple-600 font-medium">Costo Total</p>
+                    <p className="text-sm text-purple-600 font-medium">Total Cost</p>
                     <p className="text-2xl font-bold text-purple-900">${(stats.total_cost || 0).toFixed(3)}</p>
                   </div>
                   <div className="bg-orange-50 p-3 rounded-lg">
-                    <p className="text-sm text-orange-600 font-medium">Tiempo Respuesta</p>
+                    <p className="text-sm text-orange-600 font-medium">Response Time</p>
                     <p className="text-2xl font-bold text-orange-900">{(stats.avg_response_time || 0).toFixed(0)}ms</p>
                   </div>
                 </div>
                 <div className="bg-gray-50 p-3 rounded-lg">
-                  <p className="text-sm text-gray-600 font-medium">Tasa de Éxito</p>
+                  <p className="text-sm text-gray-600 font-medium">Success Rate</p>
                   <p className="text-xl font-bold text-gray-900">{(stats.success_rate || 0).toFixed(1)}%</p>
                 </div>
               </>
             ) : (
-              <p className="text-center py-4">Cargando estadísticas...</p>
+              <p className="text-center py-4">Loading stats...</p>
             )}
           </div>
         </DialogContent>
       </Dialog>
 
-      {/* Modal de Uso Actual */}
+  {/* Current Usage Modal */}
       <Dialog open={showUsageModal} onOpenChange={setShowUsageModal}>
         <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle>📊 Uso Actual</DialogTitle>
+            <DialogTitle>📊 Current Usage</DialogTitle>
             <DialogDescription>
-              Estado de tu plan y límites
+              Plan and limits status
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
@@ -493,7 +493,7 @@ export default function AdminDashboard() {
                         ></div>
                       </div>
                       <p className="text-xs text-blue-600 mt-1">
-                        {((usageData.requestsUsed / usageData.requestsLimit) * 100).toFixed(1)}% utilizado
+                        {((usageData.requestsUsed / usageData.requestsLimit) * 100).toFixed(1)}% used
                       </p>
                     </div>
                   </div>
@@ -520,12 +520,12 @@ export default function AdminDashboard() {
                     }}
                     className="flex-1"
                   >
-                    Ver API Keys
+                    View API Keys
                   </Button>
                 </div>
               </>
             ) : (
-              <p className="text-center py-4">Cargando información de uso...</p>
+              <p className="text-center py-4">Loading usage information...</p>
             )}
           </div>
         </DialogContent>
