@@ -6,9 +6,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useUserSync } from "@/hooks/useUserSync";
 import { DashboardStats, StatsService } from "@/lib/stats-service";
-import { Activity, BarChart3, Clock, Cpu, TrendingUp, Users, Key, Settings, Plus, Zap, Eye } from "lucide-react";
-import { useEffect, useState } from "react";
+import { Activity, BarChart3, Clock, Cpu, Eye, Key, Plus, Settings, TrendingUp, Users, Zap } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 interface UsageData {
   currentPlan: string;
@@ -105,7 +105,7 @@ export default function AdminDashboard() {
     try {
       const response = await fetch('/api/user/limits');
       const userLimits = await response.json();
-      
+
       if (response.ok) {
         setUsageData(userLimits);
         setShowUsageModal(true);
@@ -324,48 +324,48 @@ export default function AdminDashboard() {
           <CardContent className="space-y-2">
             <div className="space-y-2">
               <p className="text-sm font-medium text-gray-700 mb-2">Navegación</p>
-              <Button 
-                className="w-full justify-start" 
+              <Button
+                className="w-full justify-start"
                 variant="outline"
                 onClick={handleManageUsers}
               >
                 <Users className="mr-2 h-4 w-4" />
                 Gestionar Usuarios
               </Button>
-              <Button 
-                className="w-full justify-start" 
+              <Button
+                className="w-full justify-start"
                 variant="outline"
                 onClick={handleManageKeys}
               >
                 <Key className="mr-2 h-4 w-4" />
                 Gestionar API Keys
               </Button>
-              <Button 
-                className="w-full justify-start" 
+              <Button
+                className="w-full justify-start"
                 variant="outline"
                 onClick={handleApiTesting}
               >
                 <Cpu className="mr-2 h-4 w-4" />
                 Consola de API
               </Button>
-              <Button 
-                className="w-full justify-start" 
+              <Button
+                className="w-full justify-start"
                 variant="outline"
                 onClick={() => handleViewAnalytics('general')}
               >
                 <BarChart3 className="mr-2 h-4 w-4" />
                 Ver Análisis
               </Button>
-              <Button 
-                className="w-full justify-start" 
+              <Button
+                className="w-full justify-start"
                 variant="outline"
                 onClick={handleBilling}
               >
                 <TrendingUp className="mr-2 h-4 w-4" />
                 Facturación
               </Button>
-              <Button 
-                className="w-full justify-start" 
+              <Button
+                className="w-full justify-start"
                 variant="outline"
                 onClick={handleConfigureModels}
               >
@@ -373,12 +373,12 @@ export default function AdminDashboard() {
                 Configuración
               </Button>
             </div>
-            
+
             <div className="pt-4 border-t">
               <p className="text-sm font-medium text-gray-700 mb-2">Acciones Rápidas</p>
               <div className="space-y-2">
-                <Button 
-                  className="w-full justify-start" 
+                <Button
+                  className="w-full justify-start"
                   variant="default"
                   onClick={handleCreateApiKey}
                   disabled={isCreatingApiKey}
@@ -386,18 +386,18 @@ export default function AdminDashboard() {
                   <Plus className="mr-2 h-4 w-4" />
                   {isCreatingApiKey ? 'Creando...' : 'Crear Nueva API Key'}
                 </Button>
-                
-                <Button 
-                  className="w-full justify-start" 
+
+                <Button
+                  className="w-full justify-start"
                   variant="outline"
                   onClick={handleQuickStats}
                 >
                   <Zap className="mr-2 h-4 w-4" />
                   Ver Estadísticas Rápidas
                 </Button>
-                
-                <Button 
-                  className="w-full justify-start" 
+
+                <Button
+                  className="w-full justify-start"
                   variant="outline"
                   onClick={handleQuickUsage}
                 >
@@ -466,7 +466,7 @@ export default function AdminDashboard() {
               <>
                 <div className="bg-blue-50 p-4 rounded-lg">
                   <h3 className="font-semibold text-blue-900 mb-2">Plan {usageData.currentPlan}</h3>
-                  
+
                   <div className="space-y-3">
                     <div>
                       <div className="flex justify-between items-center mb-1">
@@ -474,21 +474,21 @@ export default function AdminDashboard() {
                         <span className="text-sm font-medium">{usageData.apiKeysUsed}/{usageData.apiKeysLimit}</span>
                       </div>
                       <div className="w-full bg-blue-200 rounded-full h-2">
-                        <div 
-                          className="bg-blue-600 h-2 rounded-full transition-all duration-300" 
+                        <div
+                          className="bg-blue-600 h-2 rounded-full transition-all duration-300"
                           style={{ width: `${Math.min(100, (usageData.apiKeysUsed / usageData.apiKeysLimit) * 100)}%` }}
                         ></div>
                       </div>
                     </div>
-                    
+
                     <div>
                       <div className="flex justify-between items-center mb-1">
                         <span className="text-sm text-blue-700">📡 Requests</span>
                         <span className="text-sm font-medium">{usageData.requestsUsed}/{usageData.requestsLimit}</span>
                       </div>
                       <div className="w-full bg-blue-200 rounded-full h-2">
-                        <div 
-                          className="bg-blue-600 h-2 rounded-full transition-all duration-300" 
+                        <div
+                          className="bg-blue-600 h-2 rounded-full transition-all duration-300"
                           style={{ width: `${Math.min(100, (usageData.requestsUsed / usageData.requestsLimit) * 100)}%` }}
                         ></div>
                       </div>
@@ -498,11 +498,11 @@ export default function AdminDashboard() {
                     </div>
                   </div>
                 </div>
-                
+
                 <div className="flex gap-2">
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
+                  <Button
+                    variant="outline"
+                    size="sm"
                     onClick={() => {
                       setShowUsageModal(false);
                       router.push('/admin/billing');
@@ -511,9 +511,9 @@ export default function AdminDashboard() {
                   >
                     Upgrade Plan
                   </Button>
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
+                  <Button
+                    variant="outline"
+                    size="sm"
                     onClick={() => {
                       setShowUsageModal(false);
                       router.push('/admin/keys');
