@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars */
 'use client';
 
 import RolePromotionButton from "@/components/admin/RolePromotionButton";
@@ -10,7 +11,8 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Edit, Mail, Plus, Search, Trash2, User, Users as UsersIcon } from "lucide-react";
 import Image from 'next/image';
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { StatsService } from '@/lib/stats-service';
 
 interface User {
   id: string;
@@ -37,9 +39,12 @@ interface CreateUserData {
 export default function UsersPage() {
   const [users, setUsers] = useState<User[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [accessDenied, setAccessDenied] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [roleFilter, setRoleFilter] = useState<string>('all');
   const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [demoUserIds, setDemoUserIds] = useState<Set<string>>(new Set());
+  const [hideDemoUsers, setHideDemoUsers] = useState<boolean>(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -58,6 +63,26 @@ export default function UsersPage() {
   // Load users data
   useEffect(() => {
     loadUsers();
+
+    // If debug flag is enabled, fetch dashboard stats to get debug_active_users
+    async function loadDebugIds() {
+        if (process.env.NEXT_PUBLIC_STATS_DEBUG === 'true') {
+        try {
+          const stats = await StatsService.getDashboardStats();
+          const debugList = (stats as unknown as { debug_active_users?: Array<{ id: string }> })?.debug_active_users;
+          if (debugList && debugList.length > 0) {
+            const ids = new Set(debugList.map(d => d.id));
+            setDemoUserIds(ids);
+            // Default to hide demo users when debug is active
+            setHideDemoUsers(true);
+          }
+        } catch (_e) {
+          // ignore
+        }
+      }
+    }
+
+    loadDebugIds();
   }, []);
 
   const loadUsers = async () => {
@@ -67,8 +92,18 @@ export default function UsersPage() {
       const data = await response.json();
 
       if (response.ok) {
+        setAccessDenied(false);
         setUsers(data.users || []);
+        // If API returned debug_active_users (server-side), populate demoUserIds
+        const dbg = data.debug_active_users as Array<{ id: string }> | undefined;
+        if (dbg && dbg.length > 0) {
+          setDemoUserIds(new Set(dbg.map(d => d.id)));
+          setHideDemoUsers(true);
+        }
       } else {
+        if (response.status === 401 || response.status === 403) {
+          setAccessDenied(true);
+        }
         console.error('Error loading users:', data.error);
       }
     } catch (error) {
@@ -84,6 +119,8 @@ export default function UsersPage() {
       user.email.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesRole = roleFilter === 'all' || user.role === roleFilter;
     const matchesStatus = statusFilter === 'all' || user.status === statusFilter;
+    // Excluir usuarios demo en modo debug si el toggle está activo
+    if (hideDemoUsers && demoUserIds.has(user.id)) return false;
 
     return matchesSearch && matchesRole && matchesStatus;
   });
@@ -239,10 +276,19 @@ export default function UsersPage() {
       </div>
     );
   }
+  if (accessDenied) {
+    return (
+      <div className="flex-1 space-y-6 p-8 pt-6">
+        <div className="p-8 bg-yellow-50 rounded-md">
+          <h3 className="text-lg font-semibold">Access denied</h3>
+          <p className="text-sm text-muted-foreground mt-2">You do not have permission to view the users list.</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex-1 space-y-6 p-8 pt-6">
-      {/* Header */}
       <div className="flex items-center justify-between space-y-2">
         <div>
           <h2 className="text-3xl font-bold tracking-tight">User Management</h2>
@@ -352,6 +398,13 @@ export default function UsersPage() {
             <SelectItem value="pending">Pending</SelectItem>
           </SelectContent>
         </Select>
+        {/* Debug: toggle to hide demo users discovered by stats-service */}
+        {process.env.NEXT_PUBLIC_STATS_DEBUG === 'true' && (
+          <div className="flex items-center space-x-2">
+            <label className="text-sm">Hide demo users</label>
+            <input type="checkbox" checked={hideDemoUsers} onChange={(e) => setHideDemoUsers(e.target.checked)} />
+          </div>
+        )}
       </div>
 
       {/* Users Table */}
@@ -407,7 +460,7 @@ export default function UsersPage() {
                         {user.status}
                       </Badge>
                     </div>
-                    <div className="flex space-x-1">
+                      <div className="flex space-x-1">
                       <Button
                         variant="ghost"
                         size="sm"
@@ -429,6 +482,33 @@ export default function UsersPage() {
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
+                      {/* Resend invite for pending users */}
+                      {user.status === 'pending' && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={async () => {
+                            try {
+                              const res = await fetch('/api/admin/users/invite', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ email: user.email, name: user.name, resendToUserId: user.id }),
+                              });
+                              if (res.ok) {
+                                alert('Invitation resent');
+                              } else {
+                                const data = await res.json();
+                                alert(data.error || 'Failed to resend invitation');
+                              }
+                            } catch (e) {
+                              console.error('Error resending invite', e);
+                              alert('Error resending invite');
+                            }
+                          }}
+                        >
+                          <Mail className="h-4 w-4" />
+                        </Button>
+                      )}
                     </div>
                   </div>
                 </div>

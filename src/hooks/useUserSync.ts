@@ -33,27 +33,36 @@ export function useUserSync() {
                 let existingUser = await UserService.getUserByEmail(primaryEmail);
 
                 if (!existingUser) {
-                    // Crear nuevo usuario en Supabase
-                    const userData = {
-                        id: clerkUser.id,
-                        name: `${clerkUser.firstName || ''} ${clerkUser.lastName || ''}`.trim() || 'Usuario',
-                        email: primaryEmail,
-                        company: clerkUser.organizationMemberships?.[0]?.organization?.name,
-                        plan: 'free',
-                        api_key_limit: 1,
-                        is_active: true,
-                        email_verified: clerkUser.emailAddresses[0]?.verification?.status === 'verified',
-                    };
+                    // Condición de seguridad: no crear usuario en la BD hasta que el email esté verificado,
+                    // a menos que la variable de entorno SKIP_VERIFY_BEFORE_CREATE esté activa (para entornos de desarrollo).
+                    const emailVerified = clerkUser.emailAddresses[0]?.verification?.status === 'verified';
+                    const allowCreate = process.env.NEXT_PUBLIC_SKIP_VERIFY_BEFORE_CREATE === 'true' || emailVerified;
 
-                    existingUser = await UserService.createUser(userData);
+                    if (!allowCreate) {
+                        console.log('Usuario no creado en la base de datos: email no verificado y SKIP_VERIFY_BEFORE_CREATE no activo.');
+                    } else {
+                        // Crear nuevo usuario en Supabase
+                        const userData = {
+                            id: clerkUser.id,
+                            name: `${clerkUser.firstName || ''} ${clerkUser.lastName || ''}`.trim() || 'Usuario',
+                            email: primaryEmail,
+                            company: clerkUser.organizationMemberships?.[0]?.organization?.name,
+                            plan: 'free',
+                            api_key_limit: 1,
+                            is_active: true,
+                            email_verified: emailVerified,
+                        };
 
-                    // Si el usuario ya existe (error de duplicado), intentar obtenerlo
-                    if (!existingUser) {
-                        console.log('Usuario ya existe, intentando obtenerlo...');
-                        existingUser = await UserService.getUserByEmail(primaryEmail);
+                        existingUser = await UserService.createUser(userData);
 
+                        // Si el usuario ya existe (error de duplicado), intentar obtenerlo
                         if (!existingUser) {
-                            throw new Error('Error al crear o encontrar usuario en la base de datos');
+                            console.log('Usuario ya existe, intentando obtenerlo...');
+                            existingUser = await UserService.getUserByEmail(primaryEmail);
+
+                            if (!existingUser) {
+                                throw new Error('Error al crear o encontrar usuario en la base de datos');
+                            }
                         }
                     }
                 } else {

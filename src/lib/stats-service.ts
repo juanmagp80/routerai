@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { supabase } from './supabase';
 
 export interface DashboardStats {
@@ -9,6 +10,8 @@ export interface DashboardStats {
     active_models: number;
     total_cost: number;
     success_rate: number;
+    // Optional debug info enabled by NEXT_PUBLIC_STATS_DEBUG=true
+    debug_active_users?: Array<{ id: string; email?: string | null; name?: string | null; source?: string }>;
 }
 
 export interface UserStats {
@@ -22,34 +25,91 @@ export interface UserStats {
 
 export class StatsService {
     // Obtener estadísticas del dashboard para admin
-    static async getDashboardStats(): Promise<DashboardStats> {
+    static async getDashboardStats(company?: string): Promise<DashboardStats> {
         try {
             // Obtener número total de llamadas API del último mes
             const thirtyDaysAgo = new Date();
             thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
-            const { data: usageRecords } = await supabase
-                .from('usage_records')
-                .select('*')
-                .gte('created_at', thirtyDaysAgo.toISOString());
+            // Filtrar por company si se provee (multi-tenant)
+            const usageQuery = supabase.from('usage_records').select('*').gte('created_at', thirtyDaysAgo.toISOString());
+            if (company) usageQuery.eq('company', company as string);
+            const { data: usageRecords } = await usageQuery;
 
-            // Obtener número de usuarios activos
-            const { data: activeUsers } = await supabase
-                .from('users')
-                .select('id')
-                .eq('is_active', true);
+
+
+
+            // Calcular usuarios activos basados en actividad real:
+            // 1) usuarios distintos en usage_records en los últimos 30 días
+            // 2) usuarios con api_keys creadas o usadas en los últimos 30 días
+            // Combinar conjuntos y contar usuarios activos reales. Además podemos devolver
+            // una lista de debug cuando NEXT_PUBLIC_STATS_DEBUG=true para inspeccionar exactamente
+            // qué usuarios se están contando.
+            let activeUserCount = 0;
+            const debugList: Array<{ id: string; email?: string | null; name?: string | null; source?: string }> = [];
+            try {
+                // 1) usuarios en usage_records
+                const usageQuery2 = supabase.from('usage_records').select('user_id').gte('created_at', thirtyDaysAgo.toISOString()).limit(10000);
+                if (company) usageQuery2.eq('company', company as string);
+                const { data: usageRows } = await usageQuery2;
+
+                const usageUserIds = new Set((usageRows || []).map((r: any) => r.user_id).filter(Boolean));
+
+                // 2) usuarios con api_keys recientes (creadas o usadas en los últimos 30 días)
+                const keysCreatedQuery = supabase.from('api_keys').select('user_id').gte('created_at', thirtyDaysAgo.toISOString()).limit(10000);
+                if (company) keysCreatedQuery.eq('company', company as string);
+                const { data: keysCreated } = await keysCreatedQuery;
+
+                const keysUsedQuery = supabase.from('api_keys').select('user_id').gte('last_used_at', thirtyDaysAgo.toISOString()).limit(10000);
+                if (company) keysUsedQuery.eq('company', company as string);
+                const { data: keysUsed } = await keysUsedQuery;
+
+                const keyUserIds = new Set(Array.from(((keysCreated || []).map((k: any) => k.user_id)).concat((keysUsed || []).map((k: any) => k.user_id))).filter(Boolean));
+
+                // Combinar sets
+                const combined = new Set<string>(Array.from(usageUserIds).concat(Array.from(keyUserIds)));
+
+                // Obtener metadatos de usuario para filtrar por status y construir debug list
+                if (combined.size > 0) {
+                    const ids = Array.from(combined);
+                    const userQuery = supabase.from('users').select('id,email,name,status,clerk_user_id').in('id', ids).limit(10000);
+                    if (company) userQuery.eq('company', company as string);
+                    const { data: userRows } = await userQuery;
+
+                    const activeUserRows = (userRows || []).filter((u: any) => u.status === 'active');
+
+                    activeUserCount = activeUserRows.length || ids.length;
+
+                    // Construir debug list
+                    for (const u of (userRows || [])) {
+                        const src = usageUserIds.has(u.id) ? 'usage' : keyUserIds.has(u.id) ? 'api_key' : 'unknown';
+                        debugList.push({ id: u.id, email: u.email, name: u.name, source: src });
+                    }
+                } else {
+                    // Fallback: contar usuarios con clerk_user_id no nulo y status='active' (dev fallback)
+                    const fallbackQuery = supabase.from('users').select('id,email,name,status').not('clerk_user_id', 'is', null).eq('status', 'active').limit(10000);
+                    if (company) fallbackQuery.eq('company', company as string);
+                    const { data: fallbackUsers } = await fallbackQuery;
+
+                    activeUserCount = fallbackUsers?.length || 0;
+                    if (fallbackUsers) {
+                        for (const u of fallbackUsers) debugList.push({ id: u.id, email: u.email, name: u.name, source: 'fallback' });
+                    }
+                }
+            } catch (err) {
+                console.error('Error calculating active users from usage_records/api_keys:', err);
+                activeUserCount = 0;
+            }
 
             // Obtener claves API activas (para información general)
-            const { data: activeKeys } = await supabase
-                .from('api_keys')
-                .select('id')
-                .eq('is_active', true);
+            const activeKeysQuery = supabase.from('api_keys').select('id').eq('is_active', true);
+            if (company) activeKeysQuery.eq('company', company as any);
+            const { data: activeKeys } = await activeKeysQuery;
 
             console.log(`Active API keys: ${activeKeys?.length || 0}`);
 
             // Calcular estadísticas
             const totalCalls = usageRecords?.length || 0;
-            const activeUserCount = activeUsers?.length || 0;
 
             // Calcular tiempo promedio de respuesta (simulado basado en tokens)
             const avgResponseTime = usageRecords?.length
@@ -80,7 +140,7 @@ export class StatsService {
             // Contar modelos únicos utilizados
             const uniqueModels = new Set(usageRecords?.map(usage => usage.model_used).filter(Boolean));
 
-            return {
+            const baseResult: DashboardStats = {
                 api_calls: totalCalls,
                 active_users: activeUserCount,
                 models_available: 8, // Número fijo de modelos disponibles
@@ -90,6 +150,13 @@ export class StatsService {
                 total_cost: Math.round(totalCost * 100) / 100,
                 success_rate: Math.round(successRate * 100) / 100,
             };
+
+            // Adjuntar debug info si se solicita vía variable de entorno
+            if (process.env.NEXT_PUBLIC_STATS_DEBUG === 'true') {
+                (baseResult as any).debug_active_users = debugList;
+            }
+
+            return baseResult;
         } catch (error) {
             console.error('Error obteniendo estadísticas del dashboard:', error);
             // Retornar datos por defecto en caso de error

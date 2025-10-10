@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars */
 'use client';
 
 import { Badge } from "@/components/ui/badge";
@@ -32,8 +33,22 @@ export default function AdminDashboard() {
     async function loadStats() {
       try {
         setIsLoadingStats(true);
-        const dashboardStats = await StatsService.getDashboardStats();
+  const dashboardStats = await StatsService.getDashboardStats((dbUser as unknown as { company?: string })?.company);
         setStats(dashboardStats);
+        // Si la variable de entorno pública de debug está activa, y el backend devolvió
+        // debug_active_users, imprimimos tabla en consola para inspección rápida.
+        if (process.env.NEXT_PUBLIC_STATS_DEBUG === 'true' && (dashboardStats as any).debug_active_users) {
+          try {
+            // eslint-disable-next-line no-console
+            console.groupCollapsed('Stats Debug: active users');
+            // eslint-disable-next-line no-console
+            console.table((dashboardStats as any).debug_active_users);
+            // eslint-disable-next-line no-console
+            console.groupEnd();
+          } catch (_e) {
+            // ignore console errors
+          }
+        }
       } catch (error) {
         console.error('Error loading statistics:', error);
       } finally {
@@ -42,7 +57,15 @@ export default function AdminDashboard() {
     }
 
     if (dbUser) {
-      loadStats();
+      // Only load global dashboard stats for admin users (runtime check)
+      const role = (dbUser as unknown as { role?: string })?.role;
+      if (role === 'admin') {
+        loadStats();
+      } else {
+        // Non-admin users should not see global stats
+        setStats(null);
+        setIsLoadingStats(false);
+      }
     }
   }, [dbUser]);
 
@@ -415,39 +438,49 @@ export default function AdminDashboard() {
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle>📊 Quick Stats</DialogTitle>
-            <DialogDescription>
-              Platform activity summary
-            </DialogDescription>
+            <DialogDescription>Quick overview of recent activity</DialogDescription>
           </DialogHeader>
+
           <div className="space-y-4">
-            {stats ? (
-              <>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="bg-blue-50 p-3 rounded-lg">
-                    <p className="text-sm text-blue-600 font-medium">API Calls</p>
-                    <p className="text-2xl font-bold text-blue-900">{stats.api_calls || 0}</p>
-                  </div>
-                  <div className="bg-green-50 p-3 rounded-lg">
-                    <p className="text-sm text-green-600 font-medium">Active Users</p>
-                    <p className="text-2xl font-bold text-green-900">{stats.active_users || 0}</p>
-                  </div>
-                  <div className="bg-purple-50 p-3 rounded-lg">
-                    <p className="text-sm text-purple-600 font-medium">Total Cost</p>
-                    <p className="text-2xl font-bold text-purple-900">${(stats.total_cost || 0).toFixed(3)}</p>
-                  </div>
-                  <div className="bg-orange-50 p-3 rounded-lg">
-                    <p className="text-sm text-orange-600 font-medium">Response Time</p>
-                    <p className="text-2xl font-bold text-orange-900">{(stats.avg_response_time || 0).toFixed(0)}ms</p>
-                  </div>
-                </div>
-                <div className="bg-gray-50 p-3 rounded-lg">
-                  <p className="text-sm text-gray-600 font-medium">Success Rate</p>
-                  <p className="text-xl font-bold text-gray-900">{(stats.success_rate || 0).toFixed(1)}%</p>
-                </div>
-              </>
-            ) : (
-              <p className="text-center py-4">Loading stats...</p>
+            <Button
+              className="w-full justify-start"
+              variant="default"
+              onClick={handleCreateApiKey}
+              disabled={isCreatingApiKey}
+            >
+              <Plus className="mr-2 h-4 w-4" />
+              {isCreatingApiKey ? 'Creating...' : 'Create New API Key'}
+            </Button>
+
+            {/* Debug: print active users to console when env flag is enabled */}
+            {process.env.NEXT_PUBLIC_STATS_DEBUG === 'true' && (
+              <Button
+                className="w-full justify-start"
+                variant="outline"
+                onClick={() => {
+                  try {
+                    if (stats && (stats as any).debug_active_users) {
+                      // eslint-disable-next-line no-console
+                      console.groupCollapsed('Stats Debug: active users (manual)');
+                      // eslint-disable-next-line no-console
+                      console.table((stats as any).debug_active_users);
+                      // eslint-disable-next-line no-console
+                      console.groupEnd();
+                    } else {
+                      // eslint-disable-next-line no-console
+                      console.info('No debug_active_users available in stats object.');
+                    }
+                  } catch (e) {
+                    // ignore
+                  }
+                }}
+              >
+                <Eye className="mr-2 h-4 w-4" />
+                Print debug active users
+              </Button>
             )}
+
+            <p className="text-sm text-muted-foreground">Use the button above to print the debug list in your browser console.</p>
           </div>
         </DialogContent>
       </Dialog>

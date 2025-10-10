@@ -1,4 +1,3 @@
-import { determineUserRole } from '@/lib/auth-config';
 import { supabaseAdmin, TABLES } from '@/lib/supabase';
 import { headers } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
@@ -61,10 +60,39 @@ export async function POST(req: NextRequest) {
                 const name = `${first_name || ''} ${last_name || ''}`.trim() || email;
 
                 // Determinar rol automáticamente
-                const role = determineUserRole();
+                // Por defecto los nuevos usuarios serán 'viewer'.
+                // Si no existe ningún admin en la base de datos, el primer usuario registrado será admin.
+                let role: 'admin' | 'developer' | 'viewer' = 'viewer';
 
-                // Crear usuario en nuestra base de datos
+                try {
+                    if (supabaseAdmin) {
+                        const { data: admins } = await supabaseAdmin
+                            .from(TABLES.USERS)
+                            .select('id')
+                            .eq('role', 'admin')
+                            .limit(1);
+
+                        if (!admins || admins.length === 0) {
+                            role = 'admin';
+                        }
+                    } else {
+                        console.warn('supabaseAdmin not initialized, defaulting new user to viewer');
+                        role = 'viewer';
+                    }
+                } catch (err) {
+                    console.error('Error checking existing admins:', err);
+                    // si falla la comprobación, mantener viewer por seguridad
+                    role = 'viewer';
+                }
+
+                // Crear usuario en nuestra base de datos.
+                // IMPORTANT: No crear registros de empresa/tenant automáticamente aquí.
+
                 if (supabaseAdmin) {
+                    // New users get the default free plan and default API key limit.
+                    // Role can be 'admin' for the very first user, but that should not imply an automatic enterprise plan.
+                    const apiKeyLimit = 3;
+
                     const { error } = await supabaseAdmin
                         .from(TABLES.USERS)
                         .upsert({
@@ -73,8 +101,10 @@ export async function POST(req: NextRequest) {
                             name,
                             email,
                             role,
+                            // No tocar company ni crear equipos aquí: el usuario es nuevo y no debe tener otros usuarios asociados.
+                            api_key_limit: apiKeyLimit,
                             status: 'active',
-                            plan: role === 'admin' ? 'enterprise' : 'free',
+                            plan: 'free',
                             is_active: true,
                             email_verified: true,
                             created_at: new Date().toISOString(),
@@ -82,9 +112,9 @@ export async function POST(req: NextRequest) {
                         });
 
                     if (error) {
-                        console.error('Error creating user in database:', error);
+                        console.error('Error creating/upserting user in database:', error);
                     } else {
-                        console.log(`User created: ${email} with role: ${role}`);
+                        console.log(`User created/upserted: ${email} with role: ${role} and api_key_limit: ${apiKeyLimit}`);
                     }
                 }
             }

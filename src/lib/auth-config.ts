@@ -3,10 +3,11 @@
 
 // Función para determinar el rol basado en email
 export function determineUserRole(): 'admin' | 'developer' | 'viewer' {
-    // Todos los usuarios que se registren automáticamente son admin
-    // Esto permite que el primer usuario configure el sistema
-    // y luego cree otros usuarios con roles específicos
-    return 'admin';
+    // Por seguridad, el comportamiento por defecto del cliente es asignar 'viewer'
+    // Esto evita que los usuarios creados desde el cliente obtengan privilegios de admin.
+    // El webhook en el servidor hará una comprobación para asignar admin al primer usuario
+    // si no existen administradores.
+    return 'viewer';
 }
 
 // Nota: En el futuro, si quieres restringir esto, puedes:
