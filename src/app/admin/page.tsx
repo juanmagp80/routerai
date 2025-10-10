@@ -33,7 +33,7 @@ export default function AdminDashboard() {
     async function loadStats() {
       try {
         setIsLoadingStats(true);
-  const dashboardStats = await StatsService.getDashboardStats((dbUser as unknown as { company?: string })?.company);
+        const dashboardStats = await StatsService.getDashboardStats((dbUser as unknown as { company?: string })?.company);
         setStats(dashboardStats);
         // Si la variable de entorno pública de debug está activa, y el backend devolvió
         // debug_active_users, imprimimos tabla en consola para inspección rápida.

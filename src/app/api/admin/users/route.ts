@@ -68,7 +68,7 @@ export async function GET() {
             emailVerified: user.email_verified,
         })) || [];
         // Optional debug information: detect demo/sample users (seeded API keys or recent seed usage)
-    const debug_active_users: Array<{ id: string; email?: string; name?: string; source?: string }> = [];
+        const debug_active_users: Array<{ id: string; email?: string; name?: string; source?: string }> = [];
         try {
             if (process.env.NEXT_PUBLIC_STATS_DEBUG === 'true') {
                 // Find api_keys matching common seed patterns within the same company
@@ -86,7 +86,7 @@ export async function GET() {
                     .from('usage_records')
                     .select('user_id')
                     .eq('company', caller.company)
-                    .in('model_name', ['gpt-4','gpt-3.5-turbo','claude-3-sonnet','claude-3-haiku'])
+                    .in('model_name', ['gpt-4', 'gpt-3.5-turbo', 'claude-3-sonnet', 'claude-3-haiku'])
                     .gte('created_at', new Date(Date.now() - 1000 * 60 * 60 * 24 * 30).toISOString())
                     .limit(1000);
 
