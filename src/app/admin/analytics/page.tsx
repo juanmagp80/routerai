@@ -14,6 +14,10 @@ interface AnalyticsData {
   requestsGrowth: number;
   usersGrowth: number;
   revenueGrowth: number;
+  apiKeysGrowth?: number;
+  userPlan?: string;
+  userEmail?: string;
+  planUpgradeDate?: string;
   topUsers: Array<{
     userId: string;
     email: string;
@@ -50,11 +54,11 @@ export default function AnalyticsPage() {
         const analyticsData = await response.json();
         setData(analyticsData);
       } else {
-        setError('Error al cargar datos de analytics');
+        setError('Error loading analytics data');
       }
     } catch (error) {
       console.error('Error fetching analytics:', error);
-      setError('Error de conexión');
+      setError('Connection error');
     } finally {
       setLoading(false);
     }
@@ -105,7 +109,7 @@ export default function AnalyticsPage() {
       <div className="space-y-6">
         <div className="border-b border-slate-200 pb-6">
           <h1 className="text-2xl font-bold text-slate-900">Analytics</h1>
-          <p className="text-slate-600 mt-1">Cargando datos de analytics...</p>
+          <p className="text-slate-600 mt-1">Loading analytics data...</p>
         </div>
         <div className="animate-pulse space-y-4">
           <div className="grid grid-cols-4 gap-4">
@@ -128,7 +132,7 @@ export default function AnalyticsPage() {
       <div className="space-y-6">
         <div className="border-b border-slate-200 pb-6">
           <h1 className="text-2xl font-bold text-slate-900">Analytics</h1>
-          <p className="text-slate-600 mt-1">Error al cargar datos</p>
+          <p className="text-slate-600 mt-1">Error loading data</p>
         </div>
         <div className="text-center py-8">
           <p className="text-red-600">{error}</p>
@@ -136,7 +140,7 @@ export default function AnalyticsPage() {
             onClick={fetchAnalytics}
             className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
           >
-            Reintentar
+            Retry
           </button>
         </div>
       </div>
@@ -146,9 +150,9 @@ export default function AnalyticsPage() {
   return (
     <div className="space-y-6">
       <div className="border-b border-slate-200 pb-6">
-        <h1 className="text-2xl font-bold text-slate-900">Analytics</h1>
+        <h1 className="text-2xl font-bold text-slate-900">My Analytics</h1>
         <p className="text-slate-600 mt-1">
-          Métricas y estadísticas de uso de RouterAI
+          Your personal usage metrics and statistics
         </p>
       </div>
 
@@ -160,7 +164,7 @@ export default function AnalyticsPage() {
                 <ActivityIcon className="h-6 w-6 text-blue-600" />
               </div>
               <div className="flex-1">
-                <p className="text-sm font-medium text-slate-600">Total Requests</p>
+                <p className="text-sm font-medium text-slate-600">My Requests</p>
                 <p className="text-2xl font-bold text-slate-900">
                   {formatNumber(data?.totalRequests || 0)}
                 </p>
@@ -182,14 +186,13 @@ export default function AnalyticsPage() {
                 <UsersIcon className="h-6 w-6 text-green-600" />
               </div>
               <div className="flex-1">
-                <p className="text-sm font-medium text-slate-600">Total Users</p>
-                <p className="text-2xl font-bold text-slate-900">
-                  {formatNumber(data?.totalUsers || 0)}
+                <p className="text-sm font-medium text-slate-600">Current Plan</p>
+                <p className="text-2xl font-bold text-slate-900 capitalize">
+                  {data?.userPlan || 'Free'}
                 </p>
                 <div className="flex items-center mt-1">
-                  {getGrowthIcon(data?.usersGrowth || 0)}
-                  <span className={`text-sm ml-1 ${getGrowthColor(data?.usersGrowth || 0)}`}>
-                    {data?.usersGrowth?.toFixed(1) || 0}%
+                  <span className="text-sm text-slate-500">
+                    {data?.userEmail || 'Your account'}
                   </span>
                 </div>
               </div>
@@ -204,13 +207,13 @@ export default function AnalyticsPage() {
                 <KeyIcon className="h-6 w-6 text-purple-600" />
               </div>
               <div className="flex-1">
-                <p className="text-sm font-medium text-slate-600">API Keys</p>
+                <p className="text-sm font-medium text-slate-600">My API Keys</p>
                 <p className="text-2xl font-bold text-slate-900">
                   {formatNumber(data?.totalApiKeys || 0)}
                 </p>
                 <div className="flex items-center mt-1">
                   <span className="text-sm text-slate-500">
-                    Total activas
+                    Total active
                   </span>
                 </div>
               </div>
@@ -225,7 +228,7 @@ export default function AnalyticsPage() {
                 <DollarSignIcon className="h-6 w-6 text-yellow-600" />
               </div>
               <div className="flex-1">
-                <p className="text-sm font-medium text-slate-600">Revenue</p>
+                <p className="text-sm font-medium text-slate-600">Monthly Cost</p>
                 <p className="text-2xl font-bold text-slate-900">
                   {formatCurrency(data?.totalRevenue || 0)}
                 </p>
@@ -248,14 +251,14 @@ export default function AnalyticsPage() {
               Top Users
             </CardTitle>
             <CardDescription>
-              Usuarios con más requests este mes
+              Users with most requests this month
             </CardDescription>
           </CardHeader>
           <CardContent>
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Usuario</TableHead>
+                  <TableHead>User</TableHead>
                   <TableHead>Plan</TableHead>
                   <TableHead>Requests</TableHead>
                 </TableRow>
@@ -283,7 +286,7 @@ export default function AnalyticsPage() {
                 )) || (
                     <TableRow>
                       <TableCell colSpan={3} className="text-center text-slate-500">
-                        No hay datos disponibles
+                        No data available
                       </TableCell>
                     </TableRow>
                   )}
@@ -295,10 +298,10 @@ export default function AnalyticsPage() {
         <Card>
           <CardHeader>
             <CardTitle className="text-lg font-semibold text-slate-900">
-              Modelos Más Utilizados
+              My Most Used Models
             </CardTitle>
             <CardDescription>
-              Distribución de uso por modelo de IA
+              Usage distribution by AI model
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -325,7 +328,7 @@ export default function AnalyticsPage() {
                 </div>
               )) || (
                   <p className="text-center text-slate-500">
-                    No hay datos disponibles
+                    No data available
                   </p>
                 )}
             </div>
@@ -336,10 +339,10 @@ export default function AnalyticsPage() {
       <Card>
         <CardHeader>
           <CardTitle className="text-lg font-semibold text-slate-900">
-            Actividad Reciente
+            My Recent Activity
           </CardTitle>
           <CardDescription>
-            Últimas acciones realizadas en el sistema
+            Latest actions performed in the system
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -347,9 +350,9 @@ export default function AnalyticsPage() {
             <TableHeader>
               <TableRow>
                 <TableHead>Timestamp</TableHead>
-                <TableHead>Usuario</TableHead>
-                <TableHead>Acción</TableHead>
-                <TableHead>Detalles</TableHead>
+                <TableHead>User</TableHead>
+                <TableHead>Action</TableHead>
+                <TableHead>Details</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -380,7 +383,7 @@ export default function AnalyticsPage() {
               )) || (
                   <TableRow>
                     <TableCell colSpan={4} className="text-center text-slate-500">
-                      No hay actividad reciente
+                      No recent activity
                     </TableCell>
                   </TableRow>
                 )}

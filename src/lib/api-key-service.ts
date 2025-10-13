@@ -6,10 +6,24 @@ type ApiKeyInsert = Database['public']['Tables']['api_keys']['Insert']
 
 export class ApiKeyService {
   static async getApiKeysByUserId(userId: string): Promise<ApiKey[]> {
+    // Primero intentar buscar el usuario real por clerk_user_id
+    let realUserId = userId;
+    
+    const { data: user } = await supabase
+      .from('users')
+      .select('id')
+      .eq('clerk_user_id', userId)
+      .single()
+    
+    if (user) {
+      realUserId = user.id;
+    }
+    // Si no se encuentra por clerk_user_id, usar el userId original (puede ser el ID directo)
+
     const { data, error } = await supabase
       .from('api_keys')
       .select('*')
-      .eq('user_id', userId)
+      .eq('user_id', realUserId)
       .eq('is_active', true)
       .order('created_at', { ascending: false })
 
@@ -22,9 +36,30 @@ export class ApiKeyService {
   }
 
   static async createApiKey(apiKeyData: ApiKeyInsert): Promise<ApiKey | null> {
+    // Si el user_id parece ser un Clerk ID, convertirlo al ID real
+    let realUserId: string = apiKeyData.user_id;
+    
+    if (apiKeyData.user_id?.startsWith('user_')) {
+      const { data: user, error: userError } = await supabase
+        .from('users')
+        .select('id')
+        .eq('clerk_user_id', apiKeyData.user_id)
+        .single()
+      
+      if (user && user.id) {
+        realUserId = user.id;
+      } else {
+        console.error('Could not find user with clerk_user_id:', apiKeyData.user_id, 'Error:', userError);
+        return null;
+      }
+    }
+
     const { data, error } = await supabase
       .from('api_keys')
-      .insert(apiKeyData)
+      .insert({
+        ...apiKeyData,
+        user_id: realUserId
+      })
       .select()
       .single()
 
@@ -37,11 +72,26 @@ export class ApiKeyService {
   }
 
   static async deleteApiKey(id: string, userId: string): Promise<boolean> {
+    // Si el userId parece ser un Clerk ID, convertirlo al ID real
+    let realUserId = userId;
+    
+    if (userId?.startsWith('user_')) {
+      const { data: user } = await supabase
+        .from('users')
+        .select('id')
+        .eq('clerk_user_id', userId)
+        .single()
+      
+      if (user) {
+        realUserId = user.id;
+      }
+    }
+
     const { error } = await supabase
       .from('api_keys')
       .update({ is_active: false })
       .eq('id', id)
-      .eq('user_id', userId)
+      .eq('user_id', realUserId)
 
     if (error) {
       console.error('Error deleting API key:', error)

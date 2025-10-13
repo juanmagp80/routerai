@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars */
 'use client';
 
 import RolePromotionButton from "@/components/admin/RolePromotionButton";
@@ -36,8 +35,20 @@ interface CreateUserData {
   sendInvite: boolean;
 }
 
+interface Invitation {
+  id: string;
+  email: string;
+  name: string;
+  token: string;
+  created_at: string;
+  expires_at: string;
+  resend_count: number;
+  is_used: boolean;
+}
+
 export default function UsersPage() {
   const [users, setUsers] = useState<User[]>([]);
+  const [invitations, setInvitations] = useState<Invitation[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [accessDenied, setAccessDenied] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
@@ -47,6 +58,7 @@ export default function UsersPage() {
   const [hideDemoUsers, setHideDemoUsers] = useState<boolean>(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [message, setMessage] = useState<string>('');
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [isCreating, setIsCreating] = useState(false);
@@ -76,7 +88,7 @@ export default function UsersPage() {
             // Default to hide demo users when debug is active
             setHideDemoUsers(true);
           }
-        } catch (_e) {
+        } catch {
           // ignore
         }
       }
@@ -88,23 +100,36 @@ export default function UsersPage() {
   const loadUsers = async () => {
     try {
       setIsLoading(true);
-      const response = await fetch('/api/admin/users');
-      const data = await response.json();
+      
+      // Load users
+      const usersResponse = await fetch('/api/admin/users');
+      const usersData = await usersResponse.json();
 
-      if (response.ok) {
+      // Load pending invitations
+      const invitationsResponse = await fetch('/api/admin/invitations');
+      const invitationsData = await invitationsResponse.json();
+
+      if (usersResponse.ok) {
         setAccessDenied(false);
-        setUsers(data.users || []);
+        setUsers(usersData.users || []);
+        
         // If API returned debug_active_users (server-side), populate demoUserIds
-        const dbg = data.debug_active_users as Array<{ id: string }> | undefined;
+        const dbg = usersData.debug_active_users as Array<{ id: string }> | undefined;
         if (dbg && dbg.length > 0) {
           setDemoUserIds(new Set(dbg.map(d => d.id)));
           setHideDemoUsers(true);
         }
       } else {
-        if (response.status === 401 || response.status === 403) {
+        if (usersResponse.status === 401 || usersResponse.status === 403) {
           setAccessDenied(true);
         }
-        console.error('Error loading users:', data.error);
+        console.error('Error loading users:', usersData.error);
+      }
+
+      if (invitationsResponse.ok) {
+        setInvitations(invitationsData.invitations || []);
+      } else {
+        console.error('Error loading invitations:', invitationsData.error);
       }
     } catch (error) {
       console.error('Error loading users:', error);
@@ -153,6 +178,14 @@ export default function UsersPage() {
           department: '',
           sendInvite: true,
         });
+        
+        // Show appropriate success message
+        if (createData.sendInvite) {
+          alert(`Invitation sent successfully to ${createData.email}. The user will receive an email to accept the invitation.`);
+        } else {
+          alert('User created successfully');
+        }
+        
         await loadUsers();
       } else {
         alert(result.error || 'Error creating user');
@@ -302,6 +335,22 @@ export default function UsersPage() {
         </Button>
       </div>
 
+      {/* Status Message */}
+      {message && (
+        <div className="bg-blue-50 border border-blue-200 text-blue-700 px-4 py-3 rounded relative">
+          <span className="block sm:inline">{message}</span>
+          <span
+            className="absolute top-0 bottom-0 right-0 px-4 py-3 cursor-pointer"
+            onClick={() => setMessage('')}
+          >
+            <svg className="fill-current h-4 w-4" role="button" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+              <title>Close</title>
+              <path d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z"/>
+            </svg>
+          </span>
+        </div>
+      )}
+
       {/* Stats Cards */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
@@ -362,6 +411,82 @@ export default function UsersPage() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Pending Invitations */}
+      {invitations.length > 0 && (
+        <div className="mb-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Mail className="h-5 w-5" />
+                Invitaciones Pendientes ({invitations.length})
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                {invitations.map((invitation) => (
+                  <div
+                    key={invitation.id}
+                    className="flex items-center justify-between p-3 border rounded-lg bg-yellow-50 border-yellow-200"
+                  >
+                    <div className="flex-1">
+                      <div className="font-medium">{invitation.name}</div>
+                      <div className="text-sm text-gray-600">{invitation.email}</div>
+                      <div className="text-xs text-gray-500">
+                        Enviada: {new Date(invitation.created_at).toLocaleDateString('es-ES')} |
+                        Expira: {new Date(invitation.expires_at).toLocaleDateString('es-ES')} |
+                        Reenvíos: {invitation.resend_count}/5
+                      </div>
+                    </div>
+                    <div className="flex gap-2">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => {
+                          navigator.clipboard.writeText(`${window.location.origin}/api/invites/accept?token=${invitation.token}`);
+                          // Could add a toast notification here
+                        }}
+                      >
+                        Copiar Link
+                      </Button>
+                      {invitation.resend_count < 5 && (
+                        <Button
+                          size="sm"
+                          onClick={async () => {
+                            try {
+                              const response = await fetch('/api/admin/users/invite', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                  email: invitation.email,
+                                  name: invitation.name,
+                                  role: 'user'
+                                })
+                              });
+                              
+                              if (response.ok) {
+                                await loadUsers(); // Reload to update resend count
+                                setMessage('Invitación reenviada exitosamente');
+                              } else {
+                                const data = await response.json();
+                                setMessage(data.error || 'Error al reenviar invitación');
+                              }
+                            } catch {
+                              setMessage('Error al reenviar invitación');
+                            }
+                          }}
+                        >
+                          Reenviar
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
 
       {/* Filters and Search */}
       <div className="flex flex-col space-y-4 md:flex-row md:space-y-0 md:space-x-4">

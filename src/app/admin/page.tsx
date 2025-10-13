@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars */
 'use client';
 
 import { Badge } from "@/components/ui/badge";
@@ -10,6 +9,7 @@ import { DashboardStats, StatsService } from "@/lib/stats-service";
 import { Activity, BarChart3, Clock, Cpu, Eye, Key, Plus, Settings, TrendingUp, Users, Zap } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useUser } from "@clerk/nextjs";
 
 interface UsageData {
   currentPlan: string;
@@ -20,6 +20,7 @@ interface UsageData {
 }
 
 export default function AdminDashboard() {
+  const { user } = useUser();
   const { dbUser, isLoading: userLoading, error: userError } = useUserSync();
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [isLoadingStats, setIsLoadingStats] = useState(true);
@@ -33,19 +34,23 @@ export default function AdminDashboard() {
     async function loadStats() {
       try {
         setIsLoadingStats(true);
-        const dashboardStats = await StatsService.getDashboardStats((dbUser as unknown as { company?: string })?.company);
+        const dashboardStats = await StatsService.getDashboardStats(
+          (dbUser as unknown as { company?: string })?.company,
+          user?.id // Pasar el Clerk ID del usuario logueado
+        );
         setStats(dashboardStats);
         // Si la variable de entorno pública de debug está activa, y el backend devolvió
         // debug_active_users, imprimimos tabla en consola para inspección rápida.
-        if (process.env.NEXT_PUBLIC_STATS_DEBUG === 'true' && (dashboardStats as any).debug_active_users) {
+        const debugStats = dashboardStats as unknown as { debug_active_users?: Array<{ id: string; email?: string; name?: string; source?: string }> };
+        if (process.env.NEXT_PUBLIC_STATS_DEBUG === 'true' && debugStats.debug_active_users) {
           try {
             // eslint-disable-next-line no-console
             console.groupCollapsed('Stats Debug: active users');
             // eslint-disable-next-line no-console
-            console.table((dashboardStats as any).debug_active_users);
+            console.table(debugStats.debug_active_users);
             // eslint-disable-next-line no-console
             console.groupEnd();
-          } catch (_e) {
+          } catch {
             // ignore console errors
           }
         }
@@ -56,18 +61,11 @@ export default function AdminDashboard() {
       }
     }
 
-    if (dbUser) {
-      // Only load global dashboard stats for admin users (runtime check)
-      const role = (dbUser as unknown as { role?: string })?.role;
-      if (role === 'admin') {
-        loadStats();
-      } else {
-        // Non-admin users should not see global stats
-        setStats(null);
-        setIsLoadingStats(false);
-      }
+    if (dbUser && user?.id) {
+      // Load user-specific stats for any authenticated user
+      loadStats();
     }
-  }, [dbUser]);
+  }, [dbUser, user?.id]);
 
   // Funciones de navegación para acciones rápidas
   const handleManageUsers = () => {
@@ -197,7 +195,7 @@ export default function AdminDashboard() {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total API Calls</CardTitle>
+            <CardTitle className="text-sm font-medium">Your API Calls</CardTitle>
             <BarChart3 className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -213,8 +211,8 @@ export default function AdminDashboard() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Active Users</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium">Active API Keys</CardTitle>
+            <Key className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats?.active_users || 0}</div>
@@ -222,7 +220,7 @@ export default function AdminDashboard() {
               <Button
                 variant="link"
                 className="p-0 h-auto"
-                onClick={() => handleViewDetails('users')}
+                onClick={() => handleViewDetails('keys')}
               >
                 View details
               </Button>
@@ -232,14 +230,14 @@ export default function AdminDashboard() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Available Models</CardTitle>
+            <CardTitle className="text-sm font-medium">Your Available Models</CardTitle>
             <Cpu className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats?.models_available || 0}</div>
             <p className="text-xs text-muted-foreground">
               <Badge variant="outline" className="text-green-600">
-                {stats?.active_models || 0} active
+                {stats?.active_models || 0} used
               </Badge>
             </p>
           </CardContent>
@@ -459,18 +457,18 @@ export default function AdminDashboard() {
                 variant="outline"
                 onClick={() => {
                   try {
-                    if (stats && (stats as any).debug_active_users) {
+                    if (stats && (stats as {debug_active_users?: unknown}).debug_active_users) {
                       // eslint-disable-next-line no-console
                       console.groupCollapsed('Stats Debug: active users (manual)');
                       // eslint-disable-next-line no-console
-                      console.table((stats as any).debug_active_users);
+                      console.table((stats as {debug_active_users: unknown}).debug_active_users);
                       // eslint-disable-next-line no-console
                       console.groupEnd();
                     } else {
                       // eslint-disable-next-line no-console
                       console.info('No debug_active_users available in stats object.');
                     }
-                  } catch (e) {
+                  } catch {
                     // ignore
                   }
                 }}

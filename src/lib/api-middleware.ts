@@ -60,7 +60,7 @@ export class ApiMiddleware {
             }
 
             // Verificar si el modelo está permitido para el plan del usuario
-            if (modelName) {
+            if (modelName && modelName !== 'auto') {
                 const modelAllowed = await PlanLimitsService.isModelAllowed(userId, modelName)
                 if (!modelAllowed) {
                     const userLimits = await PlanLimitsService.getUserLimitsAndUsage(userId)

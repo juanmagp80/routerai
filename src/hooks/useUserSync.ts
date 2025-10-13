@@ -41,16 +41,21 @@ export function useUserSync() {
                     if (!allowCreate) {
                         console.log('Usuario no creado en la base de datos: email no verificado y SKIP_VERIFY_BEFORE_CREATE no activo.');
                     } else {
-                        // Crear nuevo usuario en Supabase
+                        // Obtener límites del plan free para nuevos usuarios
+                        const { PlanLimitsService } = await import('@/lib/plan-limits-service');
+                        const freePlanLimits = await PlanLimitsService.getPlanLimits('free');
+                        
+                        // Crear nuevo usuario en Supabase con límites correctos del plan
                         const userData = {
                             id: clerkUser.id,
                             name: `${clerkUser.firstName || ''} ${clerkUser.lastName || ''}`.trim() || 'Usuario',
                             email: primaryEmail,
                             company: clerkUser.organizationMemberships?.[0]?.organization?.name,
                             plan: 'free',
-                            api_key_limit: 1,
+                            api_key_limit: freePlanLimits?.api_key_limit || 3,
                             is_active: true,
                             email_verified: emailVerified,
+                            clerk_user_id: clerkUser.id,
                         };
 
                         existingUser = await UserService.createUser(userData);
@@ -66,9 +71,16 @@ export function useUserSync() {
                         }
                     }
                 } else {
-                    // Actualizar datos si han cambiado
+                    // Usuario existente encontrado - vincular con Clerk si no está vinculado
                     const updatedData: Record<string, string | boolean> = {};
                     const currentName = `${clerkUser.firstName || ''} ${clerkUser.lastName || ''}`.trim();
+
+                    // Vincular con Clerk si no está vinculado
+                    const userWithClerkId = existingUser as any;
+                    if (!userWithClerkId.clerk_user_id) {
+                        (updatedData as any).clerk_user_id = clerkUser.id;
+                        console.log('Vinculando usuario existente con Clerk ID:', clerkUser.id);
+                    }
 
                     if (existingUser.name !== currentName && currentName) {
                         updatedData.name = currentName;

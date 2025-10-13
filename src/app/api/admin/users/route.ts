@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { supabaseAdmin, TABLES } from '@/lib/supabase';
 import { currentUser } from '@clerk/nextjs/server';
 import { NextRequest, NextResponse } from 'next/server';
@@ -28,11 +27,12 @@ export async function GET() {
             return NextResponse.json({ error: 'Failed to verify caller' }, { status: 500 });
         }
 
-        const caller = callerRows as any;
-        if (!caller) {
+        if (!callerRows) {
             // If the caller isn't mapped to a users row, deny access
             return NextResponse.json({ error: 'Forbidden: user not found in application database' }, { status: 403 });
         }
+        
+        const caller = callerRows as { id: string; company: string; role: string; email: string; clerk_user_id: string };
 
         // Only list users within the same company as the caller (multi-tenant isolation)
         const { data: users, error } = await supabaseAdmin
@@ -79,7 +79,7 @@ export async function GET() {
                     .or(`key_hash.ilike.rtr\_% , key_prefix.ilike.rtr\_% , name.eq.Clave Principal`)
                     .limit(1000);
 
-                const keyUserIds = new Set((candidateKeys || []).map((k: any) => k.user_id).filter(Boolean));
+                const keyUserIds = new Set((candidateKeys || []).map((k: { user_id: string }) => k.user_id).filter(Boolean));
 
                 // Also check usage_records by recent model names used in seeders
                 const { data: recentUsage } = await supabaseAdmin
@@ -90,7 +90,7 @@ export async function GET() {
                     .gte('created_at', new Date(Date.now() - 1000 * 60 * 60 * 24 * 30).toISOString())
                     .limit(1000);
 
-                const usageUserIds = new Set((recentUsage || []).map((u: any) => u.user_id).filter(Boolean));
+                const usageUserIds = new Set((recentUsage || []).map((u: { user_id: string }) => u.user_id).filter(Boolean));
 
                 const combinedIds = Array.from(new Set([...Array.from(keyUserIds), ...Array.from(usageUserIds)]));
 
@@ -103,8 +103,9 @@ export async function GET() {
                         .limit(1000);
 
                     for (const u of (detectedUsers || [])) {
-                        const src = keyUserIds.has((u as any).id) ? 'api_key' : usageUserIds.has((u as any).id) ? 'usage' : 'unknown';
-                        (debug_active_users as Array<any>).push({ id: (u as any).id, email: (u as any).email, name: (u as any).name, source: src });
+                        const user = u as { id: string; email?: string; name?: string };
+                        const src = keyUserIds.has(user.id) ? 'api_key' : usageUserIds.has(user.id) ? 'usage' : 'unknown';
+                        debug_active_users.push({ id: user.id, email: user.email, name: user.name, source: src });
                     }
                 }
             }
@@ -154,7 +155,7 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: 'Forbidden: caller not registered in app database' }, { status: 403 });
         }
 
-        const caller = callerRows as any;
+        const caller = callerRows as { id: string; company: string; role: string; name?: string };
 
         // Validate required fields
         if (!name || !email || !role) {

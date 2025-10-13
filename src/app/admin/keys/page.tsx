@@ -100,7 +100,7 @@ export default function ApiKeysPage() {
       const canCreate = await PlanLimitsService.canCreateApiKey(userId);
 
       if (!canCreate.allowed) {
-        setError(canCreate.reason || 'No se puede crear más API keys');
+        setError(canCreate.reason || 'Cannot create more API keys');
         return;
       }
 
@@ -132,11 +132,11 @@ export default function ApiKeysPage() {
         setNewlyCreatedKey({ key: keyValue, name: newKeyWithValue.name });
         setShowNewKeyDialog(true);
       } else {
-        throw new Error('No se pudo crear la API key');
+        throw new Error('Could not create API key');
       }
     } catch (err) {
       console.error('Error creating API key:', err);
-      setError(err instanceof Error ? err.message : 'Error creando API key');
+      setError(err instanceof Error ? err.message : 'Error creating API key');
     } finally {
       setIsCreatingKey(false);
     }
@@ -146,7 +146,7 @@ export default function ApiKeysPage() {
     navigator.clipboard.writeText(text).then(() => {
       // Mejor feedback visual en lugar de alert
       const notification = document.createElement('div');
-      notification.textContent = '✓ API Key copiada al portapapeles!';
+      notification.textContent = '✓ API Key copied to clipboard!';
       notification.style.cssText = `
         position: fixed;
         top: 20px;
@@ -179,7 +179,7 @@ export default function ApiKeysPage() {
   };
 
   const deleteApiKey = async (keyId: string) => {
-    if (!confirm('¿Estás seguro de que quieres eliminar esta API key?')) {
+    if (!confirm('Are you sure you want to delete this API key?')) {
       return;
     }
 
@@ -187,13 +187,13 @@ export default function ApiKeysPage() {
       const success = await ApiKeyService.deleteApiKey(keyId, userId!);
       if (success) {
         setApiKeys(apiKeys.filter(key => key.id !== keyId));
-        alert('API Key eliminada exitosamente');
+        alert('API Key deleted successfully');
       } else {
-        throw new Error('No se pudo eliminar la API key');
+        throw new Error('Could not delete API key');
       }
     } catch (err) {
       console.error('Error deleting API key:', err);
-      setError(err instanceof Error ? err.message : 'Error eliminando API key');
+      setError(err instanceof Error ? err.message : 'Error deleting API key');
     }
   };
 
@@ -221,7 +221,7 @@ export default function ApiKeysPage() {
       <div className="border-b border-slate-200 pb-6">
         <h1 className="text-2xl font-bold text-slate-900">API Keys</h1>
         <p className="text-slate-600 mt-1">
-          Gestiona tus claves de acceso API de RouterAI
+          Manage your RouterAI API access keys
         </p>
       </div>
 
@@ -257,7 +257,7 @@ export default function ApiKeysPage() {
                 </span>
               </div>
               <div className="ml-4">
-                <p className="text-sm font-medium text-slate-600">Requests este mes</p>
+                <p className="text-sm font-medium text-slate-600">Requests this month</p>
                 <p className="text-2xl font-bold text-slate-900">
                   {userLimits?.usage.requests.current || 0}
                   <span className="text-sm text-slate-500">
@@ -265,7 +265,7 @@ export default function ApiKeysPage() {
                   </span>
                 </p>
                 <p className="text-xs text-slate-500">
-                  {(userLimits?.usage.requests.percentage ?? 0).toFixed(1)}% usado
+                  {(userLimits?.usage.requests.percentage ?? 0).toFixed(1)}% used
                 </p>
               </div>
             </div>
@@ -279,7 +279,7 @@ export default function ApiKeysPage() {
                 <InfoIcon className="w-5 h-5 text-purple-600" />
               </div>
               <div className="ml-4">
-                <p className="text-sm font-medium text-slate-600">Plan Actual</p>
+                <p className="text-sm font-medium text-slate-600">Current Plan</p>
                 <p className="text-2xl font-bold text-slate-900 capitalize">
                   {userLimits?.user.plan || 'Free'}
                 </p>
@@ -304,19 +304,19 @@ export default function ApiKeysPage() {
               <div className="ml-4">
                 {userLimits?.user.plan === 'free' && userLimits?.user.trialDaysRemaining !== null ? (
                   <>
-                    <p className="text-sm font-medium text-slate-600">Prueba restante</p>
+                    <p className="text-sm font-medium text-slate-600">Trial remaining</p>
                     <p className="text-2xl font-bold text-slate-900">
                       {userLimits?.user.trialDaysRemaining}
                     </p>
                     <p className="text-xs text-slate-500">
-                      {(userLimits?.user.trialDaysRemaining ?? 0) === 1 ? 'día' : 'días'}
+                      {(userLimits?.user.trialDaysRemaining ?? 0) === 1 ? 'day' : 'days'}
                     </p>
                   </>
                 ) : (
                   <>
-                    <p className="text-sm font-medium text-slate-600">Estado</p>
-                    <p className="text-2xl font-bold text-green-900">Activo</p>
-                    <p className="text-xs text-green-600">Sin límite de tiempo</p>
+                    <p className="text-sm font-medium text-slate-600">Status</p>
+                    <p className="text-2xl font-bold text-green-900">Active</p>
+                    <p className="text-xs text-green-600">No time limit</p>
                   </>
                 )}
               </div>
@@ -336,7 +336,7 @@ export default function ApiKeysPage() {
                   Te estás acercando al límite de requests
                 </h4>
                 <p className="text-sm text-orange-700">
-                  Has usado {userLimits?.usage.requests.current} de {userLimits?.usage.requests.limit} requests este mes
+                  You have used {userLimits?.usage.requests.current} of {userLimits?.usage.requests.limit} requests this month
                   ({(userLimits?.usage.requests.percentage ?? 0).toFixed(1)}%).
                   {userLimits?.user.plan === 'free' ? (
                     <span> Considera actualizar a un plan de pago para obtener más requests.</span>
@@ -357,11 +357,11 @@ export default function ApiKeysPage() {
               <AlertTriangleIcon className="w-5 h-5 text-red-600 flex-shrink-0" />
               <div>
                 <h4 className="text-sm font-medium text-red-800">
-                  Tu prueba gratuita está por expirar
+                  Your free trial is about to expire
                 </h4>
                 <p className="text-sm text-red-700">
-                  Te quedan {userLimits?.user.trialDaysRemaining} días de prueba gratuita.
-                  Actualiza a un plan de pago para continuar usando RouterAI.
+                  You have {userLimits?.user.trialDaysRemaining} days of free trial remaining.
+                  Upgrade to a paid plan to continue using RouterAI.
                 </p>
               </div>
             </div>
@@ -369,16 +369,59 @@ export default function ApiKeysPage() {
         </Card>
       )}
 
+      {/* Alerta de sincronización cuando los límites son 0/0 */}
+      {(userLimits?.usage.apiKeys.limit || 0) === 0 && (
+        <Card className="border-blue-200 bg-blue-50">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <InfoIcon className="w-5 h-5 text-blue-600 flex-shrink-0" />
+                <div>
+                  <h4 className="text-sm font-medium text-blue-800">
+                    Account needs synchronization
+                  </h4>
+                  <p className="text-sm text-blue-700">
+                    Your limits appear as 0/0. Click "Sync Account" to fix this.
+                  </p>
+                </div>
+              </div>
+              <Button
+                onClick={async () => {
+                  try {
+                    const response = await fetch('/api/admin/real-sync', { method: 'POST' });
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                      alert('Cuenta sincronizada exitosamente');
+                      window.location.reload();
+                    } else {
+                      alert('Error: ' + result.error);
+                    }
+                  } catch (error) {
+                    alert('Connection error');
+                  }
+                }}
+                className="bg-blue-600 hover:bg-blue-700 text-white"
+              >
+                Sync Account
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+
+
       {/* API Keys Management */}
       <Card>
         <CardHeader className="border-b border-slate-200">
           <div className="flex items-center justify-between">
             <div>
               <CardTitle className="text-lg font-semibold text-slate-900">
-                Tus API Keys
+                Your API Keys
               </CardTitle>
               <CardDescription className="text-slate-600 mt-1">
-                Gestiona y monitorea tus claves de acceso API
+                Manage and monitor your API access keys
               </CardDescription>
             </div>
             <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
@@ -389,11 +432,11 @@ export default function ApiKeysPage() {
                   title={
                     !userLimits?.usage.apiKeys.allowed
                       ? userLimits?.usage.apiKeys.reason
-                      : 'Crear nueva API key'
+                      : 'Create new API key'
                   }
                 >
                   <PlusIcon className="w-4 h-4 mr-2" />
-                  Nueva API Key
+                  New API Key
                   {userLimits?.usage.apiKeys.allowed === false && (
                     <span className="ml-2 text-xs">
                       ({userLimits?.usage.apiKeys.current}/{userLimits?.usage.apiKeys.limit})
@@ -403,21 +446,21 @@ export default function ApiKeysPage() {
               </DialogTrigger>
               <DialogContent className="sm:max-w-md">
                 <DialogHeader>
-                  <DialogTitle>Crear Nueva API Key</DialogTitle>
+                  <DialogTitle>Create New API Key</DialogTitle>
                   <DialogDescription>
-                    Genera una nueva clave API para tus aplicaciones
+                    Generate a new API key for your applications
                   </DialogDescription>
                 </DialogHeader>
                 <div className="space-y-4">
                   <div>
                     <label htmlFor="keyName" className="block text-sm font-medium text-slate-700 mb-2">
-                      Nombre de la API Key
+                      API Key Name
                     </label>
                     <Input
                       id="keyName"
                       value={newKeyName}
                       onChange={(e) => setNewKeyName(e.target.value)}
-                      placeholder="Mi Aplicación - Producción"
+                      placeholder="My Application - Production"
                       className="w-full"
                     />
                   </div>
@@ -426,7 +469,7 @@ export default function ApiKeysPage() {
                       <AlertTriangleIcon className="w-4 h-4 text-yellow-600 mt-0.5" />
                       <div className="ml-2">
                         <p className="text-xs text-yellow-800">
-                          Guarda tu API key de forma segura. No podrás verla completa después de crearla.
+                          Store your API key securely. You won't be able to see it in full after creating it.
                         </p>
                       </div>
                     </div>
@@ -436,7 +479,7 @@ export default function ApiKeysPage() {
                     disabled={isCreatingKey || !newKeyName.trim()}
                     className="w-full bg-blue-600 hover:bg-blue-700"
                   >
-                    {isCreatingKey ? 'Creando...' : 'Crear API Key'}
+                    {isCreatingKey ? 'Creating...' : 'Create API Key'}
                   </Button>
                 </div>
               </DialogContent>
@@ -456,10 +499,10 @@ export default function ApiKeysPage() {
                 <KeyIcon className="w-8 h-8 text-slate-400" />
               </div>
               <h3 className="text-lg font-medium text-slate-900 mb-2">
-                No hay API Keys configuradas
+                No API Keys configured
               </h3>
               <p className="text-slate-600 mb-6">
-                Crea tu primera API key para empezar a usar RouterAI
+                Create your first API key to start using RouterAI
               </p>
             </div>
           ) : (
@@ -474,12 +517,12 @@ export default function ApiKeysPage() {
                           variant={key.is_active ? "default" : "secondary"}
                           className={key.is_active ? "bg-green-100 text-green-800" : "bg-slate-100 text-slate-600"}
                         >
-                          {key.is_active ? 'Activa' : 'Inactiva'}
+                          {key.is_active ? 'Active' : 'Inactive'}
                         </Badge>
                         {/* Indicar si es una key recién creada */}
                         {key.key_value && (
                           <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
-                            Recién creada
+                            Just created
                           </Badge>
                         )}
                       </div>
@@ -496,7 +539,7 @@ export default function ApiKeysPage() {
                                 size="sm"
                                 onClick={() => toggleKeyVisibility(key.id)}
                                 className="h-8 w-8 p-0 hover:bg-green-100"
-                                title={visibleKeys.has(key.id) ? "Ocultar key completa" : "Mostrar key completa"}
+                                title={visibleKeys.has(key.id) ? "Hide full key" : "Show full key"}
                               >
                                 {visibleKeys.has(key.id) ? (
                                   <EyeOffIcon className="w-4 h-4 text-green-600" />
@@ -509,7 +552,7 @@ export default function ApiKeysPage() {
                                 size="sm"
                                 onClick={() => copyToClipboard(key.key_value!)}
                                 className="h-8 w-8 p-0 hover:bg-green-100"
-                                title="Copiar API key"
+                                title="Copy API key"
                               >
                                 <CopyIcon className="w-4 h-4 text-green-600" />
                               </Button>
@@ -521,17 +564,17 @@ export default function ApiKeysPage() {
                                 {`${key.key_hash.substring(0, 15)}...`}
                               </code>
                               <span className="text-xs text-slate-500 italic">
-                                (Solo hash visible por seguridad)
+                                (Only hash visible for security)
                               </span>
                             </>
                           )}
                         </div>
                         <span className="text-sm text-slate-500">
-                          Creada el {formatDate(key.created_at)}
+                          Created on {formatDate(key.created_at)}
                         </span>
                         {key.last_used_at && (
                           <span className="text-sm text-slate-500">
-                            Último uso: {formatDate(key.last_used_at)}
+                            Last used: {formatDate(key.last_used_at)}
                           </span>
                         )}
                       </div>
@@ -558,13 +601,13 @@ export default function ApiKeysPage() {
       <Card>
         <CardHeader>
           <CardTitle className="text-lg font-semibold text-slate-900">
-            Cómo usar tu API Key
+            How to use your API Key
           </CardTitle>
         </CardHeader>
         <CardContent className="p-6">
           <div className="space-y-4">
             <div>
-              <h4 className="text-sm font-medium text-slate-900 mb-2">Autenticación HTTP</h4>
+              <h4 className="text-sm font-medium text-slate-900 mb-2">HTTP Authentication</h4>
               <div className="bg-slate-50 rounded-md p-3">
                 <code className="text-sm text-slate-800">
                   curl -H &quot;Authorization: Bearer YOUR_API_KEY&quot; https://api.routerai.com/v1/chat
@@ -603,10 +646,10 @@ response = requests.post('https://api.routerai.com/v1/chat', headers=headers)`}
               <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
                 <KeyIcon className="w-4 h-4 text-green-600" />
               </div>
-              <span>¡API Key creada exitosamente!</span>
+              <span>API Key created successfully!</span>
             </DialogTitle>
             <DialogDescription>
-              Esta es tu nueva API key para &quot;{newlyCreatedKey?.name}&quot;. Cópiala ahora - no podrás verla completa después.
+              This is your new API key for &quot;{newlyCreatedKey?.name}&quot;. Copy it now - you won't be able to see it in full later.
             </DialogDescription>
           </DialogHeader>
 
@@ -615,10 +658,10 @@ response = requests.post('https://api.routerai.com/v1/chat', headers=headers)`}
               <div className="flex items-start space-x-3">
                 <AlertTriangleIcon className="w-5 h-5 text-amber-600 mt-0.5 flex-shrink-0" />
                 <div>
-                  <h4 className="text-sm font-medium text-amber-800">¡Importante!</h4>
+                  <h4 className="text-sm font-medium text-amber-800">Important!</h4>
                   <p className="text-sm text-amber-700 mt-1">
-                    Por razones de seguridad, esta es la única vez que podrás ver tu API key completa.
-                    Asegúrate de copiarla y guardarla en un lugar seguro.
+                    For security reasons, this is the only time you'll be able to see your complete API key.
+                    Make sure to copy it and store it in a safe place.
                   </p>
                 </div>
               </div>
@@ -626,7 +669,7 @@ response = requests.post('https://api.routerai.com/v1/chat', headers=headers)`}
 
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-2">
-                Tu nueva API Key
+                Your new API Key
               </label>
               <div className="flex items-center space-x-2">
                 <div className="flex-1 bg-slate-50 border border-slate-200 rounded-md p-3">
@@ -639,13 +682,13 @@ response = requests.post('https://api.routerai.com/v1/chat', headers=headers)`}
                   className="flex-shrink-0 bg-blue-600 hover:bg-blue-700"
                 >
                   <CopyIcon className="w-4 h-4 mr-2" />
-                  Copiar
+                  Copy
                 </Button>
               </div>
             </div>
 
             <div className="bg-slate-50 rounded-lg p-4">
-              <h4 className="text-sm font-medium text-slate-800 mb-2">Ejemplo de uso rápido:</h4>
+              <h4 className="text-sm font-medium text-slate-800 mb-2">Quick usage example:</h4>
               <code className="text-xs text-slate-600 break-all">
                 curl -H &quot;Authorization: Bearer {newlyCreatedKey?.key || 'YOUR_API_KEY'}&quot; https://api.routerai.com/v1/chat
               </code>
@@ -657,7 +700,7 @@ response = requests.post('https://api.routerai.com/v1/chat', headers=headers)`}
                 onClick={() => copyToClipboard(newlyCreatedKey?.key || '')}
               >
                 <CopyIcon className="w-4 h-4 mr-2" />
-                Copiar de nuevo
+                Copy again
               </Button>
               <Button
                 onClick={() => {
@@ -666,7 +709,7 @@ response = requests.post('https://api.routerai.com/v1/chat', headers=headers)`}
                 }}
                 className="bg-green-600 hover:bg-green-700"
               >
-                ✓ Ya la copié
+                ✓ I've copied it
               </Button>
             </div>
           </div>

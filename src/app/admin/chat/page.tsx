@@ -75,10 +75,19 @@ export default function ApiConsolePage() {
   // Filtrar modelos según el plan del usuario
   const getFilteredModels = () => {
     if (userPlan === 'FREE') {
-      // Usuarios FREE solo pueden usar GPT-3.5 Turbo
+      // Usuarios FREE pueden usar modelos económicos específicos
+      const allowedFreeModels = [
+        'gpt-3.5-turbo',
+        'gpt-4o-mini', 
+        'claude-3-haiku',
+        'gemini-2.0-flash'
+      ];
+      
       return availableModels.filter(model =>
-        model.name.toLowerCase().includes('gpt-3.5') ||
-        model.name.toLowerCase().includes('gpt-3.5-turbo')
+        allowedFreeModels.some(allowed => 
+          model.name.toLowerCase().includes(allowed.toLowerCase()) ||
+          model.name.toLowerCase() === allowed.toLowerCase()
+        )
       );
     }
     // Otros planes pueden usar todos los modelos
@@ -532,7 +541,7 @@ export default function ApiConsolePage() {
           </CardTitle>
           <CardDescription>
             {userPlan === 'FREE'
-              ? 'As a FREE user, you can only use GPT-3.5 Turbo models'
+              ? 'Como usuario FREE, puedes usar: GPT-3.5 Turbo, GPT-4o Mini, Claude-3 Haiku, y Gemini 2.0 Flash'
               : 'Current AI models available in the router'
             }
           </CardDescription>

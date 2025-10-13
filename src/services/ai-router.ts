@@ -74,7 +74,7 @@ export class AIRouterService {
       console.log('🚫 Failed providers:', Array.from(this.failedProviders));
 
       // Get the best model for this request
-      selectedModel = this.selectBestModel(request);
+      selectedModel = await this.selectBestModel(request);
 
       if (!selectedModel) {
         console.error('❌ No available models for this request');
@@ -136,9 +136,9 @@ export class AIRouterService {
     }
   }
 
-  private selectBestModel(request: AIRequest): ModelConfig | null {
+  private async selectBestModel(request: AIRequest): Promise<ModelConfig | null> {
     const allModels = getAvailableModels();
-    const availableModels = allModels.filter(model =>
+    let availableModels = allModels.filter(model =>
       !this.failedProviders.has(model.provider) && this.providers.has(model.provider)
     );
 
@@ -146,6 +146,30 @@ export class AIRouterService {
     console.log('🔍 Failed providers:', Array.from(this.failedProviders));
     console.log('🔍 Available providers:', Array.from(this.providers.keys()));
     console.log('🔍 Filtered available models:', availableModels.map(m => `${m.name} (${m.provider})`));
+
+    // Filter by user plan permissions if userId is provided
+    if (request.userId) {
+      try {
+        const { PlanLimitsService } = await import('@/lib/plan-limits-service');
+        const userLimitsAndUsage = await PlanLimitsService.getUserLimitsAndUsage(request.userId);
+        
+        if (userLimitsAndUsage) {
+          const allowedModels = userLimitsAndUsage.limits.allowed_models;
+          const planFilteredModels = availableModels.filter(model => 
+            allowedModels.includes(model.name)
+          );
+          
+          console.log('🔒 User plan:', userLimitsAndUsage.user.plan);
+          console.log('🔒 Allowed models for plan:', allowedModels);
+          console.log('🔒 Plan-filtered available models:', planFilteredModels.map(m => `${m.name} (${m.provider})`));
+          
+          availableModels = planFilteredModels;
+        }
+      } catch (error) {
+        console.error('❌ Error filtering models by plan:', error);
+        // Continue with all available models if plan filtering fails
+      }
+    }
 
     if (availableModels.length === 0) {
       console.error('❌ No models available after filtering');

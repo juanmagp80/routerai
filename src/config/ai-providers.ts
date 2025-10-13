@@ -4,7 +4,7 @@ export const AI_PROVIDERS: Record<string, AIProvider> = {
   openai: {
     name: 'OpenAI',
     baseUrl: 'https://api.openai.com/v1',
-    models: ['gpt-4', 'gpt-4-turbo', 'gpt-3.5-turbo'],
+    models: ['gpt-4', 'gpt-4-turbo', 'gpt-4o-mini', 'gpt-3.5-turbo'],
     costPer1kTokens: {
       input: 0.03,
       output: 0.06
@@ -63,6 +63,14 @@ export const MODEL_CONFIGS: ModelConfig[] = [
     maxTokens: 4096,
     costPer1kTokens: { input: 0.01, output: 0.03 },
     priority: 2,
+    available: !!process.env.OPENAI_API_KEY
+  },
+  {
+    name: 'gpt-4o-mini',
+    provider: 'openai',
+    maxTokens: 16384,
+    costPer1kTokens: { input: 0.00015, output: 0.0006 },
+    priority: 4,
     available: !!process.env.OPENAI_API_KEY
   },
   {
