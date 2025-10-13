@@ -100,7 +100,7 @@ export default function UsersPage() {
   const loadUsers = async () => {
     try {
       setIsLoading(true);
-      
+
       // Load users
       const usersResponse = await fetch('/api/admin/users');
       const usersData = await usersResponse.json();
@@ -112,7 +112,7 @@ export default function UsersPage() {
       if (usersResponse.ok) {
         setAccessDenied(false);
         setUsers(usersData.users || []);
-        
+
         // If API returned debug_active_users (server-side), populate demoUserIds
         const dbg = usersData.debug_active_users as Array<{ id: string }> | undefined;
         if (dbg && dbg.length > 0) {
@@ -178,14 +178,14 @@ export default function UsersPage() {
           department: '',
           sendInvite: true,
         });
-        
+
         // Show appropriate success message
         if (createData.sendInvite) {
           alert(`Invitation sent successfully to ${createData.email}. The user will receive an email to accept the invitation.`);
         } else {
           alert('User created successfully');
         }
-        
+
         await loadUsers();
       } else {
         alert(result.error || 'Error creating user');
@@ -345,7 +345,7 @@ export default function UsersPage() {
           >
             <svg className="fill-current h-4 w-4" role="button" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
               <title>Close</title>
-              <path d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z"/>
+              <path d="M14.348 14.849a1.2 1.2 0 0 1-1.697 0L10 11.819l-2.651 3.029a1.2 1.2 0 1 1-1.697-1.697l2.758-3.15-2.759-3.152a1.2 1.2 0 1 1 1.697-1.697L10 8.183l2.651-3.031a1.2 1.2 0 1 1 1.697 1.697l-2.758 3.152 2.758 3.15a1.2 1.2 0 0 1 0 1.698z" />
             </svg>
           </span>
         </div>
@@ -463,7 +463,7 @@ export default function UsersPage() {
                                   role: 'user'
                                 })
                               });
-                              
+
                               if (response.ok) {
                                 await loadUsers(); // Reload to update resend count
                                 setMessage('Invitación reenviada exitosamente');

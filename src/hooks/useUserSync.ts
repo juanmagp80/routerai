@@ -44,7 +44,7 @@ export function useUserSync() {
                         // Obtener límites del plan free para nuevos usuarios
                         const { PlanLimitsService } = await import('@/lib/plan-limits-service');
                         const freePlanLimits = await PlanLimitsService.getPlanLimits('free');
-                        
+
                         // Crear nuevo usuario en Supabase con límites correctos del plan
                         const userData = {
                             id: clerkUser.id,

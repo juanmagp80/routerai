@@ -1,5 +1,5 @@
-import { Database } from './database.types'
-import { supabase } from './supabase'
+import { Database } from './database.types';
+import { supabase } from './supabase';
 
 type ApiKey = Database['public']['Tables']['api_keys']['Row']
 type ApiKeyInsert = Database['public']['Tables']['api_keys']['Insert']
@@ -8,13 +8,13 @@ export class ApiKeyService {
   static async getApiKeysByUserId(userId: string): Promise<ApiKey[]> {
     // Primero intentar buscar el usuario real por clerk_user_id
     let realUserId = userId;
-    
+
     const { data: user } = await supabase
       .from('users')
       .select('id')
       .eq('clerk_user_id', userId)
       .single()
-    
+
     if (user) {
       realUserId = user.id;
     }
@@ -38,14 +38,14 @@ export class ApiKeyService {
   static async createApiKey(apiKeyData: ApiKeyInsert): Promise<ApiKey | null> {
     // Si el user_id parece ser un Clerk ID, convertirlo al ID real
     let realUserId: string = apiKeyData.user_id;
-    
+
     if (apiKeyData.user_id?.startsWith('user_')) {
       const { data: user, error: userError } = await supabase
         .from('users')
         .select('id')
         .eq('clerk_user_id', apiKeyData.user_id)
         .single()
-      
+
       if (user && user.id) {
         realUserId = user.id;
       } else {
@@ -74,14 +74,14 @@ export class ApiKeyService {
   static async deleteApiKey(id: string, userId: string): Promise<boolean> {
     // Si el userId parece ser un Clerk ID, convertirlo al ID real
     let realUserId = userId;
-    
+
     if (userId?.startsWith('user_')) {
       const { data: user } = await supabase
         .from('users')
         .select('id')
         .eq('clerk_user_id', userId)
         .single()
-      
+
       if (user) {
         realUserId = user.id;
       }

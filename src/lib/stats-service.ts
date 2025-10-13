@@ -55,7 +55,7 @@ export class StatsService {
             // Para estadísticas específicas del usuario, calculamos API keys activas
             let activeUserCount = 0;
             const debugList: Array<{ id: string; email?: string | null; name?: string | null; source?: string }> = [];
-            
+
             if (userId) {
                 // Para usuario específico, contar sus API keys activas
                 let realUserId = userId;
@@ -67,13 +67,13 @@ export class StatsService {
                         .single();
                     if (user) realUserId = user.id;
                 }
-                
+
                 const { data: userApiKeys } = await supabase
                     .from('api_keys')
                     .select('id')
                     .eq('user_id', realUserId)
                     .eq('is_active', true);
-                
+
                 activeUserCount = userApiKeys?.length || 0;
             } else {
                 // Lógica original para estadísticas generales
@@ -137,14 +137,14 @@ export class StatsService {
                         .single();
                     if (user) realUserId = user.id;
                 }
-                
+
                 // Obtener el plan del usuario
                 const { data: userData } = await supabase
                     .from('users')
                     .select('plan')
                     .eq('id', realUserId)
                     .single();
-                
+
                 if (userData) {
                     // Obtener los modelos permitidos para el plan
                     const { data: planData } = await supabase
@@ -152,7 +152,7 @@ export class StatsService {
                         .select('allowed_models')
                         .eq('plan_name', userData.plan)
                         .single();
-                    
+
                     if (planData && planData.allowed_models) {
                         modelsAvailable = planData.allowed_models.length;
                     }

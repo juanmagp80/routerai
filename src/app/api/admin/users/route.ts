@@ -31,7 +31,7 @@ export async function GET() {
             // If the caller isn't mapped to a users row, deny access
             return NextResponse.json({ error: 'Forbidden: user not found in application database' }, { status: 403 });
         }
-        
+
         const caller = callerRows as { id: string; company: string; role: string; email: string; clerk_user_id: string };
 
         // Only list users within the same company as the caller (multi-tenant isolation)

@@ -78,13 +78,13 @@ export default function ApiConsolePage() {
       // Usuarios FREE pueden usar modelos económicos específicos
       const allowedFreeModels = [
         'gpt-3.5-turbo',
-        'gpt-4o-mini', 
+        'gpt-4o-mini',
         'claude-3-haiku',
         'gemini-2.0-flash'
       ];
-      
+
       return availableModels.filter(model =>
-        allowedFreeModels.some(allowed => 
+        allowedFreeModels.some(allowed =>
           model.name.toLowerCase().includes(allowed.toLowerCase()) ||
           model.name.toLowerCase() === allowed.toLowerCase()
         )

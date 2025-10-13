@@ -149,7 +149,7 @@ export async function GET() {
         const currentMonth = new Date()
         const lastMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 1)
         const lastMonthEnd = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 0)
-        
+
         // Obtener datos del mes anterior del usuario para comparación
         const [
             lastMonthRequestsResult,
@@ -161,7 +161,7 @@ export async function GET() {
                 .eq('user_id', dbUserId)
                 .gte('created_at', lastMonth.toISOString())
                 .lte('created_at', lastMonthEnd.toISOString()),
-            
+
             supabase
                 .from('api_keys')
                 .select('id', { count: 'exact' })
@@ -172,16 +172,16 @@ export async function GET() {
 
         const lastMonthRequests = lastMonthRequestsResult.data?.reduce((sum, record) => sum + (record.requests_count || 0), 0) || 0
         const lastMonthApiKeys = lastMonthApiKeysResult.count || 0
-        
+
         // Calcular crecimiento real del usuario
         const requestsGrowth = lastMonthRequests > 0 ? Math.round(((totalRequests - lastMonthRequests) / lastMonthRequests) * 100 * 100) / 100 : 0
         const apiKeysGrowth = lastMonthApiKeys > 0 ? Math.round(((totalApiKeys - lastMonthApiKeys) / lastMonthApiKeys) * 100 * 100) / 100 : 0
-        
+
         // Para un usuario individual, no calculamos revenue global
         // En su lugar, mostramos si es usuario premium o no
         const userRevenue = userPlan !== 'free' ? 29 : 0 // $29 si es premium, $0 si es free
         const planUpgradeDate = userPlan !== 'free' ? userCreatedAt : null
-        
+
         const analyticsData = {
             totalRequests,
             totalUsers: 1, // Solo cuenta el usuario actual

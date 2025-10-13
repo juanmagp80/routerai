@@ -6,10 +6,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useUserSync } from "@/hooks/useUserSync";
 import { DashboardStats, StatsService } from "@/lib/stats-service";
+import { useUser } from "@clerk/nextjs";
 import { Activity, BarChart3, Clock, Cpu, Eye, Key, Plus, Settings, TrendingUp, Users, Zap } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { useUser } from "@clerk/nextjs";
 
 interface UsageData {
   currentPlan: string;
@@ -457,11 +457,11 @@ export default function AdminDashboard() {
                 variant="outline"
                 onClick={() => {
                   try {
-                    if (stats && (stats as {debug_active_users?: unknown}).debug_active_users) {
+                    if (stats && (stats as { debug_active_users?: unknown }).debug_active_users) {
                       // eslint-disable-next-line no-console
                       console.groupCollapsed('Stats Debug: active users (manual)');
                       // eslint-disable-next-line no-console
-                      console.table((stats as {debug_active_users: unknown}).debug_active_users);
+                      console.table((stats as { debug_active_users: unknown }).debug_active_users);
                       // eslint-disable-next-line no-console
                       console.groupEnd();
                     } else {

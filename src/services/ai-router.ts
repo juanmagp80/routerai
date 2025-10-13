@@ -152,17 +152,17 @@ export class AIRouterService {
       try {
         const { PlanLimitsService } = await import('@/lib/plan-limits-service');
         const userLimitsAndUsage = await PlanLimitsService.getUserLimitsAndUsage(request.userId);
-        
+
         if (userLimitsAndUsage) {
           const allowedModels = userLimitsAndUsage.limits.allowed_models;
-          const planFilteredModels = availableModels.filter(model => 
+          const planFilteredModels = availableModels.filter(model =>
             allowedModels.includes(model.name)
           );
-          
+
           console.log('🔒 User plan:', userLimitsAndUsage.user.plan);
           console.log('🔒 Allowed models for plan:', allowedModels);
           console.log('🔒 Plan-filtered available models:', planFilteredModels.map(m => `${m.name} (${m.provider})`));
-          
+
           availableModels = planFilteredModels;
         }
       } catch (error) {

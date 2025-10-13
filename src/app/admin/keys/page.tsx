@@ -390,7 +390,7 @@ export default function ApiKeysPage() {
                   try {
                     const response = await fetch('/api/admin/real-sync', { method: 'POST' });
                     const result = await response.json();
-                    
+
                     if (result.success) {
                       alert('Cuenta sincronizada exitosamente');
                       window.location.reload();

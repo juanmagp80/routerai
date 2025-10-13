@@ -67,7 +67,7 @@ export class PlanLimitsService {
                 .select('id, plan')
                 .eq('id', userId)
                 .single()
-            
+
             user = directUser
             userError = directError
         }
@@ -122,7 +122,7 @@ export class PlanLimitsService {
                 .select('id, plan, monthly_requests_used, last_reset_date, free_trial_expires_at, is_active')
                 .eq('id', userId)
                 .single()
-            
+
             user = directUser
             userError = directError
         }
@@ -202,7 +202,7 @@ export class PlanLimitsService {
                     .select('id, monthly_requests_used')
                     .eq('id', userId)
                     .single()
-                
+
                 currentUser = directUser
                 fetchError = directError
             }
@@ -250,7 +250,7 @@ export class PlanLimitsService {
                 .select('plan')
                 .eq('id', userId)
                 .single()
-            
+
             user = directUser
             userError = directError
         }
@@ -364,7 +364,7 @@ export class PlanLimitsService {
                 .select('id, plan, monthly_requests_used, last_reset_date, free_trial_expires_at, is_active, created_at')
                 .eq('id', userId)
                 .single()
-            
+
             user = directUser
             userError = directError
         }
