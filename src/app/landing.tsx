@@ -4,13 +4,11 @@ import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import {
   Activity,
-  AlertTriangle,
   ArrowRight,
   BarChart3,
   Brain,
   CheckCircle,
   Code,
-  DollarSign,
   Network,
   RefreshCw,
   Target,
@@ -50,10 +48,10 @@ const Navigation = () => {
           >
             {/* Logo Icon - Minimal and Modern */}
             <div className="relative group">
-              <svg 
-                width="40" 
-                height="40" 
-                viewBox="0 0 40 40" 
+              <svg
+                width="40"
+                height="40"
+                viewBox="0 0 40 40"
                 className="transition-all duration-300"
               >
                 <defs>
@@ -63,72 +61,72 @@ const Navigation = () => {
                     <stop offset="100%" stopColor="#3b82f6" />
                   </linearGradient>
                   <filter id="glow">
-                    <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
-                    <feMerge> 
-                      <feMergeNode in="coloredBlur"/>
-                      <feMergeNode in="SourceGraphic"/>
+                    <feGaussianBlur stdDeviation="2" result="coloredBlur" />
+                    <feMerge>
+                      <feMergeNode in="coloredBlur" />
+                      <feMergeNode in="SourceGraphic" />
                     </feMerge>
                   </filter>
                 </defs>
-                
+
                 {/* Main routing symbol */}
                 <g filter="url(#glow)">
                   {/* Central hub */}
-                  <circle 
-                    cx="20" 
-                    cy="20" 
-                    r="4" 
+                  <circle
+                    cx="20"
+                    cy="20"
+                    r="4"
                     fill="url(#logoGradient)"
                     className="animate-pulse"
                   />
-                  
+
                   {/* Connection lines */}
-                  <path 
-                    d="M20,8 L20,12 M32,20 L28,20 M20,32 L20,28 M8,20 L12,20" 
-                    stroke="url(#logoGradient)" 
-                    strokeWidth="2.5" 
+                  <path
+                    d="M20,8 L20,12 M32,20 L28,20 M20,32 L20,28 M8,20 L12,20"
+                    stroke="url(#logoGradient)"
+                    strokeWidth="2.5"
                     strokeLinecap="round"
                     className="opacity-80"
                   />
-                  
+
                   {/* Neural network nodes */}
                   <circle cx="20" cy="8" r="2.5" fill="url(#logoGradient)" className="opacity-90" />
                   <circle cx="32" cy="20" r="2.5" fill="url(#logoGradient)" className="opacity-90" />
                   <circle cx="20" cy="32" r="2.5" fill="url(#logoGradient)" className="opacity-90" />
                   <circle cx="8" cy="20" r="2.5" fill="url(#logoGradient)" className="opacity-90" />
-                  
+
                   {/* Connecting arcs for AI intelligence */}
-                  <path 
-                    d="M14,14 Q20,8 26,14" 
-                    stroke="url(#logoGradient)" 
-                    strokeWidth="1.5" 
-                    fill="none" 
+                  <path
+                    d="M14,14 Q20,8 26,14"
+                    stroke="url(#logoGradient)"
+                    strokeWidth="1.5"
+                    fill="none"
                     strokeLinecap="round"
                     className="opacity-60"
                   />
-                  <path 
-                    d="M26,26 Q20,32 14,26" 
-                    stroke="url(#logoGradient)" 
-                    strokeWidth="1.5" 
-                    fill="none" 
+                  <path
+                    d="M26,26 Q20,32 14,26"
+                    stroke="url(#logoGradient)"
+                    strokeWidth="1.5"
+                    fill="none"
                     strokeLinecap="round"
                     className="opacity-60"
                   />
                 </g>
-                
+
                 {/* Subtle pulse effect */}
-                <circle 
-                  cx="20" 
-                  cy="20" 
-                  r="3" 
-                  fill="none" 
-                  stroke="url(#logoGradient)" 
-                  strokeWidth="1" 
+                <circle
+                  cx="20"
+                  cy="20"
+                  r="3"
+                  fill="none"
+                  stroke="url(#logoGradient)"
+                  strokeWidth="1"
                   className="animate-ping opacity-30"
                 />
               </svg>
             </div>
-            
+
             {/* Brand name */}
             <div className="flex items-center">
               <span className="text-2xl font-bold text-white tracking-tight bg-gradient-to-r from-white via-slate-100 to-emerald-100 bg-clip-text text-transparent">
@@ -191,14 +189,14 @@ const HeroSection = () => {
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-r from-emerald-500/20 to-cyan-500/20 rounded-full blur-3xl animate-pulse"></div>
         <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-gradient-to-r from-purple-500/10 to-emerald-500/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-r from-emerald-500/5 to-cyan-500/5 rounded-full blur-3xl"></div>
-        
+
         {/* Grid pattern */}
         <div className="absolute inset-0 opacity-40">
           <div className="w-full h-full" style={{
             backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2310b981' fill-opacity='0.05'%3E%3Ccircle cx='30' cy='30' r='1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
           }}></div>
         </div>
-        
+
         {/* Animated circuit lines */}
         <svg className="w-full h-full opacity-30">
           <defs>
@@ -271,8 +269,8 @@ const HeroSection = () => {
 
             <div className="flex flex-col sm:flex-row gap-6 mb-16">
               <motion.button
-                whileHover={{ 
-                  scale: 1.05, 
+                whileHover={{
+                  scale: 1.05,
                   boxShadow: "0 0 40px rgba(16, 185, 129, 0.6)",
                   background: "linear-gradient(135deg, #10b981, #06d6a0)"
                 }}
@@ -285,7 +283,7 @@ const HeroSection = () => {
 
               <motion.a
                 href="/docs"
-                whileHover={{ 
+                whileHover={{
                   scale: 1.05,
                   borderColor: "#10b981",
                   color: "#10b981",
@@ -980,7 +978,7 @@ const PricingSection = () => {
               {plan.badge && (
                 <div className={cn(
                   "absolute -top-3 left-1/2 transform -translate-x-1/2 px-4 py-1 rounded-full text-sm font-bold",
-                  plan.badge === "Most Popular" 
+                  plan.badge === "Most Popular"
                     ? "bg-slate-900 text-emerald-400"
                     : "bg-blue-600 text-white"
                 )}>
@@ -1042,10 +1040,10 @@ const PricingSection = () => {
                     : "bg-emerald-500 text-slate-900 hover:bg-emerald-400"
                 )}
               >
-                {plan.name === "FREE" ? "Start Free" : 
-                 plan.name === "STARTER" ? "Get Started" : 
-                 plan.name === "PRO" ? "Start Pro" : 
-                 "Contact Sales"}
+                {plan.name === "FREE" ? "Start Free" :
+                  plan.name === "STARTER" ? "Get Started" :
+                    plan.name === "PRO" ? "Start Pro" :
+                      "Contact Sales"}
               </motion.button>
             </motion.div>
           ))}
