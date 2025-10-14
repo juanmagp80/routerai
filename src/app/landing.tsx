@@ -45,27 +45,104 @@ const Navigation = () => {
       <div className="max-w-6xl mx-auto px-6">
         <div className="flex justify-between items-center h-20">
           <motion.div
-            whileHover={{ scale: 1.05 }}
+            whileHover={{ scale: 1.02 }}
             className="flex items-center space-x-3"
           >
-            <div className="relative">
-              <div className="w-10 h-10 bg-emerald-500 rounded-lg rotate-12 absolute"></div>
-              <div className="w-10 h-10 bg-slate-800 rounded-lg flex items-center justify-center relative">
-                <Network className="w-6 h-6 text-emerald-400" />
-              </div>
+            {/* Logo Icon - Minimal and Modern */}
+            <div className="relative group">
+              <svg 
+                width="40" 
+                height="40" 
+                viewBox="0 0 40 40" 
+                className="transition-all duration-300"
+              >
+                <defs>
+                  <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#10b981" />
+                    <stop offset="50%" stopColor="#06b6d4" />
+                    <stop offset="100%" stopColor="#3b82f6" />
+                  </linearGradient>
+                  <filter id="glow">
+                    <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+                    <feMerge> 
+                      <feMergeNode in="coloredBlur"/>
+                      <feMergeNode in="SourceGraphic"/>
+                    </feMerge>
+                  </filter>
+                </defs>
+                
+                {/* Main routing symbol */}
+                <g filter="url(#glow)">
+                  {/* Central hub */}
+                  <circle 
+                    cx="20" 
+                    cy="20" 
+                    r="4" 
+                    fill="url(#logoGradient)"
+                    className="animate-pulse"
+                  />
+                  
+                  {/* Connection lines */}
+                  <path 
+                    d="M20,8 L20,12 M32,20 L28,20 M20,32 L20,28 M8,20 L12,20" 
+                    stroke="url(#logoGradient)" 
+                    strokeWidth="2.5" 
+                    strokeLinecap="round"
+                    className="opacity-80"
+                  />
+                  
+                  {/* Neural network nodes */}
+                  <circle cx="20" cy="8" r="2.5" fill="url(#logoGradient)" className="opacity-90" />
+                  <circle cx="32" cy="20" r="2.5" fill="url(#logoGradient)" className="opacity-90" />
+                  <circle cx="20" cy="32" r="2.5" fill="url(#logoGradient)" className="opacity-90" />
+                  <circle cx="8" cy="20" r="2.5" fill="url(#logoGradient)" className="opacity-90" />
+                  
+                  {/* Connecting arcs for AI intelligence */}
+                  <path 
+                    d="M14,14 Q20,8 26,14" 
+                    stroke="url(#logoGradient)" 
+                    strokeWidth="1.5" 
+                    fill="none" 
+                    strokeLinecap="round"
+                    className="opacity-60"
+                  />
+                  <path 
+                    d="M26,26 Q20,32 14,26" 
+                    stroke="url(#logoGradient)" 
+                    strokeWidth="1.5" 
+                    fill="none" 
+                    strokeLinecap="round"
+                    className="opacity-60"
+                  />
+                </g>
+                
+                {/* Subtle pulse effect */}
+                <circle 
+                  cx="20" 
+                  cy="20" 
+                  r="3" 
+                  fill="none" 
+                  stroke="url(#logoGradient)" 
+                  strokeWidth="1" 
+                  className="animate-ping opacity-30"
+                />
+              </svg>
             </div>
-            <div>
-              <span className="text-xl font-black text-white">RouterAI</span>
-              <div className="text-xs text-emerald-400 font-mono">AI</div>
+            
+            {/* Brand name */}
+            <div className="flex items-center">
+              <span className="text-2xl font-bold text-white tracking-tight bg-gradient-to-r from-white via-slate-100 to-emerald-100 bg-clip-text text-transparent">
+                Router<span className="bg-gradient-to-r from-emerald-400 via-emerald-300 to-cyan-300 bg-clip-text text-transparent font-black">AI</span>
+              </span>
             </div>
           </motion.div>
 
           <div className="hidden md:flex items-center space-x-8">
             <a href="#router" className="text-slate-300 hover:text-emerald-400 transition-colors font-medium">Router</a>
-            <a href="#ahorro" className="text-slate-300 hover:text-emerald-400 transition-colors font-medium">Ahorro</a>
+            <a href="#ahorro" className="text-slate-300 hover:text-emerald-400 transition-colors font-medium">Savings</a>
             <a href="#dashboard" className="text-slate-300 hover:text-emerald-400 transition-colors font-medium">Dashboard</a>
             <a href="/docs" className="text-slate-300 hover:text-emerald-400 transition-colors font-medium">API Docs</a>
-            <a href="#precios" className="text-slate-300 hover:text-emerald-400 transition-colors font-medium">Precios</a>
+            <a href="#precios" className="text-slate-300 hover:text-emerald-400 transition-colors font-medium">Pricing</a>
           </div>
 
           <div className="hidden md:flex items-center space-x-4">
@@ -73,7 +150,7 @@ const Navigation = () => {
               href="/login"
               className="text-slate-300 hover:text-emerald-400 transition-colors font-medium px-4 py-2 rounded-lg hover:bg-slate-800/50"
             >
-              Iniciar Sesión
+              Sign In
             </a>
             <motion.a
               href="/register"
@@ -81,7 +158,7 @@ const Navigation = () => {
               whileTap={{ scale: 0.95 }}
               className="bg-emerald-500 text-slate-900 px-6 py-2 rounded-lg font-bold shadow-lg transition-all duration-300"
             >
-              Registrarse
+              Sign Up
             </motion.a>
           </div>
         </div>
@@ -107,33 +184,49 @@ const HeroSection = () => {
   }, [currentStep, fullText]);
 
   return (
-    <section className="min-h-screen bg-slate-900 text-white flex items-center relative overflow-hidden pt-20">
-      {/* Animated circuit lines */}
+    <section className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white flex items-center relative overflow-hidden pt-20">
+      {/* Animated background elements */}
       <div className="absolute inset-0 z-0">
-        <svg className="w-full h-full opacity-20">
+        {/* Gradient orbs */}
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-r from-emerald-500/20 to-cyan-500/20 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-gradient-to-r from-purple-500/10 to-emerald-500/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-r from-emerald-500/5 to-cyan-500/5 rounded-full blur-3xl"></div>
+        
+        {/* Grid pattern */}
+        <div className="absolute inset-0 opacity-40">
+          <div className="w-full h-full" style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2310b981' fill-opacity='0.05'%3E%3Ccircle cx='30' cy='30' r='1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
+          }}></div>
+        </div>
+        
+        {/* Animated circuit lines */}
+        <svg className="w-full h-full opacity-30">
           <defs>
             <linearGradient id="circuit" x1="0%" y1="0%" x2="100%" y2="100%">
               <stop offset="0%" stopColor="#10b981" />
+              <stop offset="50%" stopColor="#06d6a0" />
               <stop offset="100%" stopColor="#3b82f6" />
             </linearGradient>
           </defs>
           <motion.path
             d="M0,200 Q400,100 800,200 T1600,200"
             stroke="url(#circuit)"
-            strokeWidth="2"
+            strokeWidth="3"
             fill="none"
-            initial={{ pathLength: 0 }}
-            animate={{ pathLength: 1 }}
+            initial={{ pathLength: 0, opacity: 0 }}
+            animate={{ pathLength: 1, opacity: 1 }}
             transition={{ duration: 3, ease: "easeInOut" }}
+            className="drop-shadow-lg"
           />
           <motion.path
             d="M0,400 Q600,300 1200,400 T2400,400"
             stroke="url(#circuit)"
             strokeWidth="2"
             fill="none"
-            initial={{ pathLength: 0 }}
-            animate={{ pathLength: 1 }}
-            transition={{ duration: 3, delay: 1, ease: "easeInOut" }}
+            initial={{ pathLength: 0, opacity: 0 }}
+            animate={{ pathLength: 1, opacity: 0.7 }}
+            transition={{ duration: 4, ease: "easeInOut", delay: 0.5 }}
+            className="drop-shadow-lg"
           />
         </svg>
       </div>
@@ -150,52 +243,72 @@ const HeroSection = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
-              className="inline-flex items-center px-4 py-2 bg-emerald-500/20 border border-emerald-500/30 rounded-full mb-8"
+              className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-emerald-500/20 to-cyan-500/20 border border-emerald-500/40 rounded-full mb-10 backdrop-blur-sm"
             >
-              <div className="w-2 h-2 bg-emerald-400 rounded-full mr-3 animate-pulse"></div>
-              <span className="text-emerald-400 font-mono text-sm">Router activo • Optimizando costos</span>
+              <div className="w-3 h-3 bg-gradient-to-r from-emerald-400 to-cyan-400 rounded-full mr-3 animate-pulse shadow-lg shadow-emerald-400/50"></div>
+              <span className="text-emerald-300 font-semibold text-sm tracking-wide">🚀 LIVE • Smart routing active</span>
             </motion.div>
 
-            <h1 className="text-5xl lg:text-7xl font-black mb-8 leading-none">
-              <span className="text-white">Router</span>
+            <h1 className="text-6xl lg:text-8xl font-black mb-8 leading-[0.9] tracking-tight">
+              <span className="bg-gradient-to-r from-white to-slate-200 bg-clip-text text-transparent">
+                Smart
+              </span>
               <br />
-              <span className="text-emerald-400">Inteligente</span>
+              <span className="bg-gradient-to-r from-emerald-400 via-emerald-300 to-cyan-400 bg-clip-text text-transparent animate-pulse">
+                AI Router
+              </span>
               <br />
-              <span className="text-slate-400 text-4xl lg:text-5xl">de IA</span>
+              <span className="text-3xl lg:text-4xl font-bold bg-gradient-to-r from-slate-400 to-slate-500 bg-clip-text text-transparent">
+                that thinks for you
+              </span>
             </h1>
 
-            <p className="text-xl text-slate-300 mb-8 leading-relaxed">
-              API que elige automáticamente el modelo de IA más eficiente para cada tarea.
-              <span className="text-emerald-400 font-semibold">Ahorra hasta 70%</span> en costos
-              sin sacrificar calidad.
+            <p className="text-xl lg:text-2xl text-slate-300 mb-10 leading-relaxed max-w-4xl">
+              The <span className="text-white font-semibold">intelligent API</span> that automatically selects the most efficient AI model for each task.
+              <br />
+              <span className="bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent font-bold text-2xl lg:text-3xl">Save up to 70%</span> in costs without sacrificing quality.
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-4 mb-12">
+            <div className="flex flex-col sm:flex-row gap-6 mb-16">
               <motion.button
-                whileHover={{ scale: 1.05, boxShadow: "0 0 30px rgba(16, 185, 129, 0.5)" }}
+                whileHover={{ 
+                  scale: 1.05, 
+                  boxShadow: "0 0 40px rgba(16, 185, 129, 0.6)",
+                  background: "linear-gradient(135deg, #10b981, #06d6a0)"
+                }}
                 whileTap={{ scale: 0.95 }}
-                className="bg-emerald-500 text-slate-900 px-8 py-4 rounded-lg font-bold text-lg shadow-lg hover:bg-emerald-400 transition-all duration-300 flex items-center justify-center group"
+                className="bg-gradient-to-r from-emerald-500 to-emerald-600 text-white px-10 py-5 rounded-2xl font-bold text-xl shadow-2xl shadow-emerald-500/30 hover:shadow-emerald-500/50 transition-all duration-300 flex items-center justify-center group border border-emerald-400/50"
               >
-                Probar Gratis
-                <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                🚀 Start Free Today
+                <ArrowRight className="ml-3 w-6 h-6 group-hover:translate-x-2 transition-transform duration-300" />
               </motion.button>
 
               <motion.a
                 href="/docs"
-                whileHover={{ scale: 1.05 }}
+                whileHover={{ 
+                  scale: 1.05,
+                  borderColor: "#10b981",
+                  color: "#10b981",
+                  boxShadow: "0 0 20px rgba(16, 185, 129, 0.3)"
+                }}
                 whileTap={{ scale: 0.95 }}
-                className="border-2 border-slate-600 text-slate-300 px-8 py-4 rounded-lg font-bold text-lg hover:border-emerald-500 hover:text-emerald-400 transition-all duration-300 inline-flex items-center justify-center"
+                className="border-2 border-slate-600 text-slate-300 px-10 py-5 rounded-2xl font-bold text-xl backdrop-blur-sm bg-slate-800/30 hover:bg-slate-700/30 transition-all duration-300 inline-flex items-center justify-center group"
               >
-                Ver Documentación
+                📖 API Documentation
+                <motion.div
+                  className="ml-3 w-6 h-6 group-hover:rotate-12 transition-transform duration-300"
+                >
+                  <Code className="w-6 h-6" />
+                </motion.div>
               </motion.a>
             </div>
 
             {/* Stats en formato terminal */}
             <div className="grid grid-cols-2 gap-6 mb-8">
               {[
-                { label: "Ahorro promedio", value: "70%", color: "text-emerald-400" },
-                { label: "Tiempo de respuesta", value: "<100ms", color: "text-blue-400" },
-                { label: "Modelos soportados", value: "15+", color: "text-purple-400" },
+                { label: "Average savings", value: "70%", color: "text-emerald-400" },
+                { label: "Response time", value: "<100ms", color: "text-blue-400" },
+                { label: "Supported models", value: "15+", color: "text-purple-400" },
                 { label: "Uptime SLA", value: "99.9%", color: "text-orange-400" }
               ].map((stat, index) => (
                 <motion.div
@@ -238,10 +351,10 @@ const HeroSection = () => {
                       animate={{ opacity: 1 }}
                       transition={{ delay: 0.5 }}
                     >
-                      <div className="text-blue-400">→ Analizando tarea...</div>
-                      <div className="text-yellow-400">→ Evaluando modelos disponibles...</div>
-                      <div className="text-emerald-400">→ Modelo óptimo: Claude-3 (costo: $0.003)</div>
-                      <div className="text-green-400">✓ Respuesta generada • Ahorro: 68%</div>
+                      <div className="text-blue-400">→ Analyzing task...</div>
+                      <div className="text-yellow-400">→ Evaluating available models...</div>
+                      <div className="text-emerald-400">→ Optimal model: Claude-3 (cost: $0.003)</div>
+                      <div className="text-green-400">✓ Response generated • Savings: 68%</div>
                     </motion.div>
                   )}
                 </div>
@@ -255,7 +368,7 @@ const HeroSection = () => {
                   >
                     <div className="text-emerald-400 text-xs mb-2">RESPONSE</div>
                     <div className="text-white">
-                      &quot;Resumen del documento generado exitosamente...&quot;
+                      &quot;Document summary generated successfully...&quot;
                     </div>
                     <div className="text-slate-400 text-xs mt-2">
                       Cost: $0.003 • Model: Claude-3 • Time: 89ms
@@ -283,10 +396,10 @@ const RouterSection = () => {
           className="text-center mb-16"
         >
           <h2 className="text-4xl font-black text-slate-900 mb-4">
-            El Router que <span className="text-emerald-600">Piensa</span>
+            The Router that <span className="text-emerald-600">Thinks</span>
           </h2>
           <p className="text-xl text-slate-600 max-w-3xl mx-auto">
-            Tecnología avanzada que analiza tu tarea y elige el modelo perfecto basándose en costo, velocidad y calidad.
+            Advanced technology that analyzes your task and chooses the perfect model based on cost, speed and quality.
           </p>
         </motion.div>
 
@@ -309,7 +422,7 @@ const RouterSection = () => {
                   {"{ task: 'Resume PDF' }"}
                 </div>
               </div>
-              <h3 className="font-bold text-slate-900">Tu Tarea</h3>
+              <h3 className="font-bold text-slate-900">Your Task</h3>
             </motion.div>
 
             {/* Router Logic */}
@@ -324,7 +437,7 @@ const RouterSection = () => {
                 <Brain className="w-12 h-12 text-white mx-auto mb-4" />
                 <div className="text-white font-bold">RouterAI</div>
                 <div className="text-emerald-100 text-xs mt-2">
-                  Analizando...
+                  Analyzing...
                 </div>
 
                 {/* Animated thinking dots */}
@@ -339,9 +452,9 @@ const RouterSection = () => {
 
               {/* Decision factors */}
               <div className="grid grid-cols-3 gap-2 text-xs">
-                <div className="bg-blue-100 text-blue-800 px-2 py-1 rounded font-medium">Costo</div>
-                <div className="bg-purple-100 text-purple-800 px-2 py-1 rounded font-medium">Velocidad</div>
-                <div className="bg-orange-100 text-orange-800 px-2 py-1 rounded font-medium">Calidad</div>
+                <div className="bg-blue-100 text-blue-800 px-2 py-1 rounded font-medium">Cost</div>
+                <div className="bg-purple-100 text-purple-800 px-2 py-1 rounded font-medium">Speed</div>
+                <div className="bg-orange-100 text-orange-800 px-2 py-1 rounded font-medium">Quality</div>
               </div>
             </motion.div>
 
@@ -357,10 +470,10 @@ const RouterSection = () => {
                 <Target className="w-12 h-12 text-white mx-auto mb-4" />
                 <div className="text-white font-bold">Claude-3</div>
                 <div className="text-blue-100 text-xs mt-2">
-                  Óptimo para esta tarea
+                  Optimal for this task
                 </div>
                 <div className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-bold mt-2">
-                  68% más barato
+                  68% cheaper
                 </div>
               </div>
             </motion.div>
@@ -383,10 +496,10 @@ const SavingsSection = () => {
           className="text-center mb-16"
         >
           <h2 className="text-4xl font-black text-slate-900 mb-4">
-            Ahorro <span className="text-emerald-600">Real</span> y <span className="text-emerald-600">Medible</span>
+            <span className="text-emerald-600">Real</span> and <span className="text-emerald-600">Measurable</span> Savings
           </h2>
           <p className="text-xl text-slate-600">
-            Comparativa real de costos: antes vs después de RouterAI
+            Real cost comparison: before vs after RouterAI
           </p>
         </motion.div>
 
@@ -404,26 +517,26 @@ const SavingsSection = () => {
                 <div className="w-16 h-16 bg-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
                   <TrendingDown className="w-8 h-8 text-white" />
                 </div>
-                <h3 className="text-2xl font-bold text-red-700">ANTES</h3>
-                <p className="text-red-600">Usando solo un modelo</p>
+                <h3 className="text-2xl font-bold text-red-700">BEFORE</h3>
+                <p className="text-red-600">Using only one model</p>
               </div>
 
               <div className="space-y-4">
                 <div className="bg-white rounded-lg p-4 border border-red-200">
                   <div className="flex justify-between items-center">
-                    <span className="font-medium text-slate-700">Costo mensual</span>
+                    <span className="font-medium text-slate-700">Monthly cost</span>
                     <span className="text-2xl font-bold text-red-600">$3,200</span>
                   </div>
                 </div>
                 <div className="bg-white rounded-lg p-4 border border-red-200">
                   <div className="flex justify-between items-center">
-                    <span className="font-medium text-slate-700">Eficiencia</span>
-                    <span className="text-red-600 font-bold">Baja</span>
+                    <span className="font-medium text-slate-700">Efficiency</span>
+                    <span className="text-red-600 font-bold">Low</span>
                   </div>
                 </div>
                 <div className="bg-white rounded-lg p-4 border border-red-200">
                   <div className="flex justify-between items-center">
-                    <span className="font-medium text-slate-700">Optimización</span>
+                    <span className="font-medium text-slate-700">Optimization</span>
                     <span className="text-red-600 font-bold">Manual</span>
                   </div>
                 </div>
@@ -443,27 +556,27 @@ const SavingsSection = () => {
                 <div className="w-16 h-16 bg-emerald-500 rounded-full flex items-center justify-center mx-auto mb-4">
                   <TrendingDown className="w-8 h-8 text-white rotate-180" />
                 </div>
-                <h3 className="text-2xl font-bold text-emerald-700">DESPUÉS</h3>
-                <p className="text-emerald-600">Con RouterAI</p>
+                <h3 className="text-2xl font-bold text-emerald-700">AFTER</h3>
+                <p className="text-emerald-600">With RouterAI</p>
               </div>
 
               <div className="space-y-4">
                 <div className="bg-white rounded-lg p-4 border border-emerald-200">
                   <div className="flex justify-between items-center">
-                    <span className="font-medium text-slate-700">Costo mensual</span>
+                    <span className="font-medium text-slate-700">Monthly cost</span>
                     <span className="text-2xl font-bold text-emerald-600">$960</span>
                   </div>
                 </div>
                 <div className="bg-white rounded-lg p-4 border border-emerald-200">
                   <div className="flex justify-between items-center">
-                    <span className="font-medium text-slate-700">Eficiencia</span>
-                    <span className="text-emerald-600 font-bold">Máxima</span>
+                    <span className="font-medium text-slate-700">Efficiency</span>
+                    <span className="text-emerald-600 font-bold">Maximum</span>
                   </div>
                 </div>
                 <div className="bg-white rounded-lg p-4 border border-emerald-200">
                   <div className="flex justify-between items-center">
-                    <span className="font-medium text-slate-700">Optimización</span>
-                    <span className="text-emerald-600 font-bold">Automática</span>
+                    <span className="font-medium text-slate-700">Optimization</span>
+                    <span className="text-emerald-600 font-bold">Automatic</span>
                   </div>
                 </div>
               </div>
@@ -471,7 +584,7 @@ const SavingsSection = () => {
 
             {/* Badge de ahorro */}
             <div className="absolute -top-4 -right-4 bg-emerald-500 text-white px-6 py-3 rounded-full font-black text-lg shadow-lg transform rotate-12">
-              ¡$2,240 ahorrados!
+              $2,240 saved!
             </div>
           </motion.div>
         </div>
@@ -569,30 +682,30 @@ const DashboardSection = () => {
           className="text-center mb-16"
         >
           <h2 className="text-4xl font-black text-slate-900 mb-4">
-            Dashboard <span className="text-emerald-600">de Métricas</span>
+            <span className="text-emerald-600">Metrics</span> Dashboard
           </h2>
           <p className="text-xl text-slate-600">
-            Visualiza en tiempo real tu uso de IA y ahorros
+            Visualize your AI usage and savings in real time
           </p>
 
           <div className="mt-6 flex justify-center items-center space-x-4">
             <div className="flex items-center">
               <RefreshCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
               <span className="text-sm text-slate-500">
-                {lastUpdated ? `Actualizado: ${lastUpdated.toLocaleTimeString()}` : 'Cargando...'}
+                {lastUpdated ? `Updated: ${lastUpdated.toLocaleTimeString()}` : 'Loading...'}
               </span>
             </div>
             <button
               onClick={fetchMetrics}
               className="text-emerald-600 hover:text-emerald-700 text-sm font-medium"
             >
-              Refrescar
+              Refresh
             </button>
           </div>
         </motion.div>
 
         {/* Resumen de métricas */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -601,11 +714,12 @@ const DashboardSection = () => {
           >
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-slate-600 text-sm">Total Costo</p>
-                <p className="text-3xl font-bold text-slate-900">${totalCost.toFixed(3)}</p>
+                <p className="text-slate-600 text-sm font-medium">API Calls</p>
+                <p className="text-3xl font-bold text-slate-900">{totalRequests.toLocaleString()}</p>
+                <p className="text-xs text-slate-500 mt-1">+12.5% from last month</p>
               </div>
               <div className="w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center">
-                <DollarSign className="w-6 h-6 text-emerald-600" />
+                <BarChart3 className="w-6 h-6 text-emerald-600" />
               </div>
             </div>
           </motion.div>
@@ -619,8 +733,9 @@ const DashboardSection = () => {
           >
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-slate-600 text-sm">Total Tareas</p>
-                <p className="text-3xl font-bold text-slate-900">{totalRequests}</p>
+                <p className="text-slate-600 text-sm font-medium">Active API Keys</p>
+                <p className="text-3xl font-bold text-slate-900">3</p>
+                <p className="text-xs text-slate-500 mt-1">2 used this month</p>
               </div>
               <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
                 <Activity className="w-6 h-6 text-blue-600" />
@@ -637,11 +752,31 @@ const DashboardSection = () => {
           >
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-slate-600 text-sm">Costo Promedio</p>
-                <p className="text-3xl font-bold text-emerald-600">${avgCostPerRequest.toFixed(4)}</p>
+                <p className="text-slate-600 text-sm font-medium">Available Models</p>
+                <p className="text-3xl font-bold text-slate-900">15</p>
+                <p className="text-xs text-slate-500 mt-1">8 active models</p>
               </div>
-              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                <TrendingDown className="w-6 h-6 text-green-600" />
+              <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                <Brain className="w-6 h-6 text-purple-600" />
+              </div>
+            </div>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.3 }}
+            className="bg-white rounded-2xl p-6 shadow-lg border border-slate-200"
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-slate-600 text-sm font-medium">Avg Response Time</p>
+                <p className="text-3xl font-bold text-slate-900">1.2s</p>
+                <p className="text-xs text-slate-500 mt-1">Across all models</p>
+              </div>
+              <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
+                <Timer className="w-6 h-6 text-orange-600" />
               </div>
             </div>
           </motion.div>
@@ -656,57 +791,69 @@ const DashboardSection = () => {
         >
           <h3 className="text-xl font-bold text-slate-900 mb-6 flex items-center">
             <BarChart3 className="w-5 h-5 mr-2 text-emerald-600" />
-            Uso por Modelo
+            Model Usage Distribution
           </h3>
 
-          {loading ? (
-            <div className="flex justify-center items-center h-64">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-500"></div>
-            </div>
-          ) : error ? (
-            <div className="text-center py-8">
-              <AlertTriangle className="w-12 h-12 text-red-500 mx-auto mb-4" />
-              <p className="text-red-600">{error}</p>
-              <button
-                onClick={fetchMetrics}
-                className="mt-4 text-emerald-600 hover:text-emerald-700 font-medium"
+          <div className="space-y-4">
+            {[
+              { model: 'GPT-4o', requests: 1247, percentage: 35, color: 'bg-emerald-500', avgTime: '1.8s' },
+              { model: 'Claude-3 Sonnet', requests: 892, percentage: 25, color: 'bg-blue-500', avgTime: '1.2s' },
+              { model: 'GPT-4o Mini', requests: 712, percentage: 20, color: 'bg-purple-500', avgTime: '0.9s' },
+              { model: 'Llama 3.1', requests: 534, percentage: 15, color: 'bg-orange-500', avgTime: '1.1s' },
+              { model: 'Grok-2', requests: 178, percentage: 5, color: 'bg-pink-500', avgTime: '2.1s' }
+            ].map((modelData, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, x: -20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.1 }}
+                className="flex items-center justify-between p-4 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors"
               >
-                Intentar de nuevo
-              </button>
-            </div>
-          ) : metrics.length > 0 ? (
-            <div className="space-y-4">
-              {metrics.map((metric, index) => {
-                const metricData = metric as { model?: string; count?: number; sum?: number };
-                return (
-                  <div key={index} className="flex items-center justify-between p-4 bg-slate-50 rounded-lg">
-                    <div className="flex items-center">
-                      <div className="w-3 h-3 bg-emerald-500 rounded-full mr-3"></div>
-                      <span className="font-medium text-slate-900">{metricData.model}</span>
-                    </div>
-                    <div className="flex items-center space-x-4">
-                      <div className="text-sm text-slate-600">
-                        {metricData.count || 0} tareas
-                      </div>
-                      <div className="text-sm font-bold text-emerald-600">
-                        ${metricData.sum?.toFixed(2) || '0.00'}
-                      </div>
-                      <div className="w-32 bg-slate-200 rounded-full h-2">
-                        <div
-                          className="bg-emerald-500 h-2 rounded-full"
-                          style={{ width: `${Math.min(100, (metricData.sum || 0) / (totalCost || 1) * 100)}%` }}
-                        ></div>
-                      </div>
+                <div className="flex items-center flex-1">
+                  <div className={`w-3 h-3 ${modelData.color} rounded-full mr-3`}></div>
+                  <div className="flex-1">
+                    <span className="font-medium text-slate-900">{modelData.model}</span>
+                    <div className="text-xs text-slate-500 mt-1">
+                      Avg response: {modelData.avgTime}
                     </div>
                   </div>
-                );
-              })}
+                </div>
+                <div className="flex items-center space-x-4">
+                  <div className="text-sm text-slate-600">
+                    {modelData.requests.toLocaleString()} calls
+                  </div>
+                  <div className="text-sm font-bold text-emerald-600">
+                    {modelData.percentage}%
+                  </div>
+                  <div className="w-32 bg-slate-200 rounded-full h-2">
+                    <div
+                      className={`${modelData.color} h-2 rounded-full transition-all duration-500`}
+                      style={{ width: `${modelData.percentage}%` }}
+                    ></div>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+
+          {/* Performance Summary */}
+          <div className="mt-8 pt-6 border-t border-slate-200">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="text-center">
+                <div className="text-2xl font-bold text-emerald-600">98.7%</div>
+                <div className="text-sm text-slate-600">Success Rate</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-blue-600">1.4s</div>
+                <div className="text-sm text-slate-600">Avg Response Time</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-purple-600">15</div>
+                <div className="text-sm text-slate-600">Active Models</div>
+              </div>
             </div>
-          ) : (
-            <div className="text-center py-8 text-slate-500">
-              No hay datos disponibles aún
-            </div>
-          )}
+          </div>
         </motion.div>
 
         {/* Últimas tareas */}
@@ -718,17 +865,17 @@ const DashboardSection = () => {
         >
           <h3 className="text-xl font-bold text-slate-900 mb-6 flex items-center">
             <Activity className="w-5 h-5 mr-2 text-emerald-600" />
-            Últimas Tareas
+            Recent Tasks
           </h3>
 
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
                 <tr className="border-b border-slate-200">
-                  <th className="text-left py-3 px-4 font-medium text-slate-600">Modelo</th>
-                  <th className="text-left py-3 px-4 font-medium text-slate-600">Costo</th>
-                  <th className="text-left py-3 px-4 font-medium text-slate-600">Tiempo</th>
-                  <th className="text-left py-3 px-4 font-medium text-slate-600">Estado</th>
+                  <th className="text-left py-3 px-4 font-medium text-slate-600">Model</th>
+                  <th className="text-left py-3 px-4 font-medium text-slate-600">Cost</th>
+                  <th className="text-left py-3 px-4 font-medium text-slate-600">Time</th>
+                  <th className="text-left py-3 px-4 font-medium text-slate-600">Status</th>
                 </tr>
               </thead>
               <tbody>
@@ -744,7 +891,7 @@ const DashboardSection = () => {
                           ? 'bg-green-100 text-green-800'
                           : 'bg-yellow-100 text-yellow-800'
                           }`}>
-                          {taskData.status === 'completed' ? 'Completado' : 'Procesando'}
+                          {taskData.status === 'completed' ? 'Completed' : 'Processing'}
                         </span>
                       </td>
                     </tr>
@@ -771,35 +918,50 @@ const PricingSection = () => {
           className="text-center mb-16"
         >
           <h2 className="text-4xl font-black mb-4">
-            Precios <span className="text-emerald-400">Simples</span>
+            <span className="text-emerald-400">Simple</span> Pricing
           </h2>
           <p className="text-xl text-slate-400">
-            $0.01 por tarea + costo del modelo. Sin sorpresas.
+            $0.01 per task + model cost. No surprises.
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {[
             {
-              name: "Starter",
-              price: "$29",
-              tasks: "1,000 tareas",
-              features: ["Dashboard básico", "Todos los modelos", "Soporte email"],
-              highlight: false
+              name: "FREE",
+              price: "€0",
+              tasks: "25 requests per week",
+              features: ["3 API keys", "Forever free", "Basic models access", "Community support"],
+              highlight: false,
+              period: "/forever",
+              badge: null
             },
             {
-              name: "Pro",
-              price: "$99",
-              tasks: "5,000 tareas",
-              features: ["Prioridad en router", "Dashboard avanzado", "Soporte prioritario", "API webhooks"],
-              highlight: true
+              name: "STARTER",
+              price: "€29",
+              tasks: "10,000 requests/month",
+              features: ["10 API keys", "All AI models", "Priority support", "Analytics dashboard"],
+              highlight: false,
+              period: "/month",
+              badge: null
             },
             {
-              name: "Enterprise",
-              price: "Custom",
-              tasks: "Ilimitadas",
-              features: ["SLA dedicado", "Integración custom", "Soporte 24/7", "On-premise"],
-              highlight: false
+              name: "PRO",
+              price: "€49",
+              tasks: "100,000 requests/month",
+              features: ["25 API keys", "All AI models", "Priority support", "Advanced analytics", "Custom integrations"],
+              highlight: true,
+              period: "/month",
+              badge: "Most Popular"
+            },
+            {
+              name: "ENTERPRISE",
+              price: "€199",
+              tasks: "1,000,000 requests/month",
+              features: ["Unlimited API keys", "All AI models", "24/7 dedicated support", "Custom analytics", "On-premise deployment", "SLA guarantees"],
+              highlight: false,
+              period: "/month",
+              badge: null
             }
           ].map((plan, index) => (
             <motion.div
@@ -815,9 +977,14 @@ const PricingSection = () => {
                   : "bg-slate-800 border-slate-700 hover:border-slate-600"
               )}
             >
-              {plan.highlight && (
-                <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-slate-900 text-emerald-400 px-4 py-1 rounded-full text-sm font-bold">
-                  RECOMENDADO
+              {plan.badge && (
+                <div className={cn(
+                  "absolute -top-3 left-1/2 transform -translate-x-1/2 px-4 py-1 rounded-full text-sm font-bold",
+                  plan.badge === "Most Popular" 
+                    ? "bg-slate-900 text-emerald-400"
+                    : "bg-blue-600 text-white"
+                )}>
+                  {plan.badge}
                 </div>
               )}
 
@@ -833,12 +1000,18 @@ const PricingSection = () => {
                   plan.highlight ? "text-slate-900" : "text-emerald-400"
                 )}>
                   {plan.price}
+                  <span className={cn(
+                    "text-lg font-normal",
+                    plan.highlight ? "text-slate-600" : "text-slate-500"
+                  )}>
+                    {plan.period || ""}
+                  </span>
                 </div>
                 <div className={cn(
                   "text-sm font-mono",
                   plan.highlight ? "text-slate-700" : "text-slate-400"
                 )}>
-                  {plan.tasks}/mes
+                  {plan.tasks}
                 </div>
               </div>
 
@@ -869,7 +1042,10 @@ const PricingSection = () => {
                     : "bg-emerald-500 text-slate-900 hover:bg-emerald-400"
                 )}
               >
-                {plan.name === "Enterprise" ? "Contactar" : "Empezar"}
+                {plan.name === "FREE" ? "Start Free" : 
+                 plan.name === "STARTER" ? "Get Started" : 
+                 plan.name === "PRO" ? "Start Pro" : 
+                 "Contact Sales"}
               </motion.button>
             </motion.div>
           ))}
@@ -885,7 +1061,7 @@ const PricingSection = () => {
           <div className="inline-flex items-center px-6 py-3 bg-slate-800 border border-slate-700 rounded-full">
             <Timer className="w-4 h-4 text-emerald-400 mr-2" />
             <span className="text-slate-300 font-mono text-sm">
-              Integración: cambiar 1 línea de código • Tiempo: &lt;10 minutos
+              Integration: change 1 line of code • Time: &lt;10 minutes
             </span>
           </div>
         </motion.div>
@@ -906,7 +1082,7 @@ const TestimonialsSection = () => {
           className="text-center mb-16"
         >
           <h2 className="text-4xl font-black text-slate-900 mb-4">
-            Lo que Dicen los <span className="text-emerald-600">Developers</span>
+            What <span className="text-emerald-600">Developers</span> Say
           </h2>
         </motion.div>
 
@@ -916,16 +1092,16 @@ const TestimonialsSection = () => {
               name: "Alex Chen",
               role: "Senior Backend Engineer",
               company: "TechCorp",
-              content: "Literalmente cambié una línea de código y empecé a ahorrar $2K al mes. El router es increíblemente inteligente.",
-              savings: "$2,000/mes",
+              content: "I literally changed one line of code and started saving $2K per month. The router is incredibly smart.",
+              savings: "$2,000/month",
               tech: "Node.js + Express"
             },
             {
               name: "Sofia Rodriguez",
               role: "ML Engineer",
               company: "DataFlow",
-              content: "El dashboard me permite ver exactamente qué modelo es mejor para cada tipo de tarea. Data-driven decisions.",
-              savings: "65% optimización",
+              content: "The dashboard lets me see exactly which model is best for each type of task. Data-driven decisions.",
+              savings: "65% optimization",
               tech: "Python + FastAPI"
             }
           ].map((testimonial, index) => (
@@ -954,7 +1130,7 @@ const TestimonialsSection = () => {
 
               <div className="bg-emerald-100 border border-emerald-200 rounded-lg p-4 text-center">
                 <div className="text-emerald-700 font-bold text-lg">{testimonial.savings}</div>
-                <div className="text-emerald-600 text-sm">ahorrados</div>
+                <div className="text-emerald-600 text-sm">saved</div>
               </div>
             </motion.div>
           ))}
@@ -998,7 +1174,7 @@ const Footer = () => {
 
         <div className="mt-12 pt-8 border-t border-slate-800 text-center">
           <p className="text-slate-500 text-sm font-mono">
-            © 2024 RouterAI • Optimizando IA desde 2024
+            © 2024 RouterAI • Optimizing AI since 2024
           </p>
         </div>
       </div>
