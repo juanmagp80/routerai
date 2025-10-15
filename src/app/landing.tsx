@@ -46,7 +46,7 @@ const Navigation = () => {
             whileHover={{ scale: 1.02 }}
             className="flex items-center space-x-3"
           >
-            {/* Logo Icon - Minimal and Modern */}
+            {/* Logo Icon - X with Connection Lines */}
             <div className="relative group">
               <svg
                 width="40"
@@ -60,6 +60,10 @@ const Navigation = () => {
                     <stop offset="50%" stopColor="#06b6d4" />
                     <stop offset="100%" stopColor="#3b82f6" />
                   </linearGradient>
+                  <linearGradient id="connectionGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#059669" />
+                    <stop offset="100%" stopColor="#10b981" />
+                  </linearGradient>
                   <filter id="glow">
                     <feGaussianBlur stdDeviation="2" result="coloredBlur" />
                     <feMerge>
@@ -69,60 +73,53 @@ const Navigation = () => {
                   </filter>
                 </defs>
 
-                {/* Main routing symbol */}
+                {/* Background connection network */}
+                <g filter="url(#glow)" className="opacity-40">
+                  {/* Horizontal and vertical connection lines */}
+                  <path d="M8 20 L32 20" stroke="url(#connectionGradient)" strokeWidth="1" />
+                  <path d="M20 8 L20 32" stroke="url(#connectionGradient)" strokeWidth="1" />
+                  
+                  {/* Diagonal connection lines */}
+                  <path d="M12 12 L28 28" stroke="url(#connectionGradient)" strokeWidth="0.8" className="opacity-60" />
+                  <path d="M28 12 L12 28" stroke="url(#connectionGradient)" strokeWidth="0.8" className="opacity-60" />
+                </g>
+
+                {/* Main X structure */}
                 <g filter="url(#glow)">
-                  {/* Central hub */}
+                  {/* Primary X shape */}
+                  <path
+                    d="M12 12 L28 28 M28 12 L12 28"
+                    stroke="url(#logoGradient)"
+                    strokeWidth="3.5"
+                    strokeLinecap="round"
+                    className="animate-pulse"
+                  />
+                  
+                  {/* Central decision node */}
                   <circle
                     cx="20"
                     cy="20"
                     r="4"
                     fill="url(#logoGradient)"
-                    className="animate-pulse"
+                    className="animate-pulse opacity-90"
                   />
-
-                  {/* Connection lines */}
-                  <path
-                    d="M20,8 L20,12 M32,20 L28,20 M20,32 L20,28 M8,20 L12,20"
-                    stroke="url(#logoGradient)"
-                    strokeWidth="2.5"
-                    strokeLinecap="round"
-                    className="opacity-80"
-                  />
-
-                  {/* Neural network nodes */}
-                  <circle cx="20" cy="8" r="2.5" fill="url(#logoGradient)" className="opacity-90" />
-                  <circle cx="32" cy="20" r="2.5" fill="url(#logoGradient)" className="opacity-90" />
-                  <circle cx="20" cy="32" r="2.5" fill="url(#logoGradient)" className="opacity-90" />
-                  <circle cx="8" cy="20" r="2.5" fill="url(#logoGradient)" className="opacity-90" />
-
-                  {/* Connecting arcs for AI intelligence */}
-                  <path
-                    d="M14,14 Q20,8 26,14"
-                    stroke="url(#logoGradient)"
-                    strokeWidth="1.5"
-                    fill="none"
-                    strokeLinecap="round"
-                    className="opacity-60"
-                  />
-                  <path
-                    d="M26,26 Q20,32 14,26"
-                    stroke="url(#logoGradient)"
-                    strokeWidth="1.5"
-                    fill="none"
-                    strokeLinecap="round"
-                    className="opacity-60"
-                  />
+                  
+                  {/* Route decision points */}
+                  <circle cx="12" cy="12" r="2" fill="#34d399" className="opacity-80" />
+                  <circle cx="28" cy="12" r="2" fill="#34d399" className="opacity-80" />
+                  <circle cx="12" cy="28" r="2" fill="#34d399" className="opacity-80" />
+                  <circle cx="28" cy="28" r="2" fill="#34d399" className="opacity-80" />
                 </g>
 
-                {/* Subtle pulse effect */}
+                {/* Animated pulse effect */}
                 <circle
                   cx="20"
                   cy="20"
-                  r="3"
+                  r="6"
                   fill="none"
                   stroke="url(#logoGradient)"
                   strokeWidth="1"
-                  className="animate-ping opacity-30"
+                  className="animate-ping opacity-20"
                 />
               </svg>
             </div>
@@ -130,13 +127,13 @@ const Navigation = () => {
             {/* Brand name */}
             <div className="flex items-center">
               <span className="text-2xl font-bold text-white tracking-tight bg-gradient-to-r from-white via-slate-100 to-emerald-100 bg-clip-text text-transparent">
-                Router<span className="bg-gradient-to-r from-emerald-400 via-emerald-300 to-cyan-300 bg-clip-text text-transparent font-black">AI</span>
+                <span className="bg-gradient-to-r from-emerald-400 via-emerald-300 to-cyan-300 bg-clip-text text-transparent font-black">Roulix</span>
               </span>
             </div>
           </motion.div>
 
           <div className="hidden md:flex items-center space-x-8">
-            <a href="#router" className="text-slate-300 hover:text-emerald-400 transition-colors font-medium">Router</a>
+            <a href="#features" className="text-slate-300 hover:text-emerald-400 transition-colors font-medium">Features</a>
             <a href="#ahorro" className="text-slate-300 hover:text-emerald-400 transition-colors font-medium">Savings</a>
             <a href="#dashboard" className="text-slate-300 hover:text-emerald-400 transition-colors font-medium">Dashboard</a>
             <a href="/docs" className="text-slate-300 hover:text-emerald-400 transition-colors font-medium">API Docs</a>
@@ -169,7 +166,7 @@ const Navigation = () => {
 const HeroSection = () => {
   const [typedText, setTypedText] = useState("");
   const [currentStep, setCurrentStep] = useState(0);
-  const fullText = "curl -X POST https://api.routerai.com/v1/route";
+  const fullText = "curl -X POST https://api.roulix.com/v1/route";
 
   useEffect(() => {
     if (currentStep < fullText.length) {
@@ -253,7 +250,7 @@ const HeroSection = () => {
               </span>
               <br />
               <span className="bg-gradient-to-r from-emerald-400 via-emerald-300 to-cyan-400 bg-clip-text text-transparent animate-pulse">
-                AI Router
+                AI Routing
               </span>
               <br />
               <span className="text-3xl lg:text-4xl font-bold bg-gradient-to-r from-slate-400 to-slate-500 bg-clip-text text-transparent">
@@ -336,7 +333,7 @@ const HeroSection = () => {
                 <div className="w-3 h-3 bg-red-500 rounded-full"></div>
                 <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
                 <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                <span className="text-slate-400 text-sm font-mono ml-4">routerai-api</span>
+                <span className="text-slate-400 text-sm font-mono ml-4">roulix-api</span>
               </div>
 
               {/* Terminal content */}
@@ -385,7 +382,7 @@ const HeroSection = () => {
 // Sección de router con estilo técnico
 const RouterSection = () => {
   return (
-    <section id="router" className="py-24 bg-slate-100">
+    <section id="features" className="py-24 bg-slate-100">
       <div className="max-w-6xl mx-auto px-6">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -394,7 +391,7 @@ const RouterSection = () => {
           className="text-center mb-16"
         >
           <h2 className="text-4xl font-black text-slate-900 mb-4">
-            The Router that <span className="text-emerald-600">Thinks</span>
+            The Platform that <span className="text-emerald-600">Thinks</span>
           </h2>
           <p className="text-xl text-slate-600 max-w-3xl mx-auto">
             Advanced technology that analyzes your task and chooses the perfect model based on cost, speed and quality.
@@ -433,7 +430,7 @@ const RouterSection = () => {
             >
               <div className="bg-emerald-500 rounded-xl p-6 mb-4 relative overflow-hidden">
                 <Brain className="w-12 h-12 text-white mx-auto mb-4" />
-                <div className="text-white font-bold">RouterAI</div>
+                <div className="text-white font-bold">Roulix</div>
                 <div className="text-emerald-100 text-xs mt-2">
                   Analyzing...
                 </div>
@@ -497,7 +494,7 @@ const SavingsSection = () => {
             <span className="text-emerald-600">Real</span> and <span className="text-emerald-600">Measurable</span> Savings
           </h2>
           <p className="text-xl text-slate-600">
-            Real cost comparison: before vs after RouterAI
+            Real cost comparison: before vs after Roulix
           </p>
         </motion.div>
 
@@ -555,7 +552,7 @@ const SavingsSection = () => {
                   <TrendingDown className="w-8 h-8 text-white rotate-180" />
                 </div>
                 <h3 className="text-2xl font-bold text-emerald-700">AFTER</h3>
-                <p className="text-emerald-600">With RouterAI</p>
+                <p className="text-emerald-600">With Roulix</p>
               </div>
 
               <div className="space-y-4">
@@ -1090,7 +1087,7 @@ const TestimonialsSection = () => {
               name: "Alex Chen",
               role: "Senior Backend Engineer",
               company: "TechCorp",
-              content: "I literally changed one line of code and started saving $2K per month. The router is incredibly smart.",
+              content: "I literally changed one line of code and started saving $2K per month. Roulix is incredibly smart.",
               savings: "$2,000/month",
               tech: "Node.js + Express"
             },
@@ -1145,14 +1142,65 @@ const Footer = () => {
       <div className="max-w-6xl mx-auto px-6">
         <div className="flex flex-col md:flex-row justify-between items-center">
           <div className="flex items-center space-x-3 mb-8 md:mb-0">
-            <div className="relative">
-              <div className="w-8 h-8 bg-emerald-500 rounded-lg rotate-12 absolute"></div>
-              <div className="w-8 h-8 bg-slate-800 rounded-lg flex items-center justify-center relative border border-slate-700">
-                <Network className="w-5 h-5 text-emerald-400" />
-              </div>
+            <div className="w-8 h-8 flex items-center justify-center">
+              <svg
+                width="32"
+                height="32"
+                viewBox="0 0 32 32"
+                className="transition-all duration-300"
+              >
+                <defs>
+                  <linearGradient id="footerLogoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#10b981" />
+                    <stop offset="50%" stopColor="#06b6d4" />
+                    <stop offset="100%" stopColor="#3b82f6" />
+                  </linearGradient>
+                  <linearGradient id="footerConnectionGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#059669" />
+                    <stop offset="100%" stopColor="#10b981" />
+                  </linearGradient>
+                </defs>
+
+                {/* Background connection network */}
+                <g className="opacity-30">
+                  {/* Horizontal and vertical connection lines */}
+                  <path d="M6 16 L26 16" stroke="url(#footerConnectionGradient)" strokeWidth="0.8" />
+                  <path d="M16 6 L16 26" stroke="url(#footerConnectionGradient)" strokeWidth="0.8" />
+                  
+                  {/* Diagonal connection lines */}
+                  <path d="M10 10 L22 22" stroke="url(#footerConnectionGradient)" strokeWidth="0.6" className="opacity-60" />
+                  <path d="M22 10 L10 22" stroke="url(#footerConnectionGradient)" strokeWidth="0.6" className="opacity-60" />
+                </g>
+
+                {/* Main X structure */}
+                <g>
+                  {/* Primary X shape */}
+                  <path
+                    d="M10 10 L22 22 M22 10 L10 22"
+                    stroke="url(#footerLogoGradient)"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                  />
+                  
+                  {/* Central decision node */}
+                  <circle
+                    cx="16"
+                    cy="16"
+                    r="3"
+                    fill="url(#footerLogoGradient)"
+                    className="opacity-90"
+                  />
+                  
+                  {/* Route decision points */}
+                  <circle cx="10" cy="10" r="1.5" fill="#34d399" className="opacity-80" />
+                  <circle cx="22" cy="10" r="1.5" fill="#34d399" className="opacity-80" />
+                  <circle cx="10" cy="22" r="1.5" fill="#34d399" className="opacity-80" />
+                  <circle cx="22" cy="22" r="1.5" fill="#34d399" className="opacity-80" />
+                </g>
+              </svg>
             </div>
             <div>
-              <span className="text-lg font-black">RouterAI</span>
+              <span className="text-lg font-black">Roulix</span>
               <div className="text-xs text-slate-400 font-mono">v1.0.0</div>
             </div>
           </div>
@@ -1172,7 +1220,7 @@ const Footer = () => {
 
         <div className="mt-12 pt-8 border-t border-slate-800 text-center">
           <p className="text-slate-500 text-sm font-mono">
-            © 2024 RouterAI • Optimizing AI since 2024
+            © 2024 Roulix • Intelligent routing since 2024
           </p>
         </div>
       </div>

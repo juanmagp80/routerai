@@ -1,4 +1,5 @@
 import { ApiKeyService } from '@/lib/api-key-service'
+import { NotificationService } from '@/lib/notification-service'
 import { PlanLimitsService } from '@/lib/plan-limits-service'
 import { auth } from '@clerk/nextjs/server'
 import { NextRequest, NextResponse } from 'next/server'
@@ -80,6 +81,13 @@ export async function POST(request: NextRequest) {
                 { error: 'Error al crear la API key' },
                 { status: 500 }
             )
+        }
+
+        // Check if this is the user's first API key and send welcome notification
+        if (userLimits.usage.apiKeys.current === 0) {
+            NotificationService.notifyFirstApiKey(userId).catch(error =>
+                console.error('Error sending welcome notification:', error)
+            );
         }
 
         return NextResponse.json({

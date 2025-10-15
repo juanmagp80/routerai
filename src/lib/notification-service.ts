@@ -3,7 +3,7 @@ import { supabase } from './supabase'
 
 export interface NotificationData {
     userId: string
-    type: 'limit_warning' | 'limit_reached' | 'trial_expiring' | 'trial_expired' | 'upgrade_suggestion'
+    type: 'limit_warning' | 'limit_reached' | 'trial_expiring' | 'trial_expired' | 'upgrade_suggestion' | 'api_error' | 'welcome' | 'milestone'
     title: string
     message: string
     metadata?: Record<string, unknown>
@@ -29,6 +29,170 @@ export class NotificationService {
       CREATE INDEX IF NOT EXISTS idx_notifications_created_at ON public.notifications(created_at);
       CREATE INDEX IF NOT EXISTS idx_notifications_read ON public.notifications(read);
     `;
+    }
+
+    // ========== NOTIFICACIONES AUTOMÁTICAS INTELIGENTES ==========
+
+    // Verificar y notificar sobre límites de uso
+    static async checkAndNotifyUsageLimits(userId: string): Promise<boolean> {
+        try {
+            // Obtener datos de uso del usuario
+            const result = await PlanLimitsService.getUserLimitsAndUsage(userId);
+            if (!result) return false;
+
+            const { limits, usage } = result;
+            const usagePercentage = usage.requests.percentage;
+            const requestsUsed = usage.requests.current;
+            const requestsLimit = usage.requests.limit;
+            
+            // Notificar en diferentes umbrales
+            if (usagePercentage >= 90 && usagePercentage < 100) {
+                // 90% - Advertencia crítica
+                await this.sendNotification({
+                    userId,
+                    type: 'limit_warning',
+                    title: '🚨 Critical Usage Warning',
+                    message: `You've used ${usagePercentage.toFixed(1)}% of your monthly API quota. Only ${requestsLimit - requestsUsed} requests remaining.`,
+                    metadata: { usage_percentage: usagePercentage, remaining: requestsLimit - requestsUsed }
+                });
+                return true;
+            } else if (usagePercentage >= 80 && usagePercentage < 90) {
+                // 80% - Advertencia
+                await this.sendNotification({
+                    userId,
+                    type: 'limit_warning',
+                    title: '⚠️ High Usage Alert',
+                    message: `You've used ${usagePercentage.toFixed(1)}% of your monthly API quota. Consider monitoring your usage to avoid interruptions.`,
+                    metadata: { usage_percentage: usagePercentage }
+                });
+                return true;
+            } else if (usagePercentage >= 100) {
+                // 100% - Límite alcanzado
+                await this.sendNotification({
+                    userId,
+                    type: 'limit_reached',
+                    title: '🛑 API Limit Reached',
+                    message: 'You have reached your monthly API quota. Upgrade your plan to continue using Roulix.',
+                    metadata: { usage_percentage: usagePercentage, plan: limits.plan_name }
+                });
+                return true;
+            }
+
+            return false;
+        } catch (error) {
+            console.error('Error checking usage limits:', error);
+            return false;
+        }
+    }
+
+    // Sugerir upgrade basado en patrones de uso
+    static async checkAndSuggestUpgrade(userId: string): Promise<boolean> {
+        try {
+            const result = await PlanLimitsService.getUserLimitsAndUsage(userId);
+            if (!result) return false;
+
+            const { limits, usage, user } = result;
+            const usagePercentage = usage.requests.percentage;
+            
+            // Sugerir upgrade si está usando mucho del plan actual
+            if (usagePercentage >= 75 && user.plan !== 'ENTERPRISE') {
+                const nextPlan = this.getNextPlanRecommendation(user.plan);
+                
+                await this.sendNotification({
+                    userId,
+                    type: 'upgrade_suggestion',
+                    title: '📈 Upgrade Recommendation',
+                    message: `Based on your usage (${usagePercentage.toFixed(1)}%), upgrading to ${nextPlan} could provide better value and avoid limits.`,
+                    metadata: { 
+                        current_plan: user.plan, 
+                        suggested_plan: nextPlan,
+                        usage_percentage: usagePercentage 
+                    }
+                });
+                return true;
+            }
+
+            return false;
+        } catch (error) {
+            console.error('Error checking upgrade suggestions:', error);
+            return false;
+        }
+    }
+
+    // Notificar errores frecuentes de API
+    static async notifyApiErrors(userId: string, errorCount: number, errorType: string): Promise<boolean> {
+        try {
+            if (errorCount >= 5) { // Si hay 5 o más errores
+                await this.sendNotification({
+                    userId,
+                    type: 'api_error',
+                    title: '⚠️ API Errors Detected',
+                    message: `We've detected ${errorCount} ${errorType} errors in your recent API calls. Check your integration or contact support.`,
+                    metadata: { error_count: errorCount, error_type: errorType }
+                });
+                return true;
+            }
+            return false;
+        } catch (error) {
+            console.error('Error notifying API errors:', error);
+            return false;
+        }
+    }
+
+    // Notificar cuando el usuario crea su primera API key
+    static async notifyFirstApiKey(userId: string): Promise<boolean> {
+        try {
+            await this.sendNotification({
+                userId,
+                type: 'welcome',
+                title: '🎉 Welcome to Roulix!',
+                message: 'Your API key has been created successfully. Check out our documentation to get started with your first AI request.',
+                metadata: { milestone: 'first_api_key' }
+            });
+            return true;
+        } catch (error) {
+            console.error('Error sending welcome notification:', error);
+            return false;
+        }
+    }
+
+    // Notificar hitos de uso
+    static async notifyUsageMilestone(userId: string, milestone: number): Promise<boolean> {
+        try {
+            const milestoneMessages = {
+                100: '🎯 First 100 API calls completed! You\'re getting the hang of Roulix.',
+                1000: '🚀 1,000 API calls milestone reached! You\'re building something amazing.',
+                10000: '⭐ 10,000 API calls! You\'re a Roulix power user.',
+                100000: '🏆 100,000 API calls! Consider our Enterprise plan for even better rates.'
+            };
+
+            const message = milestoneMessages[milestone as keyof typeof milestoneMessages];
+            if (message) {
+                await this.sendNotification({
+                    userId,
+                    type: 'milestone',
+                    title: `Milestone: ${milestone.toLocaleString()} API Calls`,
+                    message,
+                    metadata: { milestone: milestone }
+                });
+                return true;
+            }
+            return false;
+        } catch (error) {
+            console.error('Error sending milestone notification:', error);
+            return false;
+        }
+    }
+
+    // Helper: Obtener recomendación de siguiente plan
+    private static getNextPlanRecommendation(currentPlan: string): string {
+        const planHierarchy = {
+            'free': 'starter',
+            'starter': 'pro', 
+            'pro': 'enterprise',
+            'enterprise': 'enterprise'
+        };
+        return planHierarchy[currentPlan.toLowerCase() as keyof typeof planHierarchy] || 'pro';
     }
 
     // Enviar notificación
@@ -141,8 +305,8 @@ export class NotificationService {
                 await this.sendNotification({
                     userId,
                     type: 'limit_warning',
-                    title: '⚠️ Te estás acercando al límite',
-                    message: `Has usado ${usage.requests.current} de ${usage.requests.limit} requests este mes (${usage.requests.percentage.toFixed(1)}%). Considera actualizar tu plan para evitar interrupciones.`,
+                    title: '⚠️ Approaching request limit',
+                    message: `You have used ${usage.requests.current} of ${usage.requests.limit} requests this month (${usage.requests.percentage.toFixed(1)}%). Consider upgrading to a paid plan to get more requests.`,
                     metadata: {
                         current: usage.requests.current,
                         limit: usage.requests.limit,
@@ -158,7 +322,7 @@ export class NotificationService {
                     userId,
                     type: 'limit_reached',
                     title: '🚫 Límite de requests alcanzado',
-                    message: `Has alcanzado tu límite de ${usage.requests.limit} requests este mes. Actualiza tu plan para continuar usando RouterAI.`,
+                    message: `Has alcanzado tu límite de ${usage.requests.limit} requests este mes. Actualiza tu plan para continuar usando Roulix.`,
                     metadata: {
                         current: usage.requests.current,
                         limit: usage.requests.limit,
@@ -167,31 +331,8 @@ export class NotificationService {
                 })
             }
 
-            // Alertas de prueba gratuita (solo para plan FREE)
-            if (user.plan === 'free' && user.trialDaysRemaining !== null) {
-                if (user.trialDaysRemaining <= 2 && user.trialDaysRemaining > 0) {
-                    await this.sendNotification({
-                        userId,
-                        type: 'trial_expiring',
-                        title: '⏰ Tu prueba gratuita está por expirar',
-                        message: `Te quedan ${user.trialDaysRemaining} días de prueba gratuita. Actualiza a un plan de pago para continuar usando RouterAI sin interrupciones.`,
-                        metadata: {
-                            daysRemaining: user.trialDaysRemaining,
-                            recommendedPlan: 'starter'
-                        }
-                    })
-                } else if (user.trialDaysRemaining <= 0) {
-                    await this.sendNotification({
-                        userId,
-                        type: 'trial_expired',
-                        title: '🔒 Tu prueba gratuita ha expirado',
-                        message: 'Tu prueba gratuita ha terminado. Actualiza a un plan de pago para continuar accediendo a RouterAI.',
-                        metadata: {
-                            recommendedPlan: 'starter'
-                        }
-                    })
-                }
-            }
+            // Nota: Los usuarios FREE no tienen límite de tiempo, solo límite de requests
+            // Por lo tanto, no enviamos notificaciones de trial expiration
 
             // Sugerencia de upgrade basada en uso
             if (user.plan === 'free' && usage.requests.percentage >= 60) {

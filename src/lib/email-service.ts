@@ -13,12 +13,12 @@ export class EmailService {
         const body = {
             from: 'onboarding@resend.dev', // Using Resend's verified domain for testing
             to: [email],
-            subject: `You're invited to join ${inviterName || 'Router AI'}`,
+            subject: `You're invited to join ${inviterName || 'Roulix'}`,
             html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
           <h2>You're invited!</h2>
           <p>Hi ${name || 'there'},</p>
-          <p>You have been invited to join Router AI by ${inviterName || 'a team member'}.</p>
+          <p>You have been invited to join Roulix by ${inviterName || 'a team member'}.</p>
           
           <div style="text-align: center; margin: 30px 0;">
             <a href="${acceptUrl}" 

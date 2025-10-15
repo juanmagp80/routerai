@@ -73,7 +73,7 @@ export class PlanLimitsService {
         }
 
         if (userError || !user) {
-            return { allowed: false, reason: 'Usuario no encontrado', current: 0, limit: 0 }
+            return { allowed: false, reason: 'User not found', current: 0, limit: 0 }
         }
 
         // Usar el ID real del usuario para las consultas posteriores
@@ -128,7 +128,7 @@ export class PlanLimitsService {
         }
 
         if (userError || !user) {
-            return { allowed: false, reason: 'Usuario no encontrado', current: 0, limit: 0, percentage: 0 }
+            return { allowed: false, reason: 'User not found', current: 0, limit: 0, percentage: 0 }
         }
 
         // Usar el ID real del usuario para las consultas posteriores
@@ -186,7 +186,7 @@ export class PlanLimitsService {
     }
 
     // Incrementar contador de requests
-    static async incrementRequestCount(userId: string): Promise<boolean> {
+    static async incrementRequestCount(userId: string, modelUsed?: string): Promise<boolean> {
         try {
             // Primero intentar buscar por clerk_user_id para obtener el ID real
             let { data: currentUser, error: fetchError } = await supabase
@@ -213,23 +213,84 @@ export class PlanLimitsService {
             }
 
             const realUserId = currentUser.id
-
             const newCount = (currentUser.monthly_requests_used || 0) + 1
 
-            // Actualizar con el nuevo valor
-            const { error } = await supabase
+            // Actualizar contador en tabla users
+            const { error: updateError } = await supabase
                 .from('users')
                 .update({ monthly_requests_used: newCount })
                 .eq('id', realUserId)
 
-            if (error) {
-                console.error('Error incrementing request count:', error)
+            if (updateError) {
+                console.error('Error incrementing request count:', updateError)
                 return false
+            }
+
+            // Crear registro en usage_records para analytics
+            // Usar el clerk_user_id para usage_records (no el UUID interno)
+            const { error: usageError } = await supabase
+                .from('usage_records')
+                .insert({
+                    user_id: userId, // usar el clerk_user_id original
+                    model_used: modelUsed || 'auto',
+                    input_tokens: 0,
+                    output_tokens: 0,
+                    cost: 0.002 // $0.002 por request como estimación
+                })
+
+            if (usageError) {
+                console.error('Error creating usage record:', usageError)
+                // No fallar completamente si no se puede crear el registro de analytics
             }
 
             return true
         } catch (err) {
             console.error('Error in incrementRequestCount:', err)
+            return false
+        }
+    }
+
+    // Registrar el modelo real usado (llamar después de obtener respuesta de AI)
+    static async recordModelUsage(userId: string, modelUsed: string): Promise<boolean> {
+        try {
+            // Buscar el ID real del usuario
+            let { data: currentUser, error: fetchError } = await supabase
+                .from('users')
+                .select('id')
+                .eq('clerk_user_id', userId)
+                .single()
+
+            if (fetchError || !currentUser) {
+                const { data: directUser, error: directError } = await supabase
+                    .from('users')
+                    .select('id')
+                    .eq('id', userId)
+                    .single()
+
+                currentUser = directUser
+            }
+
+            if (!currentUser) {
+                console.error('User not found for model usage recording')
+                return false
+            }
+
+            // Actualizar el registro más reciente de usage_records con el modelo real
+            const { error } = await supabase
+                .from('usage_records')
+                .update({ model_used: modelUsed })
+                .eq('user_id', userId) // usar el clerk_user_id original
+                .order('created_at', { ascending: false })
+                .limit(1)
+
+            if (error) {
+                console.error('Error recording model usage:', error)
+                return false
+            }
+
+            return true
+        } catch (err) {
+            console.error('Error in recordModelUsage:', err)
             return false
         }
     }

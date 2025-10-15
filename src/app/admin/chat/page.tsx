@@ -541,7 +541,7 @@ export default function ApiConsolePage() {
           </CardTitle>
           <CardDescription>
             {userPlan === 'FREE'
-              ? 'Como usuario FREE, puedes usar: GPT-3.5 Turbo, GPT-4o Mini, Claude-3 Haiku, y Gemini 2.0 Flash'
+              ? 'As a FREE user, you can use: GPT-3.5 Turbo, GPT-4o Mini, Claude-3 Haiku, and Gemini 2.0 Flash'
               : 'Current AI models available in the router'
             }
           </CardDescription>

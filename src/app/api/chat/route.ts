@@ -1,4 +1,5 @@
 import { ApiMiddleware } from '@/lib/api-middleware';
+import { NotificationService } from '@/lib/notification-service';
 import { AIRouterService } from '@/services/ai-router';
 import { AIRequest } from '@/types/ai';
 import { NextRequest, NextResponse } from 'next/server';
@@ -69,7 +70,20 @@ export async function POST(request: NextRequest) {
         const aiRouter = getAIRouter();
         const response = await aiRouter.generateResponse(aiRequest);
 
+        // Registrar el modelo real usado para analytics (fire and forget)
+        if (response.success && response.model) {
+          const { PlanLimitsService } = await import('@/lib/plan-limits-service');
+          PlanLimitsService.recordModelUsage(userId, response.model).catch(error =>
+            console.error('Error recording model usage:', error)
+          );
+        }
+
         if (!response.success) {
+          // Track API errors for notification purposes (fire and forget)
+          NotificationService.notifyApiErrors(userId, 1, 'ai_request_failure').catch(error =>
+            console.error('Error tracking API errors:', error)
+          );
+
           return NextResponse.json(
             {
               error: {
@@ -81,6 +95,22 @@ export async function POST(request: NextRequest) {
             { status: 500 }
           );
         }
+
+        // Trigger automatic notifications (no await - fire and forget)
+        NotificationService.checkAndNotifyUsageLimits(userId).catch(error => 
+          console.error('Error checking usage limits:', error)
+        );
+        NotificationService.checkAndSuggestUpgrade(userId).catch(error =>
+          console.error('Error checking upgrade suggestions:', error)
+        );
+        
+        // Check for milestones (fire and forget)
+        fetch(`${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/api/notifications/milestones`, {
+          method: 'POST',
+          headers: {
+            'Cookie': request.headers.get('Cookie') || ''
+          }
+        }).catch(error => console.error('Error checking milestones:', error));
 
         // Return successful response compatible with console
         return NextResponse.json({

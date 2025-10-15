@@ -221,7 +221,7 @@ export default function ApiKeysPage() {
       <div className="border-b border-slate-200 pb-6">
         <h1 className="text-2xl font-bold text-slate-900">API Keys</h1>
         <p className="text-slate-600 mt-1">
-          Manage your RouterAI API access keys
+          Manage your Roulix API access keys
         </p>
       </div>
 
@@ -333,7 +333,7 @@ export default function ApiKeysPage() {
               <AlertTriangleIcon className="w-5 h-5 text-orange-600 flex-shrink-0" />
               <div>
                 <h4 className="text-sm font-medium text-orange-800">
-                  Te estás acercando al límite de requests
+                  Approaching request limit
                 </h4>
                 <p className="text-sm text-orange-700">
                   You have used {userLimits?.usage.requests.current} of {userLimits?.usage.requests.limit} requests this month
@@ -350,24 +350,7 @@ export default function ApiKeysPage() {
         </Card>
       )}
 
-      {userLimits?.user.plan === 'free' && (userLimits?.user.trialDaysRemaining ?? 0) <= 2 && (
-        <Card className="border-red-200 bg-red-50">
-          <CardContent className="p-4">
-            <div className="flex items-center space-x-3">
-              <AlertTriangleIcon className="w-5 h-5 text-red-600 flex-shrink-0" />
-              <div>
-                <h4 className="text-sm font-medium text-red-800">
-                  Your free trial is about to expire
-                </h4>
-                <p className="text-sm text-red-700">
-                  You have {userLimits?.user.trialDaysRemaining} days of free trial remaining.
-                  Upgrade to a paid plan to continue using RouterAI.
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      )}
+
 
       {/* Alerta de sincronización cuando los límites son 0/0 */}
       {(userLimits?.usage.apiKeys.limit || 0) === 0 && (
@@ -428,10 +411,11 @@ export default function ApiKeysPage() {
               <DialogTrigger asChild>
                 <Button
                   className="bg-blue-600 hover:bg-blue-700 text-white disabled:bg-slate-400"
-                  disabled={!userLimits?.usage.apiKeys.allowed || isCreatingKey}
+                  disabled={loading || isCreatingKey || (userLimits?.usage.apiKeys.allowed === false)}
                   title={
-                    !userLimits?.usage.apiKeys.allowed
-                      ? userLimits?.usage.apiKeys.reason
+                    loading ? 'Loading limits...' :
+                    (userLimits?.usage.apiKeys.allowed === false)
+                      ? userLimits.usage.apiKeys.reason || 'Cannot create more API keys'
                       : 'Create new API key'
                   }
                 >
@@ -502,7 +486,7 @@ export default function ApiKeysPage() {
                 No API Keys configured
               </h3>
               <p className="text-slate-600 mb-6">
-                Create your first API key to start using RouterAI
+                Create your first API key to start using Roulix
               </p>
             </div>
           ) : (
@@ -610,7 +594,7 @@ export default function ApiKeysPage() {
               <h4 className="text-sm font-medium text-slate-900 mb-2">HTTP Authentication</h4>
               <div className="bg-slate-50 rounded-md p-3">
                 <code className="text-sm text-slate-800">
-                  curl -H &quot;Authorization: Bearer YOUR_API_KEY&quot; https://api.routerai.com/v1/chat
+                  curl -H &quot;Authorization: Bearer YOUR_API_KEY&quot; https://api.roulix.com/v1/chat
                 </code>
               </div>
             </div>
@@ -618,7 +602,7 @@ export default function ApiKeysPage() {
               <h4 className="text-sm font-medium text-slate-900 mb-2">JavaScript/Node.js</h4>
               <div className="bg-slate-50 rounded-md p-3">
                 <code className="text-sm text-slate-800">
-                  {`const response = await fetch('https://api.routerai.com/v1/chat', {
+                  {`const response = await fetch('https://api.roulix.com/v1/chat', {
   headers: { 'Authorization': 'Bearer YOUR_API_KEY' }
 });`}
                 </code>
@@ -630,7 +614,7 @@ export default function ApiKeysPage() {
                 <code className="text-sm text-slate-800">
                   {`import requests
 headers = {'Authorization': 'Bearer YOUR_API_KEY'}
-response = requests.post('https://api.routerai.com/v1/chat', headers=headers)`}
+response = requests.post('https://api.roulix.com/v1/chat', headers=headers)`}
                 </code>
               </div>
             </div>
@@ -690,7 +674,7 @@ response = requests.post('https://api.routerai.com/v1/chat', headers=headers)`}
             <div className="bg-slate-50 rounded-lg p-4">
               <h4 className="text-sm font-medium text-slate-800 mb-2">Quick usage example:</h4>
               <code className="text-xs text-slate-600 break-all">
-                curl -H &quot;Authorization: Bearer {newlyCreatedKey?.key || 'YOUR_API_KEY'}&quot; https://api.routerai.com/v1/chat
+                curl -H &quot;Authorization: Bearer {newlyCreatedKey?.key || 'YOUR_API_KEY'}&quot; https://api.roulix.com/v1/chat
               </code>
             </div>
 

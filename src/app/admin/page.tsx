@@ -7,7 +7,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { useUserSync } from "@/hooks/useUserSync";
 import { DashboardStats, StatsService } from "@/lib/stats-service";
 import { useUser } from "@clerk/nextjs";
-import { Activity, BarChart3, Clock, Cpu, Eye, Key, Plus, Settings, TrendingUp, Users, Zap } from "lucide-react";
+import { Activity, BarChart3, Bell, Clock, Cpu, Eye, Key, Plus, Settings, TrendingUp, Users, Zap } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -87,6 +87,8 @@ export default function AdminDashboard() {
   const handleApiTesting = () => {
     router.push('/admin/chat');
   };
+
+
 
   const handleCreateApiKey = async () => {
     try {
@@ -404,9 +406,11 @@ export default function AdminDashboard() {
                   onClick={handleCreateApiKey}
                   disabled={isCreatingApiKey}
                 >
-                  <Plus className="mr-2 h-4 w-4" />
+  <Plus className="mr-2 h-4 w-4" />
                   {isCreatingApiKey ? 'Creating...' : 'Create New API Key'}
                 </Button>
+
+
 
                 <Button
                   className="w-full justify-start"
@@ -425,6 +429,8 @@ export default function AdminDashboard() {
                   <Eye className="mr-2 h-4 w-4" />
                   View Current Usage
                 </Button>
+
+
               </div>
             </div>
           </CardContent>

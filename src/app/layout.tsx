@@ -15,8 +15,8 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Router AI - Intelligent AI Model Router",
-  description: "Smart AI router that automatically selects the best AI model based on cost, speed, and quality",
+  title: "Roulix - Intelligent AI Model Router",
+  description: "Smart AI routing platform that automatically selects the best AI model based on cost, speed, and quality",
 };
 
 export default function RootLayout({

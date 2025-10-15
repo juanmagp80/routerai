@@ -17,7 +17,7 @@ export default function SettingsPage() {
       <div className="border-b border-slate-200 pb-6">
         <h1 className="text-2xl font-bold text-slate-900">Settings</h1>
         <p className="text-slate-600 mt-1">
-          Configura tu cuenta y preferencias de RouterAI
+          Configure your Roulix account and preferences
         </p>
       </div>
 
@@ -29,48 +29,48 @@ export default function SettingsPage() {
             <CardHeader>
               <CardTitle className="flex items-center text-lg font-semibold text-slate-900">
                 <Settings2Icon className="w-5 h-5 mr-2" />
-                Configuración General
+                General Settings
               </CardTitle>
               <CardDescription>
-                Configuraciones básicas de tu cuenta
+                Basic account settings
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="firstName">Nombre</Label>
-                  <Input id="firstName" placeholder="Tu nombre" className="mt-1" />
+                  <Label htmlFor="firstName">First Name</Label>
+                  <Input id="firstName" placeholder="Your first name" className="mt-1" />
                 </div>
                 <div>
-                  <Label htmlFor="lastName">Apellido</Label>
-                  <Input id="lastName" placeholder="Tu apellido" className="mt-1" />
+                  <Label htmlFor="lastName">Last Name</Label>
+                  <Input id="lastName" placeholder="Your last name" className="mt-1" />
                 </div>
               </div>
               
               <div>
                 <Label htmlFor="email">Email</Label>
-                <Input id="email" type="email" placeholder="tu@email.com" className="mt-1" />
+                <Input id="email" type="email" placeholder="your@email.com" className="mt-1" />
                 <p className="text-xs text-slate-500 mt-1">
-                  Tu email principal para notificaciones importantes
+                  Your primary email for important notifications
                 </p>
               </div>
 
               <div>
-                <Label htmlFor="company">Empresa (Opcional)</Label>
-                <Input id="company" placeholder="Tu empresa" className="mt-1" />
+                <Label htmlFor="company">Company (Optional)</Label>
+                <Input id="company" placeholder="Your company" className="mt-1" />
               </div>
 
               <div>
-                <Label htmlFor="timezone">Zona Horaria</Label>
+                <Label htmlFor="timezone">Time Zone</Label>
                 <Select>
                   <SelectTrigger className="mt-1">
-                    <SelectValue placeholder="Selecciona tu zona horaria" />
+                    <SelectValue placeholder="Select your time zone" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="america/madrid">Europa/Madrid (GMT+1)</SelectItem>
-                    <SelectItem value="america/new_york">América/Nueva York (GMT-5)</SelectItem>
-                    <SelectItem value="america/los_angeles">América/Los Ángeles (GMT-8)</SelectItem>
-                    <SelectItem value="asia/tokyo">Asia/Tokio (GMT+9)</SelectItem>
+                    <SelectItem value="europe/madrid">Europe/Madrid (GMT+1)</SelectItem>
+                    <SelectItem value="america/new_york">America/New York (GMT-5)</SelectItem>
+                    <SelectItem value="america/los_angeles">America/Los Angeles (GMT-8)</SelectItem>
+                    <SelectItem value="asia/tokyo">Asia/Tokyo (GMT+9)</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -82,18 +82,18 @@ export default function SettingsPage() {
             <CardHeader>
               <CardTitle className="flex items-center text-lg font-semibold text-slate-900">
                 <KeyIcon className="w-5 h-5 mr-2" />
-                Configuración de API
+                API Configuration
               </CardTitle>
               <CardDescription>
-                Configura el comportamiento de tus API calls
+                Configure your API calls behavior
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               <div>
-                <Label htmlFor="defaultModel">Modelo por Defecto</Label>
+                <Label htmlFor="defaultModel">Default Model</Label>
                 <Select>
                   <SelectTrigger className="mt-1">
-                    <SelectValue placeholder="Selecciona modelo por defecto" />
+                    <SelectValue placeholder="Select default model" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="gpt-4">GPT-4</SelectItem>
@@ -105,18 +105,18 @@ export default function SettingsPage() {
               </div>
 
               <div>
-                <Label htmlFor="maxTokens">Límite de Tokens por Defecto</Label>
+                <Label htmlFor="maxTokens">Default Token Limit</Label>
                 <Input id="maxTokens" type="number" placeholder="2048" className="mt-1" />
                 <p className="text-xs text-slate-500 mt-1">
-                  Número máximo de tokens para respuestas (máx: 4096)
+                  Maximum number of tokens for responses (max: 4096)
                 </p>
               </div>
 
               <div>
-                <Label htmlFor="temperature">Temperatura por Defecto</Label>
+                <Label htmlFor="temperature">Default Temperature</Label>
                 <Input id="temperature" type="number" step="0.1" placeholder="0.7" className="mt-1" />
                 <p className="text-xs text-slate-500 mt-1">
-                  Controla la creatividad de las respuestas (0.0 - 1.0)
+                  Controls response creativity (0.0 - 1.0)
                 </p>
               </div>
 
@@ -124,7 +124,7 @@ export default function SettingsPage() {
                 <div>
                   <Label>Auto-fallback</Label>
                   <p className="text-sm text-slate-600">
-                    Cambiar automáticamente a otro modelo si falla
+                    Automatically switch to another model if one fails
                   </p>
                 </div>
                 <Switch />
@@ -132,9 +132,9 @@ export default function SettingsPage() {
 
               <div className="flex items-center justify-between">
                 <div>
-                  <Label>Logging Detallado</Label>
+                  <Label>Detailed Logging</Label>
                   <p className="text-sm text-slate-600">
-                    Registrar información detallada de requests
+                    Log detailed request information
                   </p>
                 </div>
                 <Switch />
@@ -147,18 +147,18 @@ export default function SettingsPage() {
             <CardHeader>
               <CardTitle className="flex items-center text-lg font-semibold text-slate-900">
                 <ShieldIcon className="w-5 h-5 mr-2" />
-                Seguridad
+                Security
               </CardTitle>
               <CardDescription>
-                Configuraciones de seguridad y acceso
+                Security and access settings
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <Label>Autenticación de Dos Factores</Label>
+                  <Label>Two-Factor Authentication</Label>
                   <p className="text-sm text-slate-600">
-                    Protege tu cuenta con 2FA
+                    Protect your account with 2FA
                   </p>
                 </div>
                 <Switch />
@@ -166,16 +166,16 @@ export default function SettingsPage() {
 
               <div className="flex items-center justify-between">
                 <div>
-                  <Label>Notificaciones de Login</Label>
+                  <Label>Login Notifications</Label>
                   <p className="text-sm text-slate-600">
-                    Recibir email cuando inicies sesión
+                    Receive email when you sign in
                   </p>
                 </div>
                 <Switch defaultChecked />
               </div>
 
               <div>
-                <Label htmlFor="allowedIPs">IPs Permitidas (Opcional)</Label>
+                <Label htmlFor="allowedIPs">Allowed IPs (Optional)</Label>
                 <Textarea 
                   id="allowedIPs" 
                   placeholder="192.168.1.100&#10;10.0.0.50&#10;203.0.113.45"
@@ -183,13 +183,13 @@ export default function SettingsPage() {
                   rows={3}
                 />
                 <p className="text-xs text-slate-500 mt-1">
-                  Restringe el acceso a tu API desde IPs específicas (una por línea)
+                  Restrict API access to specific IPs (one per line)
                 </p>
               </div>
 
               <div>
                 <Button variant="outline" className="text-red-600 border-red-200 hover:bg-red-50">
-                  Revocar Todas las Sesiones
+                  Revoke All Sessions
                 </Button>
               </div>
             </CardContent>
@@ -202,7 +202,7 @@ export default function SettingsPage() {
           <Card>
             <CardHeader>
               <CardTitle className="text-lg font-semibold text-slate-900">
-                Plan Actual
+                Current Plan
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -211,10 +211,10 @@ export default function SettingsPage() {
                   Free Plan
                 </Badge>
                 <p className="text-sm text-slate-600 mt-2">
-                  3 API Keys máximo
+                  3 API Keys maximum
                 </p>
                 <p className="text-sm text-slate-600">
-                  10,000 requests/mes
+                  10,000 requests/month
                 </p>
                 <Button className="w-full mt-4 bg-blue-600 hover:bg-blue-700">
                   Upgrade Plan
@@ -227,7 +227,7 @@ export default function SettingsPage() {
           <Card>
             <CardHeader>
               <CardTitle className="text-lg font-semibold text-slate-900">
-                Uso Este Mes
+                This Month's Usage
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -260,7 +260,7 @@ export default function SettingsPage() {
             <CardHeader>
               <CardTitle className="flex items-center text-lg font-semibold text-slate-900">
                 <BellIcon className="w-5 h-5 mr-2" />
-                Notificaciones
+                Notifications
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -268,7 +268,7 @@ export default function SettingsPage() {
                 <div>
                   <Label className="text-sm">Email Alerts</Label>
                   <p className="text-xs text-slate-600">
-                    Errores críticos
+                    Critical errors
                   </p>
                 </div>
                 <Switch defaultChecked />
@@ -278,7 +278,7 @@ export default function SettingsPage() {
                 <div>
                   <Label className="text-sm">Usage Alerts</Label>
                   <p className="text-xs text-slate-600">
-                    80% del límite
+                    80% of limit reached
                   </p>
                 </div>
                 <Switch defaultChecked />
@@ -288,7 +288,7 @@ export default function SettingsPage() {
                 <div>
                   <Label className="text-sm">Weekly Reports</Label>
                   <p className="text-xs text-slate-600">
-                    Resumen semanal
+                    Weekly summary
                   </p>
                 </div>
                 <Switch />
@@ -300,15 +300,15 @@ export default function SettingsPage() {
           <Card className="border-red-200">
             <CardHeader>
               <CardTitle className="text-lg font-semibold text-red-900">
-                Zona de Peligro
+                Danger Zone
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               <Button variant="outline" className="w-full text-red-600 border-red-200 hover:bg-red-50">
-                Eliminar Todos los Datos
+                Delete All Data
               </Button>
               <Button variant="outline" className="w-full text-red-600 border-red-200 hover:bg-red-50">
-                Cerrar Cuenta
+                Close Account
               </Button>
             </CardContent>
           </Card>
@@ -319,10 +319,10 @@ export default function SettingsPage() {
       <div className="flex justify-end pt-6 border-t border-slate-200">
         <div className="flex space-x-3">
           <Button variant="outline">
-            Cancelar
+            Cancel
           </Button>
           <Button className="bg-blue-600 hover:bg-blue-700">
-            Guardar Cambios
+            Save Changes
           </Button>
         </div>
       </div>

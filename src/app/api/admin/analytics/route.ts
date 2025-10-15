@@ -1,4 +1,5 @@
 import { supabase } from '@/lib/supabase'
+import { PlanLimitsService } from '@/lib/plan-limits-service'
 import { auth } from '@clerk/nextjs/server'
 import { NextResponse } from 'next/server'
 
@@ -13,21 +14,33 @@ export async function GET() {
             )
         }
 
-        // Obtener el ID del usuario en la base de datos usando el clerk_user_id
-        const { data: userData } = await supabase
-            .from('users')
-            .select('id')
-            .eq('clerk_user_id', userId)
-            .single()
+        // Obtener datos del usuario usando el mismo servicio que Billing
+        const limitsAndUsage = await PlanLimitsService.getUserLimitsAndUsage(userId)
 
-        if (!userData) {
+        if (!limitsAndUsage) {
             return NextResponse.json(
                 { error: 'User not found' },
                 { status: 404 }
             )
         }
 
+        // Obtener el ID del usuario en la base de datos
+        const { data: userData } = await supabase
+            .from('users')
+            .select('id, email, created_at')
+            .eq('clerk_user_id', userId)
+            .single()
+
+        if (!userData) {
+            return NextResponse.json(
+                { error: 'User not found in database' },
+                { status: 404 }
+            )
+        }
+
         const dbUserId = userData.id
+        // Para usage_records usamos el clerk_user_id directamente
+        const userIdForRecords = userId
 
         // Obtener métricas básicas del usuario específico
         const [
@@ -38,11 +51,11 @@ export async function GET() {
             recentUsageResult,
             userDataResult
         ] = await Promise.all([
-            // Total requests del usuario este mes
+            // Total requests del usuario este mes (cada registro = 1 request)
             supabase
                 .from('usage_records')
-                .select('requests_count')
-                .eq('user_id', dbUserId)
+                .select('*')
+                .eq('user_id', userIdForRecords)
                 .gte('created_at', new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString()),
 
             // API keys del usuario
@@ -55,8 +68,8 @@ export async function GET() {
             // Modelos utilizados por el usuario
             supabase
                 .from('usage_records')
-                .select('model_used, requests_count')
-                .eq('user_id', dbUserId)
+                .select('model_used')
+                .eq('user_id', userIdForRecords)
                 .gte('created_at', new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString()),
 
             // API Keys del usuario (actividad reciente)
@@ -70,25 +83,22 @@ export async function GET() {
             // Uso de la API del usuario (actividad reciente)
             supabase
                 .from('usage_records')
-                .select('created_at, model_used, requests_count')
-                .eq('user_id', dbUserId)
+                .select('created_at, model_used')
+                .eq('user_id', userIdForRecords)
                 .order('created_at', { ascending: false })
                 .limit(10),
 
-            // Datos del usuario actual
-            supabase
-                .from('users')
-                .select('email, current_plan, created_at')
-                .eq('id', dbUserId)
-                .single()
+            // Ya no necesitamos consultar datos del usuario aquí porque los tenemos de PlanLimitsService
+            Promise.resolve({ data: null })
         ])
 
-        // Calcular totales del usuario
-        const totalRequests = totalRequestsResult.data?.reduce((sum, record) => sum + (record.requests_count || 0), 0) || 0
+        // Calcular totales del usuario (cada registro = 1 request)
+        const totalRequests = totalRequestsResult.data?.length || 0
         const totalApiKeys = totalApiKeysResult.count || 0
-        const userEmail = userDataResult.data?.email || 'Unknown'
-        const userPlan = userDataResult.data?.current_plan || 'free'
-        const userCreatedAt = userDataResult.data?.created_at || new Date().toISOString()
+        const userEmail = userData.email || 'Unknown'
+        // CORREGIDO: usar el plan del PlanLimitsService (que ya funciona en Billing)
+        const userPlan = limitsAndUsage.user.plan
+        const userCreatedAt = userData.created_at || new Date().toISOString()
 
         // Para un usuario individual, no hay "top usuarios" - solo mostramos su información
         const topUsers = [{
@@ -103,7 +113,7 @@ export async function GET() {
         topModelsResult.data?.forEach(record => {
             const model = record.model_used || 'unknown'
             const existing = modelRequestsMap.get(model) || 0
-            modelRequestsMap.set(model, existing + (record.requests_count || 0))
+            modelRequestsMap.set(model, existing + 1) // Cada registro representa 1 request
         })
 
         const topModels = Array.from(modelRequestsMap.entries())
@@ -116,7 +126,13 @@ export async function GET() {
             .slice(0, 5)
 
         // Procesar actividad reciente del usuario
-        const allActivity: any[] = []
+        const allActivity: Array<{
+            timestamp: string;
+            userId: string;
+            email: string;
+            action: string;
+            details: string;
+        }> = []
 
         // Agregar actividad de API Keys del usuario
         recentApiKeysResult.data?.forEach(apiKey => {
@@ -136,7 +152,7 @@ export async function GET() {
                 userId: dbUserId.toString(),
                 email: userEmail,
                 action: 'API Usage',
-                details: `Made ${usage.requests_count} requests using ${usage.model_used}`
+                details: `Made API request using ${usage.model_used}`
             })
         })
 
@@ -157,8 +173,8 @@ export async function GET() {
         ] = await Promise.all([
             supabase
                 .from('usage_records')
-                .select('requests_count')
-                .eq('user_id', dbUserId)
+                .select('*')
+                .eq('user_id', userIdForRecords)
                 .gte('created_at', lastMonth.toISOString())
                 .lte('created_at', lastMonthEnd.toISOString()),
 
@@ -170,7 +186,7 @@ export async function GET() {
                 .lte('created_at', lastMonthEnd.toISOString())
         ])
 
-        const lastMonthRequests = lastMonthRequestsResult.data?.reduce((sum, record) => sum + (record.requests_count || 0), 0) || 0
+        const lastMonthRequests = lastMonthRequestsResult.data?.length || 0
         const lastMonthApiKeys = lastMonthApiKeysResult.count || 0
 
         // Calcular crecimiento real del usuario
@@ -182,18 +198,48 @@ export async function GET() {
         const userRevenue = userPlan !== 'free' ? 29 : 0 // $29 si es premium, $0 si es free
         const planUpgradeDate = userPlan !== 'free' ? userCreatedAt : null
 
+        // Calcular métricas reales a partir de los datos existentes
+        const totalCost = totalRequests * 0.002 // Estimado: $0.002 por request (basado en uso real)
+        const monthlyGrowthSign = requestsGrowth >= 0 ? '+' : ''
+        const monthlyGrowth = `${monthlyGrowthSign}${Math.round(requestsGrowth)}`
+        
+        // Calcular horario pico real basado en timestamps de usage_records
+        let peakHours = 'No data'
+        if (recentUsageResult.data && recentUsageResult.data.length > 0) {
+            const hourCounts = new Array(24).fill(0)
+            recentUsageResult.data.forEach(record => {
+                const hour = new Date(record.created_at).getHours()
+                hourCounts[hour] += 1 // Cada registro representa 1 request
+            })
+            const peakHour = hourCounts.indexOf(Math.max(...hourCounts))
+            const endHour = (peakHour + 2) % 24
+            peakHours = `${peakHour.toString().padStart(2, '0')}:00 - ${endHour.toString().padStart(2, '0')}:00`
+        }
+
+        // CORREGIDO: usar los límites del plan del PlanLimitsService
+        const planLimits = limitsAndUsage.limits
+
         const analyticsData = {
             totalRequests,
-            totalUsers: 1, // Solo cuenta el usuario actual
+            totalUsers: 1, // Para un usuario individual
             totalApiKeys,
             totalRevenue: userRevenue,
             requestsGrowth,
-            usersGrowth: 0, // No aplica para usuario individual
-            revenueGrowth: 0, // Simplificado para vista de usuario
+            usersGrowth: 0, // No aplicable para un usuario
+            revenueGrowth: 0, // Se calcularía si hay datos históricos de pagos
             apiKeysGrowth,
             userPlan,
             userEmail,
             planUpgradeDate,
+            // Real metrics only
+            totalCost: Math.round(totalCost * 100) / 100,
+            peakHours,
+            monthlyGrowth,
+            // CORREGIDO: usar los límites reales del servicio
+            planLimits: {
+                monthlyRequestLimit: planLimits.monthly_request_limit,
+                apiKeyLimit: planLimits.api_key_limit
+            },
             topUsers,
             topModels,
             recentActivity

@@ -19,18 +19,18 @@ export interface StripeConfig {
 export const stripeConfig: StripeConfig = {
     plans: {
         starter: {
-            priceId: 'price_1SDp0o2ULfqKVBqVsydpZwiU', // Router AI Starter - €29/mes
-            name: 'Router AI Starter',
+            priceId: 'price_1SDp0o2ULfqKVBqVsydpZwiU', // Roulix Starter - €29/mes
+            name: 'Roulix Starter',
             price: 29
         },
         pro: {
-            priceId: 'price_1SCLNc2ULfqKVBqVKXWa5Va4', // Router AI Pro - €49/mes
-            name: 'Router AI Pro',
+            priceId: 'price_1SCLNc2ULfqKVBqVKXWa5Va4', // Roulix Pro - €49/mes
+            name: 'Roulix Pro',
             price: 49
         },
         enterprise: {
-            priceId: 'price_1SCLO32ULfqKVBqV0CitIdp0', // Router AI Enterprise - €199/mes
-            name: 'Router AI Enterprise',
+            priceId: 'price_1SCLO32ULfqKVBqV0CitIdp0', // Roulix Enterprise - €199/mes
+            name: 'Roulix Enterprise',
             price: 199
         }
     }

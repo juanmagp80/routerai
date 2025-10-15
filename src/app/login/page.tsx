@@ -47,26 +47,26 @@ export default function LoginPage() {
                             </div>
                         </motion.div>
                         <h1 className="text-4xl font-bold text-white mb-4 leading-tight">
-                            Bienvenido de vuelta a
+                            Welcome back to
                             <span className="block bg-gradient-to-r from-emerald-400 to-emerald-600 bg-clip-text text-transparent">
-                                RouterAI
+                                Roulix
                             </span>
                         </h1>
                         <p className="text-gray-400 text-lg leading-relaxed">
-                            El router inteligente de modelos de IA que optimiza costo, velocidad y calidad para tus aplicaciones.
+                            The intelligent AI model router that optimizes cost, speed, and quality for your applications.
                         </p>
                         <div className="mt-8 space-y-4">
                             <div className="flex items-center space-x-3">
                                 <div className="w-2 h-2 bg-emerald-400 rounded-full"></div>
-                                <span className="text-gray-300">99.9% de tiempo de actividad</span>
+                                <span className="text-gray-300">99.9% uptime guarantee</span>
                             </div>
                             <div className="flex items-center space-x-3">
                                 <div className="w-2 h-2 bg-emerald-400 rounded-full"></div>
-                                <span className="text-gray-300">Enrutamiento multi-proveedor</span>
+                                <span className="text-gray-300">Multi-provider routing</span>
                             </div>
                             <div className="flex items-center space-x-3">
                                 <div className="w-2 h-2 bg-emerald-400 rounded-full"></div>
-                                <span className="text-gray-300">Optimización de costos en tiempo real</span>
+                                <span className="text-gray-300">Real-time cost optimization</span>
                             </div>
                         </div>
                     </div>
@@ -74,8 +74,8 @@ export default function LoginPage() {
                 <div className="w-full lg:w-1/2 flex items-center justify-center p-8">
                     <div className="w-full max-w-md">
                         <div className="text-center mb-8">
-                            <h2 className="text-3xl font-bold text-white mb-2">Iniciar sesión</h2>
-                            <p className="text-gray-400">Accede a tu panel de RouterAI</p>
+                            <h2 className="text-3xl font-bold text-white mb-2">Sign In</h2>
+                            <p className="text-gray-400">Access your Roulix dashboard</p>
                         </div>
                         <div className="bg-white/5 backdrop-blur-lg rounded-3xl p-8 border border-white/10 shadow-2xl">
                             <SignIn appearance={{

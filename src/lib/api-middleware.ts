@@ -75,8 +75,8 @@ export class ApiMiddleware {
             // Actualizar último uso de la API key
             await ApiKeyService.updateLastUsed(keyData.id)
 
-            // Incrementar contador de requests
-            await PlanLimitsService.incrementRequestCount(userId)
+            // Incrementar contador de requests (modelo se registrará después con el modelo real)
+            await PlanLimitsService.incrementRequestCount(userId, modelName)
 
             // Obtener información actualizada para la respuesta
             const updatedLimits = await PlanLimitsService.getUserLimitsAndUsage(userId)

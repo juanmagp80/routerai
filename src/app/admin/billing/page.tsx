@@ -208,14 +208,14 @@ function BillingPageContent() {
       <div className="border-b border-slate-200 pb-6">
         <h1 className="text-2xl font-bold text-slate-900">Billing</h1>
         <p className="text-slate-600 mt-1">
-          Gestiona tu facturación y uso de RouterAI
+          Manage your Roulix billing and usage
         </p>
       </div>
 
       <Card>
         <CardHeader>
           <CardTitle className="text-lg font-semibold text-slate-900">
-            Plan Actual
+            Current Plan
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -229,11 +229,11 @@ function BillingPageContent() {
                 </span>
               </div>
               <p className="text-slate-600 mt-2">
-                {userLimits?.apiKeysUsed || 0} de {userLimits?.apiKeysLimit || 0} API Keys •
-                {formatNumber(userLimits?.requestsUsed || 0)} de {formatNumber(userLimits?.requestsLimit || 0)} requests
+                {userLimits?.apiKeysUsed || 0} of {userLimits?.apiKeysLimit || 0} API Keys •
+                {formatNumber(userLimits?.requestsUsed || 0)} of {formatNumber(userLimits?.requestsLimit || 0)} requests
                 {userLimits?.trialEndsAt && (
                   <span className="text-orange-600 ml-2">
-                    • Trial termina: {new Date(userLimits.trialEndsAt).toLocaleDateString()}
+                    • Trial ends: {new Date(userLimits.trialEndsAt).toLocaleDateString()}
                   </span>
                 )}
               </p>
@@ -245,7 +245,7 @@ function BillingPageContent() {
                   onClick={handleManageSubscription}
                   className="mr-2"
                 >
-                  Gestionar Suscripción
+                  Manage Subscription
                 </Button>
               )}
               {userLimits?.currentPlan !== 'enterprise' && (
@@ -302,7 +302,7 @@ function BillingPageContent() {
                 <DollarSignIcon className="h-6 w-6 text-purple-600" />
               </div>
               <div>
-                <p className="text-sm font-medium text-slate-600">Límite Mensual</p>
+                <p className="text-sm font-medium text-slate-600">Monthly Limit</p>
                 <p className="text-2xl font-bold text-slate-900">
                   {formatNumber(userLimits?.requestsLimit || 0)}
                 </p>
@@ -315,7 +315,7 @@ function BillingPageContent() {
       <Card>
         <CardHeader>
           <CardTitle className="text-lg font-semibold text-slate-900">
-            Planes Disponibles
+            Available Plans
           </CardTitle>
           <CardDescription>
             Elige el plan que mejor se adapte a tus necesidades
@@ -340,7 +340,7 @@ function BillingPageContent() {
                 )}
                 {userLimits?.currentPlan?.toLowerCase() === plan.stripeId && (
                   <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                    <Badge className="bg-green-600 text-white">Plan Actual</Badge>
+                    <Badge className="bg-green-600 text-white">Current Plan</Badge>
                   </div>
                 )}
 
@@ -389,14 +389,14 @@ function BillingPageContent() {
       <Card>
         <CardHeader>
           <CardTitle className="text-lg font-semibold text-slate-900">
-            Uso del Plan
+            Plan Usage
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
             <div>
               <div className="flex justify-between text-sm">
-                <span>Requests utilizados</span>
+                <span>Requests used</span>
                 <span>{userLimits?.requestsUsed || 0} / {formatNumber(userLimits?.requestsLimit || 0)}</span>
               </div>
               <div className="mt-2 h-2 bg-slate-100 rounded-full">
@@ -410,7 +410,7 @@ function BillingPageContent() {
             </div>
             <div>
               <div className="flex justify-between text-sm">
-                <span>API Keys utilizadas</span>
+                <span>API Keys used</span>
                 <span>{userLimits?.apiKeysUsed || 0} / {userLimits?.apiKeysLimit || 0}</span>
               </div>
               <div className="mt-2 h-2 bg-slate-100 rounded-full">
