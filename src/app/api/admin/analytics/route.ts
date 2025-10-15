@@ -1,5 +1,5 @@
-import { supabase } from '@/lib/supabase'
 import { PlanLimitsService } from '@/lib/plan-limits-service'
+import { supabase } from '@/lib/supabase'
 import { auth } from '@clerk/nextjs/server'
 import { NextResponse } from 'next/server'
 
@@ -202,7 +202,7 @@ export async function GET() {
         const totalCost = totalRequests * 0.002 // Estimado: $0.002 por request (basado en uso real)
         const monthlyGrowthSign = requestsGrowth >= 0 ? '+' : ''
         const monthlyGrowth = `${monthlyGrowthSign}${Math.round(requestsGrowth)}`
-        
+
         // Calcular horario pico real basado en timestamps de usage_records
         let peakHours = 'No data'
         if (recentUsageResult.data && recentUsageResult.data.length > 0) {

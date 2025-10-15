@@ -1,12 +1,12 @@
 'use client';
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { BarChart3, Key, DollarSign, Activity, TrendingUp, XCircle } from "lucide-react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useUserSync } from "@/hooks/useUserSync";
 import { StatsService, UserStats } from "@/lib/stats-service";
+import { Activity, BarChart3, DollarSign, Key, TrendingUp, XCircle } from "lucide-react";
 import { useEffect, useState } from "react";
 
 export default function UserProfile() {
@@ -19,16 +19,16 @@ export default function UserProfile() {
   useEffect(() => {
     async function loadUserStats() {
       if (!dbUser?.id) return;
-      
+
       try {
         setIsLoadingStats(true);
         const [stats, subscriptionStatus] = await Promise.all([
           StatsService.getUserStats(dbUser.id),
           fetch('/api/stripe/subscription-status').then(res => res.json()).catch(() => null)
         ]);
-        
+
         setUserStats(stats);
-        
+
         // Verificar si la suscripción ya está programada para cancelación
         if (subscriptionStatus?.cancelAtPeriodEnd) {
           setSubscriptionCanceled(true);
@@ -232,7 +232,7 @@ export default function UserProfile() {
                 <span className="text-sm">{dbUser.company}</span>
               </div>
             )}
-            
+
             {/* Subscription Management */}
             {dbUser.plan !== 'free' && (
               <div className="pt-4 border-t border-slate-200">

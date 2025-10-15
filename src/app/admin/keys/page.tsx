@@ -414,9 +414,9 @@ export default function ApiKeysPage() {
                   disabled={loading || isCreatingKey || (userLimits?.usage.apiKeys.allowed === false)}
                   title={
                     loading ? 'Loading limits...' :
-                    (userLimits?.usage.apiKeys.allowed === false)
-                      ? userLimits.usage.apiKeys.reason || 'Cannot create more API keys'
-                      : 'Create new API key'
+                      (userLimits?.usage.apiKeys.allowed === false)
+                        ? userLimits.usage.apiKeys.reason || 'Cannot create more API keys'
+                        : 'Create new API key'
                   }
                 >
                   <PlusIcon className="w-4 h-4 mr-2" />

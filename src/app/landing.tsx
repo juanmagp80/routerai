@@ -9,7 +9,6 @@ import {
   Brain,
   CheckCircle,
   Code,
-  Network,
   RefreshCw,
   Target,
   Timer,
@@ -78,7 +77,7 @@ const Navigation = () => {
                   {/* Horizontal and vertical connection lines */}
                   <path d="M8 20 L32 20" stroke="url(#connectionGradient)" strokeWidth="1" />
                   <path d="M20 8 L20 32" stroke="url(#connectionGradient)" strokeWidth="1" />
-                  
+
                   {/* Diagonal connection lines */}
                   <path d="M12 12 L28 28" stroke="url(#connectionGradient)" strokeWidth="0.8" className="opacity-60" />
                   <path d="M28 12 L12 28" stroke="url(#connectionGradient)" strokeWidth="0.8" className="opacity-60" />
@@ -94,7 +93,7 @@ const Navigation = () => {
                     strokeLinecap="round"
                     className="animate-pulse"
                   />
-                  
+
                   {/* Central decision node */}
                   <circle
                     cx="20"
@@ -103,7 +102,7 @@ const Navigation = () => {
                     fill="url(#logoGradient)"
                     className="animate-pulse opacity-90"
                   />
-                  
+
                   {/* Route decision points */}
                   <circle cx="12" cy="12" r="2" fill="#34d399" className="opacity-80" />
                   <circle cx="28" cy="12" r="2" fill="#34d399" className="opacity-80" />
@@ -1166,7 +1165,7 @@ const Footer = () => {
                   {/* Horizontal and vertical connection lines */}
                   <path d="M6 16 L26 16" stroke="url(#footerConnectionGradient)" strokeWidth="0.8" />
                   <path d="M16 6 L16 26" stroke="url(#footerConnectionGradient)" strokeWidth="0.8" />
-                  
+
                   {/* Diagonal connection lines */}
                   <path d="M10 10 L22 22" stroke="url(#footerConnectionGradient)" strokeWidth="0.6" className="opacity-60" />
                   <path d="M22 10 L10 22" stroke="url(#footerConnectionGradient)" strokeWidth="0.6" className="opacity-60" />
@@ -1181,7 +1180,7 @@ const Footer = () => {
                     strokeWidth="2.5"
                     strokeLinecap="round"
                   />
-                  
+
                   {/* Central decision node */}
                   <circle
                     cx="16"
@@ -1190,7 +1189,7 @@ const Footer = () => {
                     fill="url(#footerLogoGradient)"
                     className="opacity-90"
                   />
-                  
+
                   {/* Route decision points */}
                   <circle cx="10" cy="10" r="1.5" fill="#34d399" className="opacity-80" />
                   <circle cx="22" cy="10" r="1.5" fill="#34d399" className="opacity-80" />

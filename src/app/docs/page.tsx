@@ -6,18 +6,18 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { motion } from "framer-motion";
 import {
     ArrowRight,
+    BarChart3,
     BookOpen,
     CheckCircle,
+    Clock,
     Code,
     Copy,
     Key,
     Lock,
     Settings,
     Shield,
-    Zap,
     TrendingDown,
-    BarChart3,
-    Clock
+    Zap
 } from "lucide-react";
 import { useState } from "react";
 
@@ -77,7 +77,7 @@ curl -X POST https://api.roulix.com/v1/chat \\
             {/* Hero Section */}
             <div className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-emerald-900">
                 <div className="absolute inset-0 bg-[linear-gradient(45deg,transparent_25%,rgba(16,185,129,0.05)_50%,transparent_75%),linear-gradient(-45deg,transparent_25%,rgba(6,182,212,0.05)_50%,transparent_75%)] bg-[length:60px_60px]"></div>
-                
+
                 <div className="relative max-w-6xl mx-auto px-6 py-20">
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
@@ -90,15 +90,15 @@ curl -X POST https://api.roulix.com/v1/chat \\
                             </div>
                             <span className="text-xl font-bold text-white">Roulix Docs</span>
                         </div>
-                        
+
                         <h1 className="text-5xl font-black text-white mb-6 leading-tight">
                             One API, All Models
                         </h1>
-                        
+
                         <p className="text-xl text-slate-300 leading-relaxed max-w-3xl mx-auto mb-8">
                             Roulix automatically routes your AI requests to the best model — faster, cheaper, and smarter than any single provider.
                         </p>
-                        
+
                         <div className="flex flex-wrap justify-center gap-4">
                             <Badge variant="secondary" className="bg-emerald-100 text-emerald-800 px-4 py-2">
                                 <TrendingDown className="w-4 h-4 mr-2" />
@@ -173,7 +173,7 @@ curl -X POST https://api.roulix.com/v1/chat \\
 
             {/* Main Content */}
             <div className="max-w-6xl mx-auto px-6 py-16">
-                
+
                 {/* Cost Savings Section */}
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
@@ -219,7 +219,7 @@ curl -X POST https://api.roulix.com/v1/chat \\
                 {/* API Examples by Use Case */}
                 <div className="space-y-12 mb-16">
                     <h2 className="text-3xl font-bold text-slate-900 text-center mb-8">
-                        Examples by Use Case  
+                        Examples by Use Case
                     </h2>
 
                     {/* Chatbot Example */}
@@ -343,7 +343,7 @@ curl -X POST https://api.roulix.com/v1/chat \\
                                 </code>
                             </div>
                         </div>
-                        
+
                         <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
                             <div className="flex items-center">
                                 <Shield className="w-5 h-5 text-amber-600 mr-2" />

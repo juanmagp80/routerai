@@ -2,7 +2,6 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { ActivityIcon, DollarSignIcon, KeyIcon, TrendingDownIcon, TrendingUpIcon, UsersIcon } from "lucide-react";
 import { useEffect, useState } from 'react';
 
@@ -281,8 +280,8 @@ export default function AnalyticsPage() {
                     <span className="text-xs bg-green-100 text-green-600 px-2 py-1 rounded-full">Live</span>
                   </div>
                   <p className="text-xl font-bold text-green-900">
-                    ${data?.totalRequests && data.totalRequests > 0 
-                      ? ((data.totalCost || 0) / data.totalRequests).toFixed(4) 
+                    ${data?.totalRequests && data.totalRequests > 0
+                      ? ((data.totalCost || 0) / data.totalRequests).toFixed(4)
                       : '0.0000'}
                   </p>
                   <p className="text-xs text-green-600 mt-1">Per API call</p>
@@ -299,10 +298,10 @@ export default function AnalyticsPage() {
                     <span className="text-sm text-slate-600">API Keys Utilization</span>
                     <div className="flex items-center">
                       <div className="w-20 h-2 bg-slate-200 rounded-full mr-2">
-                        <div 
+                        <div
                           className="h-full bg-purple-500 rounded-full"
-                          style={{ 
-                            width: `${data?.totalApiKeys ? Math.min((data.totalRequests / (data.totalApiKeys * 10)) * 100, 100) : 0}%` 
+                          style={{
+                            width: `${data?.totalApiKeys ? Math.min((data.totalRequests / (data.totalApiKeys * 10)) * 100, 100) : 0}%`
                           }}
                         ></div>
                       </div>
@@ -316,10 +315,10 @@ export default function AnalyticsPage() {
                     <span className="text-sm text-slate-600">Plan Limit Usage</span>
                     <div className="flex items-center">
                       <div className="w-20 h-2 bg-slate-200 rounded-full mr-2">
-                        <div 
+                        <div
                           className="h-full bg-orange-500 rounded-full"
-                          style={{ 
-                            width: `${Math.min(((data?.totalRequests || 0) / (data?.planLimits?.monthlyRequestLimit || 25)) * 100, 100)}%` 
+                          style={{
+                            width: `${Math.min(((data?.totalRequests || 0) / (data?.planLimits?.monthlyRequestLimit || 25)) * 100, 100)}%`
                           }}
                         ></div>
                       </div>
@@ -337,13 +336,13 @@ export default function AnalyticsPage() {
                   <span className="text-xs bg-amber-100 text-amber-600 px-2 py-1 rounded-full">AI</span>
                 </div>
                 <div className="text-sm text-amber-800">
-                  {(data?.totalRequests || 0) === 0 
+                  {(data?.totalRequests || 0) === 0
                     ? "Start making API calls to get personalized insights!"
                     : (data?.totalRequests || 0) / (data?.planLimits?.monthlyRequestLimit || 25) > 0.6
-                    ? `You're using ${Math.round(((data?.totalRequests || 0) / (data?.planLimits?.monthlyRequestLimit || 25)) * 100)}% of your ${data?.userPlan || 'current'} plan. ${data?.userPlan === 'free' ? 'Consider upgrading for more requests.' : 'Monitor your usage.'}`
-                    : (data?.totalRequests || 0) > 0 && (data?.topModels?.length || 0) <= 1
-                    ? "Try experimenting with different AI models to find the best fit for your use case."
-                    : "Your usage patterns look healthy! Keep up the good work."}
+                      ? `You're using ${Math.round(((data?.totalRequests || 0) / (data?.planLimits?.monthlyRequestLimit || 25)) * 100)}% of your ${data?.userPlan || 'current'} plan. ${data?.userPlan === 'free' ? 'Consider upgrading for more requests.' : 'Monitor your usage.'}`
+                      : (data?.totalRequests || 0) > 0 && (data?.topModels?.length || 0) <= 1
+                        ? "Try experimenting with different AI models to find the best fit for your use case."
+                        : "Your usage patterns look healthy! Keep up the good work."}
                 </div>
               </div>
             </div>
@@ -414,7 +413,7 @@ export default function AnalyticsPage() {
                   <DollarSignIcon className="h-6 w-6 text-blue-600" />
                 </div>
               </div>
-              
+
               <div className="flex items-center justify-between p-4 bg-green-50 rounded-lg">
                 <div>
                   <p className="text-sm font-medium text-green-900">Growth Rate</p>

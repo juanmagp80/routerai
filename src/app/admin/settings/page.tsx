@@ -1,14 +1,14 @@
 'use client';
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Settings2Icon, BellIcon, ShieldIcon, KeyIcon } from "lucide-react";
+import { BellIcon, KeyIcon, Settings2Icon, ShieldIcon } from "lucide-react";
 
 export default function SettingsPage() {
   return (
@@ -46,7 +46,7 @@ export default function SettingsPage() {
                   <Input id="lastName" placeholder="Your last name" className="mt-1" />
                 </div>
               </div>
-              
+
               <div>
                 <Label htmlFor="email">Email</Label>
                 <Input id="email" type="email" placeholder="your@email.com" className="mt-1" />
@@ -176,8 +176,8 @@ export default function SettingsPage() {
 
               <div>
                 <Label htmlFor="allowedIPs">Allowed IPs (Optional)</Label>
-                <Textarea 
-                  id="allowedIPs" 
+                <Textarea
+                  id="allowedIPs"
                   placeholder="192.168.1.100&#10;10.0.0.50&#10;203.0.113.45"
                   className="mt-1"
                   rows={3}
@@ -241,7 +241,7 @@ export default function SettingsPage() {
                     <div className="bg-blue-500 h-2 rounded-full" style={{ width: '28.47%' }}></div>
                   </div>
                 </div>
-                
+
                 <div>
                   <div className="flex justify-between text-sm mb-1">
                     <span>Storage</span>

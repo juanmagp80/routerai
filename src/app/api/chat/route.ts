@@ -97,13 +97,13 @@ export async function POST(request: NextRequest) {
         }
 
         // Trigger automatic notifications (no await - fire and forget)
-        NotificationService.checkAndNotifyUsageLimits(userId).catch(error => 
+        NotificationService.checkAndNotifyUsageLimits(userId).catch(error =>
           console.error('Error checking usage limits:', error)
         );
         NotificationService.checkAndSuggestUpgrade(userId).catch(error =>
           console.error('Error checking upgrade suggestions:', error)
         );
-        
+
         // Check for milestones (fire and forget)
         fetch(`${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/api/notifications/milestones`, {
           method: 'POST',

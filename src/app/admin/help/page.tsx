@@ -1,32 +1,21 @@
 "use client";
 
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { motion } from "framer-motion";
 import {
-    ArrowRight,
-    BookOpen,
+    AlertCircle,
+    BarChart3,
     CheckCircle,
     Code,
     Copy,
-    Key,
-    Lock,
-    Settings,
-    Shield,
-    Zap,
-    TrendingDown,
-    BarChart3,
-    Clock,
-    HelpCircle,
-    MessageSquare,
-    Users,
     CreditCard,
-    FileText,
-    Monitor,
-    AlertCircle,
+    HelpCircle,
+    Key,
     Lightbulb,
-    PlayCircle
+    MessageSquare,
+    PlayCircle,
+    Settings
 } from "lucide-react";
 import { useState } from "react";
 
@@ -150,7 +139,7 @@ const response = await fetch('https://api.roulix.com/v1/chat', {
             {/* Hero Section */}
             <div className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-emerald-900">
                 <div className="absolute inset-0 bg-[linear-gradient(45deg,transparent_25%,rgba(16,185,129,0.05)_50%,transparent_75%),linear-gradient(-45deg,transparent_25%,rgba(6,182,212,0.05)_50%,transparent_75%)] bg-[length:60px_60px]"></div>
-                
+
                 <div className="relative max-w-6xl mx-auto px-6 py-16">
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
@@ -163,15 +152,15 @@ const response = await fetch('https://api.roulix.com/v1/chat', {
                             </div>
                             <span className="text-xl font-bold text-white">Roulix Help Center</span>
                         </div>
-                        
+
                         <h1 className="text-4xl font-black text-white mb-6 leading-tight">
                             Get the Most Out of Roulix
                         </h1>
-                        
+
                         <p className="text-xl text-slate-300 leading-relaxed max-w-3xl mx-auto mb-8">
                             Everything you need to know about using Roulix's intelligent AI routing platform effectively.
                         </p>
-                        
+
                         <div className="flex flex-wrap justify-center gap-4">
                             <Button size="lg" variant="secondary" asChild>
                                 <a href="/admin/keys">
@@ -192,7 +181,7 @@ const response = await fetch('https://api.roulix.com/v1/chat', {
 
             {/* Main Content */}
             <div className="max-w-6xl mx-auto px-6 py-16">
-                
+
                 {/* Quick Start Section */}
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
@@ -234,7 +223,7 @@ const response = await fetch('https://api.roulix.com/v1/chat', {
                                     <p className="text-sm text-slate-600">Track your usage in the Analytics dashboard</p>
                                 </div>
                             </div>
-                            
+
                             <div className="bg-slate-900 rounded-lg p-4 relative">
                                 <button
                                     onClick={() => handleCopyCode(quickStartExample, 'quickstart')}

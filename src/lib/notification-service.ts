@@ -44,7 +44,7 @@ export class NotificationService {
             const usagePercentage = usage.requests.percentage;
             const requestsUsed = usage.requests.current;
             const requestsLimit = usage.requests.limit;
-            
+
             // Notificar en diferentes umbrales
             if (usagePercentage >= 90 && usagePercentage < 100) {
                 // 90% - Advertencia crítica
@@ -93,20 +93,20 @@ export class NotificationService {
 
             const { limits, usage, user } = result;
             const usagePercentage = usage.requests.percentage;
-            
+
             // Sugerir upgrade si está usando mucho del plan actual
             if (usagePercentage >= 75 && user.plan !== 'ENTERPRISE') {
                 const nextPlan = this.getNextPlanRecommendation(user.plan);
-                
+
                 await this.sendNotification({
                     userId,
                     type: 'upgrade_suggestion',
                     title: '📈 Upgrade Recommendation',
                     message: `Based on your usage (${usagePercentage.toFixed(1)}%), upgrading to ${nextPlan} could provide better value and avoid limits.`,
-                    metadata: { 
-                        current_plan: user.plan, 
+                    metadata: {
+                        current_plan: user.plan,
                         suggested_plan: nextPlan,
-                        usage_percentage: usagePercentage 
+                        usage_percentage: usagePercentage
                     }
                 });
                 return true;
@@ -188,7 +188,7 @@ export class NotificationService {
     private static getNextPlanRecommendation(currentPlan: string): string {
         const planHierarchy = {
             'free': 'starter',
-            'starter': 'pro', 
+            'starter': 'pro',
             'pro': 'enterprise',
             'enterprise': 'enterprise'
         };

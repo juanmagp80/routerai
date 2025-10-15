@@ -2,7 +2,6 @@
 
 import { cn } from '@/lib/utils';
 import {
-  Activity,
   BarChart3,
   Bell,
   CreditCard,
@@ -68,7 +67,7 @@ export function Sidebar({ className }: SidebarProps) {
                 {/* Horizontal and vertical connection lines */}
                 <path d="M6 16 L26 16" stroke="url(#sidebarConnectionGradient)" strokeWidth="0.8" />
                 <path d="M16 6 L16 26" stroke="url(#sidebarConnectionGradient)" strokeWidth="0.8" />
-                
+
                 {/* Diagonal connection lines */}
                 <path d="M10 10 L22 22" stroke="url(#sidebarConnectionGradient)" strokeWidth="0.6" className="opacity-60" />
                 <path d="M22 10 L10 22" stroke="url(#sidebarConnectionGradient)" strokeWidth="0.6" className="opacity-60" />
@@ -83,7 +82,7 @@ export function Sidebar({ className }: SidebarProps) {
                   strokeWidth="2.5"
                   strokeLinecap="round"
                 />
-                
+
                 {/* Central decision node */}
                 <circle
                   cx="16"
@@ -92,7 +91,7 @@ export function Sidebar({ className }: SidebarProps) {
                   fill="url(#sidebarLogoGradient)"
                   className="opacity-90"
                 />
-                
+
                 {/* Route decision points */}
                 <circle cx="10" cy="10" r="1.5" fill="#34d399" className="opacity-80" />
                 <circle cx="22" cy="10" r="1.5" fill="#34d399" className="opacity-80" />

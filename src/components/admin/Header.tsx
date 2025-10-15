@@ -230,9 +230,9 @@ export function Header() {
             <div className="flex items-center space-x-3">
               {/* Custom User Menu */}
               <div className="relative" ref={userMenuRef}>
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
+                <Button
+                  variant="ghost"
+                  size="sm"
                   className="flex items-center space-x-2"
                   onClick={() => setShowUserMenu(!showUserMenu)}
                 >
@@ -243,12 +243,12 @@ export function Header() {
                     {clerkUser?.emailAddresses[0]?.emailAddress || 'User'}
                   </span>
                 </Button>
-                
+
                 {/* Dropdown menu for user actions */}
                 {showUserMenu && (
                   <div className="absolute right-0 mt-1 w-48 bg-white rounded-md shadow-lg border border-slate-200 py-1 z-50">
                     <Link href="/admin/profile">
-                      <button 
+                      <button
                         className="flex items-center w-full px-4 py-2 text-sm text-slate-700 hover:bg-slate-100"
                         onClick={() => setShowUserMenu(false)}
                       >

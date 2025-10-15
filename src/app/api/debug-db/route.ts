@@ -33,7 +33,7 @@ export async function GET() {
                     error: usersError?.message
                 },
                 usageRecords: {
-                    data: usageRecordsTable, 
+                    data: usageRecordsTable,
                     error: usageError?.message
                 }
             },
