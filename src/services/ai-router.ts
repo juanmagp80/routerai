@@ -1,13 +1,13 @@
 import { getAvailableModels, getModelConfig } from '@/config/ai-providers';
+import { AdaptiveLearningService, TaskContext } from '@/lib/adaptive-learning-service';
 import { supabase } from '@/lib/supabase';
 import { AIRequest, AIResponse, ModelConfig } from '@/types/ai';
-import { AdaptiveLearningService, TaskContext } from '@/lib/adaptive-learning-service';
 import { AnthropicProvider } from './providers/anthropic';
 import { GoogleProvider } from './providers/google';
 import { GrokProvider } from './providers/grok';
+import { MistralProvider } from './providers/mistral';
 import { OpenAIProvider } from './providers/openai';
 import { TogetherProvider } from './providers/together';
-import { MistralProvider } from './providers/mistral';
 
 type AIProviderInstance = OpenAIProvider | AnthropicProvider | GoogleProvider | GrokProvider | TogetherProvider | MistralProvider;
 
@@ -208,7 +208,7 @@ export class AIRouterService {
     if (request.userId) {
       try {
         console.log('🧠 Using adaptive learning system for model selection');
-        
+
         // Analyze task context
         const taskContext = AdaptiveLearningService.analyzeTaskContext(request.message);
         console.log('🔍 Task context:', taskContext);
@@ -227,20 +227,20 @@ export class AIRouterService {
           const bestModel = modelScores[0];
           const secondBestScore = modelScores[1]?.score || 0;
           const scoreDifference = bestModel.score - secondBestScore;
-          
+
           // Use adaptive learning only if:
           // 1. Confidence is reasonably high (> 0.3)
           // 2. There's a meaningful difference between top models (> 0.1)
           // 3. The best model isn't always the cheapest one (add variety)
           if (bestModel.confidence > 0.3 && scoreDifference > 0.1) {
             const selectedModel = getModelConfig(bestModel.modelName);
-            
+
             if (selectedModel) {
               console.log('🏆 Selected adaptive model:', selectedModel.name, 'with score:', bestModel.score.toFixed(3));
               console.log('💡 Reasoning:', bestModel.reasoning.join(', '));
-              
-            // Store task context for later use in logging
-            Object.assign(request, { taskContext });              return selectedModel;
+
+              // Store task context for later use in logging
+              Object.assign(request, { taskContext }); return selectedModel;
             }
           } else {
             console.log('🎲 Adaptive learning confidence too low or scores too similar, using fallback strategy');
@@ -345,11 +345,11 @@ export class AIRouterService {
         // For short messages, use a variety of fast models (not always the same)
         if (messageLength < 200) {
           const quickModels = availableModels.filter(m =>
-            m.name.includes('gpt-3.5') || m.name.includes('haiku') || 
+            m.name.includes('gpt-3.5') || m.name.includes('haiku') ||
             m.name.includes('gemini-2.0-flash') || m.name.includes('gpt-4o-mini') ||
             m.name.includes('claude-3-sonnet')
           );
-          
+
           if (quickModels.length > 1) {
             // Add some randomness to avoid always picking the same model
             const randomIndex = Math.floor(Math.random() * Math.min(3, quickModels.length));
@@ -363,10 +363,10 @@ export class AIRouterService {
 
         // Default: prefer a good balanced model over just the cheapest
         const preferredModels = availableModels.filter(m =>
-          m.name.includes('claude-3-sonnet') || m.name.includes('gpt-4o') || 
+          m.name.includes('claude-3-sonnet') || m.name.includes('gpt-4o') ||
           m.name.includes('gemini-1.5-pro') || m.name.includes('gpt-3.5-turbo')
         );
-        
+
         if (preferredModels.length > 0) {
           console.log('🎯 Selected preferred default model:', preferredModels[0].name);
           return preferredModels[0];
@@ -483,7 +483,7 @@ export class AIRouterService {
       if (request && requestWithContext.taskContext) {
         const taskContext: TaskContext = requestWithContext.taskContext;
         const wasManualSelection = !!request.model; // If model was explicitly requested
-        
+
         await AdaptiveLearningService.updateModelUsage(
           userId,
           response.model,

@@ -7,8 +7,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { ModelConfig } from "@/types/ai";
 import { getModelsForPlan } from "@/config/ai-providers";
+import { ModelConfig } from "@/types/ai";
 import { CheckCircle, Clock, Code, Copy, DollarSign, Eye, EyeOff, Play, Settings, Star, Zap } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -100,11 +100,11 @@ export default function ApiConsolePage() {
   // Obtener modelos de tu plan que no tienen API key configurada
   const getMissingApiKeyModels = () => {
     if (userAllowedModels.length === 0) return [];
-    
+
     const allPlanModels = getModelsForPlan(userPlan, userAllowedModels);
     const availableModelNames = availableModels.map(model => model.name);
-    
-    return allPlanModels.filter(model => 
+
+    return allPlanModels.filter(model =>
       !availableModelNames.includes(model.name)
     ).map(model => ({
       name: model.name,
@@ -393,7 +393,7 @@ export default function ApiConsolePage() {
                       ))}
                     </SelectContent>
                   </Select>
-                  
+
                   {/* Mostrar información de modelos disponibles y faltantes */}
                   <div className="flex items-center justify-between text-xs text-muted-foreground">
                     <span>Modelos disponibles: {getFilteredModels().length}</span>

@@ -204,7 +204,7 @@ export const MODEL_CONFIGS: ModelConfig[] = [
   },
   {
     name: 'claude-3-opus',
-    provider: 'anthropic',  
+    provider: 'anthropic',
     maxTokens: 4096,
     costPer1kTokens: { input: 0.015, output: 0.075 },
     priority: 2,
@@ -484,8 +484,8 @@ export function getProviders(): AIProvider[] {
 
 // Nueva función para obtener modelos según el plan del usuario
 export function getModelsForPlan(userPlan: string, allowedModels: string[]): ModelConfig[] {
-  return MODEL_CONFIGS.filter(model => 
-    model.available && 
+  return MODEL_CONFIGS.filter(model =>
+    model.available &&
     allowedModels.includes(model.name)
   ).sort((a, b) => a.priority - b.priority);
 }
@@ -503,11 +503,11 @@ export function getModelsByPriceCategory(): {
   enterprise: ModelConfig[];
 } {
   const freeModels = ['gpt-3.5-turbo', 'gpt-4o-mini', 'claude-3-haiku', 'claude-3.5-sonnet', 'gemini-2.0-flash', 'gemini-2.5-flash', 'gemini-1.5-flash', 'llama-3.1-8b', 'mistral-7b'];
-  
+
   const starterModels = [...freeModels, 'gpt-4', 'gpt-4o', 'gpt-4-vision', 'claude-3-sonnet', 'gemini-pro', 'gemini-1.5-pro', 'gemini-2.5-pro', 'llama-3.1-70b', 'mixtral-8x7b', 'codestral'];
-  
+
   const proModels = [...starterModels, 'gpt-4-turbo', 'gpt-4-32k', 'o1-preview', 'o1-mini', 'claude-3-opus', 'claude-3.5-opus', 'gemini-ultra', 'llama-3.1-405b', 'grok-beta', 'grok-2', 'command-r', 'command-r-plus'];
-  
+
   const enterpriseModels = [...proModels, 'llama-3.2-3b', 'llama-3.2-90b', 'mistral-small', 'codellama-34b', 'deepseek-coder', 'starcoder2', 'pplx-7b-online', 'pplx-70b-online', 'stable-beluga', 'stable-code', 'zephyr-7b', 'falcon-180b'];
 
   return {

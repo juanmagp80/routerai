@@ -14,8 +14,8 @@ export default function SignInPage() {
                         Access your admin dashboard
                     </p>
                 </div>
-                
-                <SignIn 
+
+                <SignIn
                     appearance={{
                         elements: {
                             footerAction: "hidden",

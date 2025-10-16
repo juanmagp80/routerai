@@ -1,17 +1,17 @@
 const { createClient } = require('@supabase/supabase-js');
 
 const supabase = createClient(
-  'https://jmfegokyvaflwegtyaun.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImptZmVnb2t5dmFmbHdlZ3R5YXVuIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1ODAyNDIxOSwiZXhwIjoyMDczNjAwMjE5fQ.yPH3ObF9tKB1PzsM2Pj9tsIqBKypCbiDhQ9Mr0stAtM'
+    'https://jmfegokyvaflwegtyaun.supabase.co',
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImptZmVnb2t5dmFmbHdlZ3R5YXVuIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1ODAyNDIxOSwiZXhwIjoyMDczNjAwMjE5fQ.yPH3ObF9tKB1PzsM2Pj9tsIqBKypCbiDhQ9Mr0stAtM'
 );
 
 async function createBasicLearningFunction() {
-  console.log('🔧 CREANDO FUNCIÓN BÁSICA DE APRENDIZAJE');
-  console.log('======================================');
+    console.log('🔧 CREANDO FUNCIÓN BÁSICA DE APRENDIZAJE');
+    console.log('======================================');
 
-  try {
-    // Crear función simple para obtener estadísticas
-    const simpleFunction = `
+    try {
+        // Crear función simple para obtener estadísticas
+        const simpleFunction = `
       CREATE OR REPLACE FUNCTION get_user_learning_stats(p_user_id TEXT)
       RETURNS JSON AS $$
       DECLARE
@@ -48,28 +48,28 @@ async function createBasicLearningFunction() {
       $$ LANGUAGE plpgsql;
     `;
 
-    console.log('📤 Enviando función a Supabase...');
-    
-    // Probar ejecutando la función como una query
-    const { data, error } = await supabase
-      .from('user_model_preferences')
-      .select('*')
-      .limit(1);
-    
-    if (error) {
-      console.error('❌ Error de conexión:', error.message);
-      return;
+        console.log('📤 Enviando función a Supabase...');
+
+        // Probar ejecutando la función como una query
+        const { data, error } = await supabase
+            .from('user_model_preferences')
+            .select('*')
+            .limit(1);
+
+        if (error) {
+            console.error('❌ Error de conexión:', error.message);
+            return;
+        }
+
+        console.log('✅ Conexión a Supabase exitosa');
+        console.log('📝 Para instalar las funciones, ejecuta este SQL en el dashboard de Supabase:');
+        console.log('='.repeat(80));
+        console.log(simpleFunction);
+        console.log('='.repeat(80));
+
+    } catch (error) {
+        console.error('❌ Error:', error.message);
     }
-
-    console.log('✅ Conexión a Supabase exitosa');
-    console.log('📝 Para instalar las funciones, ejecuta este SQL en el dashboard de Supabase:');
-    console.log('='.repeat(80));
-    console.log(simpleFunction);
-    console.log('='.repeat(80));
-
-  } catch (error) {
-    console.error('❌ Error:', error.message);
-  }
 }
 
 createBasicLearningFunction();

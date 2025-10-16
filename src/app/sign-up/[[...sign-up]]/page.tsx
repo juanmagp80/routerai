@@ -14,14 +14,14 @@ export default function SignUpPage() {
                         Get started with Roulix
                     </p>
                 </div>
-                <SignUp 
+                <SignUp
                     appearance={{
                         elements: {
                             formButtonPrimary: "bg-blue-600 hover:bg-blue-700 text-sm normal-case font-medium rounded-md px-4 py-2 transition-colors",
                             formFieldLabel: "text-sm font-medium text-gray-700 mb-1",
                             formFieldInput: "mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm",
                             footerAction: "hidden",
-                            footerActionText: "hidden", 
+                            footerActionText: "hidden",
                             footerActionLink: "hidden",
                             footer: "hidden",
                             dividerLine: "bg-gray-300",
