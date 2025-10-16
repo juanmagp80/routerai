@@ -23,8 +23,14 @@ export async function GET() {
             )
         }
 
+        // Obtener información completa del plan para incluir modelos permitidos
+        const planLimits = await PlanLimitsService.getPlanLimits(limitsAndUsage.user.plan);
+
         return NextResponse.json({
+            success: true,
+            plan: limitsAndUsage.user.plan,
             currentPlan: limitsAndUsage.user.plan,
+            allowedModels: planLimits?.allowed_models || [],
             apiKeysUsed: limitsAndUsage.usage.apiKeys.current,
             apiKeysLimit: limitsAndUsage.usage.apiKeys.limit,
             requestsUsed: limitsAndUsage.usage.requests.current,

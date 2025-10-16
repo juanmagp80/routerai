@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { ModelConfig } from "@/types/ai";
+import { getModelsForPlan } from "@/config/ai-providers";
 import { CheckCircle, Clock, Code, Copy, DollarSign, Eye, EyeOff, Play, Settings, Star, Zap } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -43,6 +44,7 @@ export default function ApiConsolePage() {
   const [isLoading, setIsLoading] = useState(false);
   const [availableModels, setAvailableModels] = useState<ModelConfig[]>([]);
   const [userPlan, setUserPlan] = useState<string>('FREE');
+  const [userAllowedModels, setUserAllowedModels] = useState<string[]>([]);
   const [testHistory, setTestHistory] = useState<ApiTest[]>([]);
   const [selectedTest, setSelectedTest] = useState<ApiTest | null>(null);
   const [copied, setCopied] = useState(false);
@@ -64,34 +66,51 @@ export default function ApiConsolePage() {
       .then(data => {
         if (data.success) {
           setUserPlan(data.plan || 'FREE');
+          setUserAllowedModels(data.allowedModels || []);
         }
       })
       .catch(err => {
         console.error('Error loading user plan:', err);
         setUserPlan('FREE'); // Por defecto FREE si hay error
+        // Fallback para modelos gratuitos
+        setUserAllowedModels(['gpt-3.5-turbo', 'gpt-4o-mini', 'claude-3-haiku', 'claude-3.5-sonnet', 'gemini-2.0-flash', 'gemini-2.5-flash', 'gemini-1.5-flash', 'llama-3.1-8b', 'mistral-7b']);
       });
   }, []);
 
   // Filtrar modelos según el plan del usuario
   const getFilteredModels = () => {
-    if (userPlan === 'FREE') {
-      // Usuarios FREE pueden usar modelos económicos específicos
-      const allowedFreeModels = [
-        'gpt-3.5-turbo',
-        'gpt-4o-mini',
-        'claude-3-haiku',
-        'gemini-2.0-flash'
-      ];
-
+    if (userAllowedModels.length === 0) {
+      // Si no hay modelos permitidos cargados, usar fallback básico
       return availableModels.filter(model =>
-        allowedFreeModels.some(allowed =>
-          model.name.toLowerCase().includes(allowed.toLowerCase()) ||
-          model.name.toLowerCase() === allowed.toLowerCase()
-        )
+        ['gpt-3.5-turbo', 'gpt-4o-mini', 'claude-3-haiku', 'gemini-2.0-flash'].includes(model.name)
       );
     }
-    // Otros planes pueden usar todos los modelos
-    return availableModels;
+
+    // Filtrar modelos disponibles que están en el plan del usuario
+    return availableModels.filter(model =>
+      userAllowedModels.includes(model.name)
+    ).sort((a, b) => {
+      // Ordenar por prioridad de costo (más barato primero)
+      const aCost = a.costPer1kTokens?.input || 0;
+      const bCost = b.costPer1kTokens?.input || 0;
+      return aCost - bCost;
+    });
+  };
+
+  // Obtener modelos de tu plan que no tienen API key configurada
+  const getMissingApiKeyModels = () => {
+    if (userAllowedModels.length === 0) return [];
+    
+    const allPlanModels = getModelsForPlan(userPlan, userAllowedModels);
+    const availableModelNames = availableModels.map(model => model.name);
+    
+    return allPlanModels.filter(model => 
+      !availableModelNames.includes(model.name)
+    ).map(model => ({
+      name: model.name,
+      provider: model.provider,
+      cost: model.costPer1kTokens?.input || 0
+    }));
   };
 
   const executeApiTest = async () => {
@@ -284,6 +303,25 @@ export default function ApiConsolePage() {
                 </div>
               </div>
 
+              {/* Plan Information */}
+              <div className="bg-muted/50 p-3 rounded-lg">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    <Badge variant={userPlan === 'FREE' ? 'secondary' : userPlan === 'STARTER' ? 'default' : 'destructive'}>
+                      {userPlan} Plan
+                    </Badge>
+                    <span className="text-sm text-muted-foreground">
+                      {getFilteredModels().length} models available
+                    </span>
+                  </div>
+                  {userPlan === 'FREE' && (
+                    <span className="text-xs text-muted-foreground">
+                      Upgrade for more models
+                    </span>
+                  )}
+                </div>
+              </div>
+
               <div className="grid grid-cols-2 gap-4">
                 <div className="flex flex-col space-y-2">
                   <Label className="text-sm font-medium">Routing Strategy</Label>
@@ -321,20 +359,75 @@ export default function ApiConsolePage() {
                 </div>
 
                 <div className="flex flex-col space-y-2">
-                  <Label className="text-sm font-medium">Model Override</Label>
+                  <div className="flex items-center justify-between">
+                    <Label className="text-sm font-medium">Model Override</Label>
+                    <span className="text-xs text-muted-foreground">
+                      {getFilteredModels().length} available
+                    </span>
+                  </div>
                   <Select value={selectedModel} onValueChange={setSelectedModel}>
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="auto">Auto Select</SelectItem>
+                      <SelectItem value="auto">
+                        <div className="flex items-center justify-between w-full">
+                          <span>Auto Select</span>
+                          <Badge variant="outline" className="ml-2">Smart</Badge>
+                        </div>
+                      </SelectItem>
                       {getFilteredModels().map((model) => (
                         <SelectItem key={model.name} value={model.name}>
-                          {model.name} ({model.provider})
+                          <div className="flex items-center justify-between w-full">
+                            <div className="flex flex-col">
+                              <span>{model.name}</span>
+                              <span className="text-xs text-muted-foreground">{model.provider}</span>
+                            </div>
+                            <div className="flex items-center space-x-1 ml-2">
+                              <Badge variant="secondary" className="text-xs">
+                                ${(model.costPer1kTokens?.input || 0).toFixed(4)}/1k
+                              </Badge>
+                            </div>
+                          </div>
                         </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
+                  
+                  {/* Mostrar información de modelos disponibles y faltantes */}
+                  <div className="flex items-center justify-between text-xs text-muted-foreground">
+                    <span>Modelos disponibles: {getFilteredModels().length}</span>
+                    <span>Plan: {userPlan}</span>
+                  </div>
+
+                  {/* Mostrar modelos que necesitan API keys */}
+                  {getMissingApiKeyModels().length > 0 && (
+                    <div className="mt-3 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+                      <div className="flex items-center space-x-2 mb-2">
+                        <Settings className="h-4 w-4 text-amber-600" />
+                        <span className="text-sm font-medium text-amber-800">
+                          Modelos de tu plan {userPlan} que necesitan API Keys
+                        </span>
+                      </div>
+                      <div className="grid grid-cols-1 gap-1 text-xs">
+                        {getMissingApiKeyModels().map((model, index) => (
+                          <div key={index} className="flex items-center justify-between text-amber-700">
+                            <span>{model.name} ({model.provider})</span>
+                            <span>${model.cost.toFixed(4)}/1k</span>
+                          </div>
+                        ))}
+                      </div>
+                      <p className="text-xs text-amber-600 mt-2">
+                        💡 Configura las API keys en Settings → API Keys para acceder a estos modelos
+                      </p>
+                    </div>
+                  )}
+
+                  {userPlan === 'FREE' && getFilteredModels().length < 15 && (
+                    <p className="text-xs text-muted-foreground">
+                      💡 Upgrade to access premium models like GPT-4, Claude Opus, and more
+                    </p>
+                  )}
                 </div>
               </div>
 

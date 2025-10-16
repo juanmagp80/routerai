@@ -1,12 +1,15 @@
 import { getAvailableModels, getModelConfig } from '@/config/ai-providers';
 import { supabase } from '@/lib/supabase';
 import { AIRequest, AIResponse, ModelConfig } from '@/types/ai';
+import { AdaptiveLearningService, TaskContext } from '@/lib/adaptive-learning-service';
 import { AnthropicProvider } from './providers/anthropic';
 import { GoogleProvider } from './providers/google';
 import { GrokProvider } from './providers/grok';
 import { OpenAIProvider } from './providers/openai';
+import { TogetherProvider } from './providers/together';
+import { MistralProvider } from './providers/mistral';
 
-type AIProviderInstance = OpenAIProvider | AnthropicProvider | GoogleProvider | GrokProvider;
+type AIProviderInstance = OpenAIProvider | AnthropicProvider | GoogleProvider | GrokProvider | TogetherProvider | MistralProvider;
 
 export class AIRouterService {
   private providers = new Map<string, AIProviderInstance>();
@@ -43,6 +46,20 @@ export class AIRouterService {
       console.log('✅ Grok provider initialized');
     } else {
       console.log('❌ Grok API key not found');
+    }
+
+    if (process.env.TOGETHER_API_KEY) {
+      this.providers.set('meta', new TogetherProvider());
+      console.log('✅ Together provider initialized');
+    } else {
+      console.log('❌ Together API key not found');
+    }
+
+    if (process.env.MISTRAL_API_KEY) {
+      this.providers.set('mistral', new MistralProvider());
+      console.log('✅ Mistral provider initialized');
+    } else {
+      console.log('❌ Mistral API key not found');
     }
 
     console.log(`🎯 Total providers initialized: ${this.providers.size}`);
@@ -99,7 +116,7 @@ export class AIRouterService {
       const response = await provider.generateResponse(modelRequest);
 
       // Log usage to database
-      await this.logUsage(request.userId, response, request.apiKeyId);
+      await this.logUsage(request.userId, response, request.apiKeyId, request);
 
       return response;
 
@@ -187,9 +204,56 @@ export class AIRouterService {
       }
     }
 
-    // Apply routing strategy
+    // Use adaptive learning system if user is provided
+    if (request.userId) {
+      try {
+        console.log('🧠 Using adaptive learning system for model selection');
+        
+        // Analyze task context
+        const taskContext = AdaptiveLearningService.analyzeTaskContext(request.message);
+        console.log('🔍 Task context:', taskContext);
+
+        // Get personalized scores for available models
+        const modelScores = await AdaptiveLearningService.calculatePersonalizedScores(
+          request.userId,
+          availableModels.map(m => ({ name: m.name, provider: m.provider })),
+          taskContext
+        );
+
+        console.log('📊 Model scores:', modelScores.map(s => `${s.modelName}: ${s.score.toFixed(3)} (confidence: ${s.confidence.toFixed(2)})`));
+
+        // Only use adaptive learning if confidence is high and scores are diverse
+        if (modelScores.length > 0) {
+          const bestModel = modelScores[0];
+          const secondBestScore = modelScores[1]?.score || 0;
+          const scoreDifference = bestModel.score - secondBestScore;
+          
+          // Use adaptive learning only if:
+          // 1. Confidence is reasonably high (> 0.3)
+          // 2. There's a meaningful difference between top models (> 0.1)
+          // 3. The best model isn't always the cheapest one (add variety)
+          if (bestModel.confidence > 0.3 && scoreDifference > 0.1) {
+            const selectedModel = getModelConfig(bestModel.modelName);
+            
+            if (selectedModel) {
+              console.log('🏆 Selected adaptive model:', selectedModel.name, 'with score:', bestModel.score.toFixed(3));
+              console.log('💡 Reasoning:', bestModel.reasoning.join(', '));
+              
+            // Store task context for later use in logging
+            Object.assign(request, { taskContext });              return selectedModel;
+            }
+          } else {
+            console.log('🎲 Adaptive learning confidence too low or scores too similar, using fallback strategy');
+          }
+        }
+      } catch (error) {
+        console.error('❌ Error in adaptive learning selection, falling back to strategy-based selection:', error);
+      }
+    }
+
+    // Fallback to traditional strategy-based selection
     const strategy = request.routingStrategy || 'auto';
-    console.log('🎯 Using routing strategy:', strategy);
+    console.log('🎯 Using fallback routing strategy:', strategy);
 
     switch (strategy) {
       case 'cost':
@@ -228,14 +292,38 @@ export class AIRouterService {
 
       case 'auto':
       default:
-        // Smart model selection based on request characteristics
+        // Smart model selection with more variety and intelligence
         const messageLength = request.message.length;
         const isComplexTask = this.isComplexTask(request.message);
+        const isCodeTask = this.isCodeTask(request.message);
+        const isCreativeTask = this.isCreativeTask(request.message);
 
-        // For complex tasks, prefer GPT-4 or Claude-3-Opus
+        // For code tasks, prefer models good at programming
+        if (isCodeTask) {
+          const codeModels = availableModels.filter(m =>
+            m.name.includes('gpt-4') || m.name.includes('claude-3.5-sonnet') || m.name.includes('o1-')
+          );
+          if (codeModels.length > 0) {
+            console.log('💻 Selected code task model:', codeModels[0].name);
+            return codeModels[0];
+          }
+        }
+
+        // For creative tasks, prefer Claude or GPT-4
+        if (isCreativeTask) {
+          const creativeModels = availableModels.filter(m =>
+            m.name.includes('claude-3.5-sonnet') || m.name.includes('gpt-4o') || m.name.includes('opus')
+          );
+          if (creativeModels.length > 0) {
+            console.log('🎨 Selected creative task model:', creativeModels[0].name);
+            return creativeModels[0];
+          }
+        }
+
+        // For complex tasks, prefer high-quality models
         if (isComplexTask) {
           const complexModels = availableModels.filter(m =>
-            m.name.includes('gpt-4') || m.name.includes('opus')
+            m.name.includes('gpt-4') || m.name.includes('opus') || m.name.includes('claude-3.5-sonnet')
           );
           if (complexModels.length > 0) {
             console.log('🧠 Selected complex task model:', complexModels[0].name);
@@ -243,19 +331,49 @@ export class AIRouterService {
           }
         }
 
-        // For short messages, prefer faster/cheaper models
+        // For medium messages (200-500 chars), prefer balanced models
+        if (messageLength >= 200 && messageLength <= 500) {
+          const balancedModels = availableModels.filter(m =>
+            m.name.includes('claude-3-sonnet') || m.name.includes('gpt-4o') || m.name.includes('gemini-1.5-pro')
+          );
+          if (balancedModels.length > 0) {
+            console.log('⚖️ Selected balanced model for medium message:', balancedModels[0].name);
+            return balancedModels[0];
+          }
+        }
+
+        // For short messages, use a variety of fast models (not always the same)
         if (messageLength < 200) {
           const quickModels = availableModels.filter(m =>
-            m.name.includes('gpt-3.5') || m.name.includes('haiku') || m.name.includes('gemini-2.5-flash') || m.name.includes('gemini-2.0-flash')
+            m.name.includes('gpt-3.5') || m.name.includes('haiku') || 
+            m.name.includes('gemini-2.0-flash') || m.name.includes('gpt-4o-mini') ||
+            m.name.includes('claude-3-sonnet')
           );
-          if (quickModels.length > 0) {
+          
+          if (quickModels.length > 1) {
+            // Add some randomness to avoid always picking the same model
+            const randomIndex = Math.floor(Math.random() * Math.min(3, quickModels.length));
+            console.log('🏃 Selected varied quick model:', quickModels[randomIndex].name);
+            return quickModels[randomIndex];
+          } else if (quickModels.length > 0) {
             console.log('🏃 Selected quick model:', quickModels[0].name);
             return quickModels[0];
           }
         }
 
-        // Default: return highest priority available model
-        console.log('🎲 Selected default model:', availableModels[0]?.name);
+        // Default: prefer a good balanced model over just the cheapest
+        const preferredModels = availableModels.filter(m =>
+          m.name.includes('claude-3-sonnet') || m.name.includes('gpt-4o') || 
+          m.name.includes('gemini-1.5-pro') || m.name.includes('gpt-3.5-turbo')
+        );
+        
+        if (preferredModels.length > 0) {
+          console.log('🎯 Selected preferred default model:', preferredModels[0].name);
+          return preferredModels[0];
+        }
+
+        // Last resort: return first available model
+        console.log('🎲 Selected fallback model:', availableModels[0]?.name);
         return availableModels[0];
     }
   }
@@ -263,13 +381,37 @@ export class AIRouterService {
   private isComplexTask(message: string): boolean {
     const complexKeywords = [
       'analyze', 'explain', 'complex', 'detailed', 'comprehensive',
-      'code', 'programming', 'algorithm', 'technical', 'research',
-      'write a', 'create a', 'design', 'plan'
+      'technical', 'research', 'compare', 'evaluate', 'strategy',
+      'architecture', 'system', 'framework', 'methodology'
     ];
 
     const lowerMessage = message.toLowerCase();
     return complexKeywords.some(keyword => lowerMessage.includes(keyword)) ||
       message.length > 500;
+  }
+
+  private isCodeTask(message: string): boolean {
+    const codeKeywords = [
+      'code', 'programming', 'algorithm', 'function', 'class',
+      'variable', 'debug', 'error', 'syntax', 'compile',
+      'javascript', 'python', 'typescript', 'react', 'html',
+      'css', 'sql', 'api', 'database', 'server'
+    ];
+
+    const lowerMessage = message.toLowerCase();
+    return codeKeywords.some(keyword => lowerMessage.includes(keyword)) ||
+      message.includes('```') || message.includes('function') || message.includes('const ');
+  }
+
+  private isCreativeTask(message: string): boolean {
+    const creativeKeywords = [
+      'write a story', 'create a', 'imagine', 'creative', 'brainstorm',
+      'story', 'poem', 'novel', 'character', 'plot', 'narrative',
+      'artistic', 'design idea', 'concept', 'innovative', 'original'
+    ];
+
+    const lowerMessage = message.toLowerCase();
+    return creativeKeywords.some(keyword => lowerMessage.includes(keyword));
   }
 
   private async handleFallback(request: AIRequest, originalError: Error): Promise<AIResponse | null> {
@@ -307,7 +449,7 @@ export class AIRouterService {
           response.error = `Primary model failed (${originalError.message}), used fallback: ${model.name}`;
 
           // Log usage
-          await this.logUsage(request.userId, response, request.apiKeyId);
+          await this.logUsage(request.userId, response, request.apiKeyId, request);
 
           return response;
         } else {
@@ -322,8 +464,9 @@ export class AIRouterService {
     return null;
   }
 
-  private async logUsage(userId: string, response: AIResponse, apiKeyId?: string): Promise<void> {
+  private async logUsage(userId: string, response: AIResponse, apiKeyId?: string, request?: AIRequest): Promise<void> {
     try {
+      // Log usage in the traditional way
       await supabase.from('usage_records').insert({
         user_id: userId,
         api_key_id: apiKeyId || null,
@@ -334,6 +477,27 @@ export class AIRouterService {
         response_time: response.responseTime,
         status: response.success ? 'success' : 'error'
       });
+
+      // Log adaptive learning data if we have task context
+      const requestWithContext = request as AIRequest & { taskContext?: TaskContext };
+      if (request && requestWithContext.taskContext) {
+        const taskContext: TaskContext = requestWithContext.taskContext;
+        const wasManualSelection = !!request.model; // If model was explicitly requested
+        
+        await AdaptiveLearningService.updateModelUsage(
+          userId,
+          response.model,
+          response.provider,
+          taskContext,
+          response.tokensUsed.total,
+          response.cost,
+          response.responseTime,
+          wasManualSelection,
+          response.success
+        );
+
+        console.log('📚 Updated adaptive learning data for model:', response.model);
+      }
     } catch (error) {
       console.error('Failed to log usage:', error);
     }

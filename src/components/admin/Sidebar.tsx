@@ -4,6 +4,7 @@ import { cn } from '@/lib/utils';
 import {
   BarChart3,
   Bell,
+  Brain,
   CreditCard,
   HelpCircle,
   Key,
@@ -22,6 +23,7 @@ const navigation = [
   { name: 'AI Chat', href: '/admin/chat', icon: MessageSquare },
   { name: 'API Keys', href: '/admin/keys', icon: Key },
   { name: 'Analytics', href: '/admin/analytics', icon: BarChart3 },
+  { name: 'Adaptive Learning', href: '/admin/learning', icon: Brain },
   { name: 'Users', href: '/admin/users', icon: Users },
   { name: 'System Status', href: '/admin/system', icon: Shield },
   { name: 'Billing', href: '/admin/billing', icon: CreditCard },

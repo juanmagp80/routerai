@@ -1,7 +1,7 @@
-import { NextResponse } from 'next/server';
-import { auth } from '@clerk/nextjs/server';
-import { AIRouterService } from '@/services/ai-router';
 import { getAvailableModels, getProviders } from '@/config/ai-providers';
+import { AIRouterService } from '@/services/ai-router';
+import { auth } from '@clerk/nextjs/server';
+import { NextResponse } from 'next/server';
 
 // Use singleton pattern to maintain state between requests
 let aiRouterInstance: AIRouterService | null = null;
@@ -17,7 +17,7 @@ export async function GET() {
   try {
     // Verify authentication
     const { userId } = await auth();
-    
+
     if (!userId) {
       return NextResponse.json(
         { error: 'Unauthorized' },
@@ -28,13 +28,13 @@ export async function GET() {
     // Get available models and providers
     const models = getAvailableModels();
     const providers = getProviders();
-    
+
     // Get provider health status
     const aiRouter = getAIRouter();
     const providerHealth = await aiRouter.getProviderHealth();
 
     // Filter models by healthy providers
-    const availableModels = models.filter(model => 
+    const availableModels = models.filter(model =>
       providerHealth[model.provider] === true
     );
 
@@ -51,7 +51,7 @@ export async function GET() {
 
   } catch (error) {
     console.error('Models API error:', error);
-    
+
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

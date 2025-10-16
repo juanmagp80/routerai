@@ -76,3 +76,30 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Hide Clerk branding and development mode indicators */
+.cl-footerAction,
+.cl-footerActionText,
+.cl-footerActionLink,
+.cl-footer {
+  display: none !important;
+  visibility: hidden !important;
+  height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* Hide elements with specific data attributes for branding */
+[data-localization-key*="poweredBy"],
+[data-localization-key*="developmentMode"],
+[data-localization-key*="secured"] {
+  display: none !important;
+}
+
+/* Hide specific Clerk branding classes (commented out broad selectors that break functionality) */
+/* 
+.cl-internal-b3fm6y,
+[class*="cl-internal"] {
+  display: none !important;
+}
+*/

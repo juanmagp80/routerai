@@ -14,10 +14,14 @@ export default function SignInPage() {
                         Access your admin dashboard
                     </p>
                 </div>
-                <SignIn
+                
+                <SignIn 
                     appearance={{
                         elements: {
-                            formButtonPrimary: "bg-blue-600 hover:bg-blue-700 text-sm normal-case"
+                            footerAction: "hidden",
+                            footerActionText: "hidden",
+                            footerActionLink: "hidden",
+                            footer: "hidden"
                         }
                     }}
                 />

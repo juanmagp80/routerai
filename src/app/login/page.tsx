@@ -85,10 +85,16 @@ export default function LoginPage() {
                                     headerTitle: "text-3xl font-bold text-white mb-2",
                                     headerSubtitle: "text-gray-400",
                                     socialButtonsBlockButton: "w-full bg-white/5 border border-white/10 text-white py-2 px-4 rounded-xl font-medium hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-emerald-400 transition-all duration-300 flex items-center justify-center space-x-2 backdrop-blur-sm disabled:opacity-50 disabled:cursor-not-allowed",
-                                    footerActionText: "text-gray-400",
-                                    footerActionLink: "font-medium text-emerald-400 hover:text-emerald-300 transition-colors",
                                     formFieldInput: "w-full bg-white/5 border border-white/10 text-white rounded-xl px-4 py-3 transition-all duration-300 placeholder-gray-500 focus:outline-none backdrop-blur-sm",
                                     formFieldLabel: "block text-sm font-medium text-gray-300 mb-2",
+                                    // Hide branding elements
+                                    footer: "hidden",
+                                    footerAction: "hidden",
+                                    footerActionText: "hidden",
+                                    footerActionLink: "hidden"
+                                },
+                                variables: {
+                                    colorPrimary: "#10b981"
                                 }
                             }} redirectUrl="/admin" />
                         </div>
