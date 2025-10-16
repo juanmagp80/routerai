@@ -11,7 +11,7 @@ import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
 
 export function Header() {
-  const { dbUser, clerkUser, isLoading } = useUserSync();
+  const { clerkUser } = useUserSync();
   const { getRecentNotifications, unreadCount, markAsRead, deleteNotification } = useNotifications();
   const [showNotifications, setShowNotifications] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);

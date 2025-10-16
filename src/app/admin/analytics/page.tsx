@@ -1,6 +1,5 @@
 'use client';
 
-import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ActivityIcon, DollarSignIcon, KeyIcon, TrendingDownIcon, TrendingUpIcon, UsersIcon } from "lucide-react";
 import { useEffect, useState } from 'react';
@@ -95,21 +94,6 @@ export default function AnalyticsPage() {
 
   const getGrowthColor = (growth: number) => {
     return growth >= 0 ? 'text-green-600' : 'text-red-600';
-  };
-
-  const getPlanBadge = (plan: string) => {
-    switch (plan.toLowerCase()) {
-      case 'free':
-        return <Badge className="bg-gray-100 text-gray-800">FREE</Badge>;
-      case 'starter':
-        return <Badge className="bg-blue-100 text-blue-800">STARTER</Badge>;
-      case 'pro':
-        return <Badge className="bg-purple-100 text-purple-800">PRO</Badge>;
-      case 'enterprise':
-        return <Badge className="bg-orange-100 text-orange-800">ENTERPRISE</Badge>;
-      default:
-        return <Badge className="bg-gray-100 text-gray-800">FREE</Badge>;
-    }
   };
 
   if (loading) {

@@ -48,8 +48,7 @@ export async function GET() {
             totalApiKeysResult,
             topModelsResult,
             recentApiKeysResult,
-            recentUsageResult,
-            userDataResult
+            recentUsageResult
         ] = await Promise.all([
             // Total requests del usuario este mes (cada registro = 1 request)
             supabase
@@ -86,10 +85,7 @@ export async function GET() {
                 .select('created_at, model_used')
                 .eq('user_id', userIdForRecords)
                 .order('created_at', { ascending: false })
-                .limit(10),
-
-            // Ya no necesitamos consultar datos del usuario aquí porque los tenemos de PlanLimitsService
-            Promise.resolve({ data: null })
+                .limit(10)
         ])
 
         // Calcular totales del usuario (cada registro = 1 request)

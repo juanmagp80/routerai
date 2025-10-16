@@ -589,11 +589,9 @@ const SavingsSection = () => {
 
 // Componente de Dashboard con métricas en tiempo real
 const DashboardSection = () => {
-  const [metrics, setMetrics] = useState<unknown[]>([]);
   const [summary, setSummary] = useState<Record<string, unknown>>({});
   const [recentTasks, setRecentTasks] = useState<unknown[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
 
   const fetchMetrics = async () => {
@@ -608,25 +606,15 @@ const DashboardSection = () => {
       const data = await response.json();
 
       if (data.success) {
-        setMetrics(data.metrics || []);
         setSummary(data.summary || {});
         setRecentTasks(data.recent_tasks || []);
         setLastUpdated(new Date());
-        setError(null);
-      } else {
-        setError(data.error || 'Failed to fetch metrics');
       }
     } catch (err) {
       console.error('Error fetching metrics:', err);
 
       // Usar datos mock como fallback para la demo
       console.log('Using fallback mock data for demo...');
-      setMetrics([
-        { model: "gpt-4o", count: 45, sum: 0.675 },
-        { model: "claude-3", count: 23, sum: 0.69 },
-        { model: "gpt-4o-mini", count: 67, sum: 0.134 },
-        { model: "llama-3", count: 89, sum: 0.089 }
-      ]);
       setSummary({
         total_cost: 1.588,
         total_requests: 224,
@@ -649,7 +637,6 @@ const DashboardSection = () => {
         }
       ]);
       setLastUpdated(new Date());
-      setError(null); // No mostrar error, usar datos mock
     } finally {
       setLoading(false);
     }
@@ -662,9 +649,7 @@ const DashboardSection = () => {
     return () => clearInterval(interval);
   }, []);
 
-  const totalCost = Number(summary.total_cost) || 0;
   const totalRequests = Number(summary.total_requests) || 0;
-  const avgCostPerRequest = Number(summary.avg_cost_per_request) || 0;
 
   return (
     <section id="dashboard" className="py-24 bg-gradient-to-br from-slate-50 to-blue-50">

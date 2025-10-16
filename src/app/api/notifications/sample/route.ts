@@ -1,8 +1,8 @@
 import { NotificationService } from '@/lib/notification-service';
 import { auth } from '@clerk/nextjs/server';
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 
-export async function POST(request: NextRequest) {
+export async function POST() {
     try {
         const { userId } = await auth();
 

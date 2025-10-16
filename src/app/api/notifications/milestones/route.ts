@@ -1,10 +1,10 @@
 import { NotificationService } from '@/lib/notification-service';
 import { supabase } from '@/lib/supabase';
 import { auth } from '@clerk/nextjs/server';
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 
 // Endpoint para verificar hitos automáticamente
-export async function POST(request: NextRequest) {
+export async function POST() {
     try {
         const { userId } = await auth();
 

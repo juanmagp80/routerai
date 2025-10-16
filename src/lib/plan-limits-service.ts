@@ -254,25 +254,23 @@ export class PlanLimitsService {
     static async recordModelUsage(userId: string, modelUsed: string): Promise<boolean> {
         try {
             // Buscar el ID real del usuario
-            let { data: currentUser, error: fetchError } = await supabase
+            const { data: currentUser, error: fetchError } = await supabase
                 .from('users')
                 .select('id')
                 .eq('clerk_user_id', userId)
                 .single()
 
             if (fetchError || !currentUser) {
-                const { data: directUser, error: directError } = await supabase
+                const { data: directUser } = await supabase
                     .from('users')
                     .select('id')
                     .eq('id', userId)
                     .single()
 
-                currentUser = directUser
-            }
-
-            if (!currentUser) {
-                console.error('User not found for model usage recording')
-                return false
+                if (!directUser) {
+                    console.error('User not found for model usage recording')
+                    return false
+                }
             }
 
             // Actualizar el registro más reciente de usage_records con el modelo real
@@ -357,7 +355,7 @@ export class PlanLimitsService {
         }
     }
 
-    private static async canMakeRequestInternal(realUserId: string, user: any): Promise<{ allowed: boolean, reason?: string, current: number, limit: number, percentage: number }> {
+    private static async canMakeRequestInternal(realUserId: string, user: { is_active: boolean; plan: string; free_trial_expires_at?: string; monthly_requests_used: number; last_reset_date?: string }): Promise<{ allowed: boolean, reason?: string, current: number, limit: number, percentage: number }> {
         // Verificar si el usuario está activo
         if (!user.is_active) {
             return { allowed: false, reason: 'Cuenta desactivada', current: 0, limit: 0, percentage: 0 }
@@ -377,7 +375,7 @@ export class PlanLimitsService {
         }
 
         // Verificar si necesitamos resetear el contador mensual
-        const lastReset = new Date(user.last_reset_date)
+        const lastReset = new Date(user.last_reset_date || Date.now())
         const now = new Date()
         const shouldReset = lastReset.getMonth() !== now.getMonth() || lastReset.getFullYear() !== now.getFullYear()
 

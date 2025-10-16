@@ -227,7 +227,7 @@ export default function SettingsPage() {
           <Card>
             <CardHeader>
               <CardTitle className="text-lg font-semibold text-slate-900">
-                This Month's Usage
+                This Month&apos;s Usage
               </CardTitle>
             </CardHeader>
             <CardContent>

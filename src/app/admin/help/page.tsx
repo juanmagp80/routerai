@@ -158,7 +158,7 @@ const response = await fetch('https://api.roulix.com/v1/chat', {
                         </h1>
 
                         <p className="text-xl text-slate-300 leading-relaxed max-w-3xl mx-auto mb-8">
-                            Everything you need to know about using Roulix's intelligent AI routing platform effectively.
+                            Everything you need to know about using Roulix&apos;s intelligent AI routing platform effectively.
                         </p>
 
                         <div className="flex flex-wrap justify-center gap-4">
@@ -398,7 +398,7 @@ const response = await fetch('https://api.roulix.com/v1/chat', {
                                 Still Need Help?
                             </h3>
                             <p className="text-slate-600 mb-6 max-w-2xl mx-auto">
-                                Can't find what you're looking for? Our support team is here to help you get the most out of Roulix.
+                                Can&apos;t find what you&apos;re looking for? Our support team is here to help you get the most out of Roulix.
                             </p>
                             <div className="flex flex-col sm:flex-row gap-4 justify-center">
                                 <Button size="lg" asChild>

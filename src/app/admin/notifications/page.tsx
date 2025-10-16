@@ -211,7 +211,7 @@ const NotificationsPage = () => {
                                         key={filterOption}
                                         variant={filter === filterOption ? 'default' : 'outline'}
                                         size="sm"
-                                        onClick={() => setFilter(filterOption as any)}
+                                        onClick={() => setFilter(filterOption as 'all' | 'unread' | 'read')}
                                         className="capitalize"
                                     >
                                         {filterOption}
@@ -335,7 +335,7 @@ const NotificationsPage = () => {
                                                     {/* Action Buttons */}
                                                     <div className="mt-3 flex items-center space-x-2">
                                                         {(() => {
-                                                            const primaryAction = getNotificationAction(notification.type, notification.metadata);
+                                                            const primaryAction = getNotificationAction(notification.type);
                                                             const secondaryAction = getNotificationActionSecondary(notification.type);
 
                                                             return (

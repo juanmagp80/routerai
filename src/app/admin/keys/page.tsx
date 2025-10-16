@@ -364,7 +364,7 @@ export default function ApiKeysPage() {
                     Account needs synchronization
                   </h4>
                   <p className="text-sm text-blue-700">
-                    Your limits appear as 0/0. Click "Sync Account" to fix this.
+                    Your limits appear as 0/0. Click &quot;Sync Account&quot; to fix this.
                   </p>
                 </div>
               </div>
@@ -380,7 +380,7 @@ export default function ApiKeysPage() {
                     } else {
                       alert('Error: ' + result.error);
                     }
-                  } catch (error) {
+                  } catch {
                     alert('Connection error');
                   }
                 }}
@@ -453,7 +453,7 @@ export default function ApiKeysPage() {
                       <AlertTriangleIcon className="w-4 h-4 text-yellow-600 mt-0.5" />
                       <div className="ml-2">
                         <p className="text-xs text-yellow-800">
-                          Store your API key securely. You won't be able to see it in full after creating it.
+                          Store your API key securely. You won&apos;t be able to see it in full after creating it.
                         </p>
                       </div>
                     </div>
@@ -633,7 +633,7 @@ response = requests.post('https://api.roulix.com/v1/chat', headers=headers)`}
               <span>API Key created successfully!</span>
             </DialogTitle>
             <DialogDescription>
-              This is your new API key for &quot;{newlyCreatedKey?.name}&quot;. Copy it now - you won't be able to see it in full later.
+              This is your new API key for &quot;{newlyCreatedKey?.name}&quot;. Copy it now - you won&apos;t be able to see it in full later.
             </DialogDescription>
           </DialogHeader>
 
@@ -644,7 +644,7 @@ response = requests.post('https://api.roulix.com/v1/chat', headers=headers)`}
                 <div>
                   <h4 className="text-sm font-medium text-amber-800">Important!</h4>
                   <p className="text-sm text-amber-700 mt-1">
-                    For security reasons, this is the only time you'll be able to see your complete API key.
+                    For security reasons, this is the only time you&apos;ll be able to see your complete API key.
                     Make sure to copy it and store it in a safe place.
                   </p>
                 </div>
@@ -693,7 +693,7 @@ response = requests.post('https://api.roulix.com/v1/chat', headers=headers)`}
                 }}
                 className="bg-green-600 hover:bg-green-700"
               >
-                ✓ I've copied it
+                ✓ I&apos;ve copied it
               </Button>
             </div>
           </div>

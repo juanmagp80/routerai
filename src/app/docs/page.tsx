@@ -425,7 +425,7 @@ curl -X POST https://api.roulix.com/v1/chat \\
                                 Ready to optimize your AI costs?
                             </h3>
                             <p className="text-slate-600 mb-6 max-w-2xl mx-auto">
-                                Create your account and start building with Roulix's intelligent API routing in minutes.
+                                Create your account and start building with Roulix&apos;s intelligent API routing in minutes.
                             </p>
                             <div className="flex flex-col sm:flex-row gap-4 justify-center">
                                 <Button size="lg" asChild>

@@ -76,9 +76,9 @@ export function useUserSync() {
                     const currentName = `${clerkUser.firstName || ''} ${clerkUser.lastName || ''}`.trim();
 
                     // Vincular con Clerk si no está vinculado
-                    const userWithClerkId = existingUser as any;
+                    const userWithClerkId = existingUser as { clerk_user_id?: string };
                     if (!userWithClerkId.clerk_user_id) {
-                        (updatedData as any).clerk_user_id = clerkUser.id;
+                        updatedData.clerk_user_id = clerkUser.id;
                         console.log('Vinculando usuario existente con Clerk ID:', clerkUser.id);
                     }
 

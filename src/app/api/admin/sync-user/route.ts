@@ -36,7 +36,7 @@ export async function POST() {
         }
 
         // Vincular con Clerk si no está vinculado
-        const updateData: any = {};
+        const updateData: Record<string, string | boolean> = {};
 
         if (!existingUser.clerk_user_id) {
             updateData.clerk_user_id = clerkUser.id;
@@ -82,7 +82,7 @@ export async function POST() {
                 email: updatedUser.email,
                 name: updatedUser.name,
                 plan: updatedUser.plan,
-                clerk_user_id: (updatedUser as any).clerk_user_id,
+                clerk_user_id: (updatedUser as { clerk_user_id?: string }).clerk_user_id,
                 api_key_limit: updatedUser.api_key_limit
             },
             changes: updateData

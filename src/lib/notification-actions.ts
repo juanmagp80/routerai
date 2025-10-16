@@ -6,7 +6,7 @@ export interface NotificationAction {
     icon?: string;
 }
 
-export function getNotificationAction(type: string, metadata?: Record<string, unknown>): NotificationAction | null {
+export function getNotificationAction(type: string): NotificationAction | null {
     switch (type) {
         case 'limit_warning':
         case 'limit_reached':

@@ -91,7 +91,7 @@ export class NotificationService {
             const result = await PlanLimitsService.getUserLimitsAndUsage(userId);
             if (!result) return false;
 
-            const { limits, usage, user } = result;
+            const { usage, user } = result;
             const usagePercentage = usage.requests.percentage;
 
             // Sugerir upgrade si está usando mucho del plan actual
