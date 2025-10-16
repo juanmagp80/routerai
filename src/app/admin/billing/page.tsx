@@ -96,9 +96,9 @@ function BillingPageContent() {
     const plan = searchParams.get('plan');
 
     if (success && plan) {
-      alert(`¡Suscripción exitosa al plan ${plan.toUpperCase()}!`);
+      alert(`Successful upgrade to ${plan.toUpperCase()} plan!`);
     } else if (canceled) {
-      alert('Suscripción cancelada');
+      alert('Subscription cancelled');
     }
 
     fetchUserLimits();
@@ -189,7 +189,7 @@ function BillingPageContent() {
       <div className="space-y-6">
         <div className="border-b border-slate-200 pb-6">
           <h1 className="text-2xl font-bold text-slate-900">Billing</h1>
-          <p className="text-slate-600 mt-1">Cargando información de facturación...</p>
+          <p className="text-slate-600 mt-1">Loading billing information...</p>
         </div>
         <div className="animate-pulse space-y-4">
           <div className="h-32 bg-gray-200 rounded"></div>
@@ -318,7 +318,7 @@ function BillingPageContent() {
             Available Plans
           </CardTitle>
           <CardDescription>
-            Elige el plan que mejor se adapte a tus necesidades
+            Choose the plan that best fits your needs
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -431,7 +431,7 @@ function BillingPageContent() {
 
 export default function BillingPage() {
   return (
-    <Suspense fallback={<div className="p-8">Cargando...</div>}>
+    <Suspense fallback={<div className="p-8">Loading...</div>}>
       <BillingPageContent />
     </Suspense>
   );
