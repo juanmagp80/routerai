@@ -56,10 +56,22 @@ export default function AdaptiveLearningPage() {
     } | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [isAuthorized, setIsAuthorized] = useState(false);
 
     useEffect(() => {
         if (isLoaded && user) {
-            fetchLearningData();
+            // Check if user is authorized to view SaaS data
+            const primaryEmail = user.emailAddresses.find(email => email.id === user.primaryEmailAddressId);
+            const userEmail = primaryEmail?.emailAddress;
+            
+            if (userEmail === 'agentroutermcp@gmail.com') {
+                setIsAuthorized(true);
+                fetchLearningData();
+            } else {
+                setIsAuthorized(false);
+                setLoading(false);
+                setError('Access denied: This section is restricted to authorized administrators only.');
+            }
         }
     }, [isLoaded, user]);
 
@@ -127,14 +139,38 @@ export default function AdaptiveLearningPage() {
     }
 
     if (error) {
+        // Si el error es de acceso, redirigir silenciosamente
+        if (error.includes('Access denied')) {
+            if (typeof window !== 'undefined') {
+                window.location.href = '/admin';
+            }
+            return (
+                <div className="flex items-center justify-center min-h-screen">
+                    <div className="text-center">
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+                        <p className="text-slate-400">Redirecting...</p>
+                    </div>
+                </div>
+            );
+        }
+        
+        // Para otros errores, mostrar el mensaje de error normal
         return (
             <div className="p-6">
                 <Card className="border-red-200 bg-red-50">
-                    <CardContent className="p-6">
-                        <p className="text-red-700">Error: {error}</p>
-                        <Button onClick={fetchLearningData} className="mt-4">
-                            Retry
-                        </Button>
+                    <CardContent className="p-6 text-center">
+                        <div className="mb-4">
+                            <svg className="mx-auto h-12 w-12 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                            </svg>
+                        </div>
+                        <h3 className="text-lg font-medium text-red-700 mb-2">Error</h3>
+                        <p className="text-red-600 mb-4">{error}</p>
+                        {isAuthorized && (
+                            <Button onClick={fetchLearningData} className="mt-4">
+                                Retry
+                            </Button>
+                        )}
                     </CardContent>
                 </Card>
             </div>

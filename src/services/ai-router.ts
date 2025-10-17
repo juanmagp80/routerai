@@ -164,6 +164,38 @@ export class AIRouterService {
     console.log('🔍 Available providers:', Array.from(this.providers.keys()));
     console.log('🔍 Filtered available models:', availableModels.map(m => `${m.name} (${m.provider})`));
 
+    // Apply user preferences if userId is provided
+    if (request.userId) {
+      try {
+        // Get user settings for model preferences
+        const { data: settingsData } = await supabase
+          .from('user_settings')
+          .select('settings')
+          .eq('user_id', request.userId)
+          .single();
+
+        const userSettings = settingsData?.settings || {};
+        const preferredProviders = userSettings.preferredProviders || [];
+
+        // Filter by preferred providers FIRST if specified
+        if (preferredProviders.length > 0) {
+          const providerFilteredModels = availableModels.filter(model =>
+            preferredProviders.includes(model.provider)
+          );
+          
+          if (providerFilteredModels.length > 0) {
+            availableModels = providerFilteredModels;
+            console.log('🎯 Filtered by preferred providers:', preferredProviders);
+            console.log('🎯 Models after provider filter:', availableModels.map(m => `${m.name} (${m.provider})`));
+          } else {
+            console.log('⚠️ No models available from preferred providers, using all available models');
+          }
+        }
+      } catch (error) {
+        console.log('⚠️ Could not load user preferences:', error);
+      }
+    }
+
     // Filter by user plan permissions if userId is provided
     if (request.userId) {
       try {
@@ -201,6 +233,59 @@ export class AIRouterService {
         return requestedModel;
       } else {
         console.log('⚠️ Requested model unavailable, selecting alternative');
+      }
+    }
+
+    // Si no hay modelo específico, primero intentar usar las preferencias del usuario
+    if (!request.model && request.userId) {
+      try {
+        console.log('🔍 Loading user preferences for model selection...');
+        console.log('🔍 User ID:', request.userId);
+        
+        const { data: settingsData, error: settingsError } = await supabase
+          .from('user_settings')
+          .select('settings')
+          .eq('user_id', request.userId)
+          .single();
+
+        if (settingsError) {
+          console.log('⚠️ Error loading user settings:', settingsError);
+        }
+
+        console.log('📋 Raw settings data:', settingsData);
+
+        const userSettings = settingsData?.settings || {};
+        const defaultModel = userSettings.defaultModel;
+        const preferredProviders = userSettings.preferredProviders || [];
+
+        console.log('👤 User settings loaded:', { defaultModel, preferredProviders });
+        console.log('👤 Available models before filtering:', availableModels.map(m => `${m.name} (${m.provider})`));
+
+        // Si el usuario tiene un modelo por defecto, intentar usarlo
+        if (defaultModel) {
+          const preferredModel = availableModels.find(m => m.name === defaultModel);
+          if (preferredModel) {
+            console.log('🎯 Using user default model preference:', defaultModel);
+            return preferredModel;
+          } else {
+            console.log('⚠️ User preferred model not available:', defaultModel);
+          }
+        }
+
+        // Si no tiene modelo por defecto pero tiene proveedores preferidos, 
+        // usar el mejor modelo de esos proveedores
+        if (preferredProviders.length > 0) {
+          const providerModels = availableModels.filter(m => 
+            preferredProviders.includes(m.provider)
+          );
+          if (providerModels.length > 0) {
+            // Usar el primer modelo disponible del proveedor preferido
+            console.log('🎯 Using model from preferred provider:', providerModels[0].name);
+            return providerModels[0];
+          }
+        }
+      } catch (error) {
+        console.log('⚠️ Could not load user preferences:', error);
       }
     }
 

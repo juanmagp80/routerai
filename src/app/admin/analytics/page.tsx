@@ -2,6 +2,7 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ActivityIcon, DollarSignIcon, KeyIcon, TrendingDownIcon, TrendingUpIcon, UsersIcon } from "lucide-react";
+import { useUser } from '@clerk/nextjs';
 import { useEffect, useState } from 'react';
 
 interface AnalyticsData {
@@ -46,17 +47,26 @@ interface AnalyticsData {
 }
 
 export default function AnalyticsPage() {
+  const { user, isLoaded } = useUser();
   const [data, setData] = useState<AnalyticsData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchAnalytics();
-  }, []);
+    if (isLoaded && user) {
+      // Todos los usuarios pueden ver analytics, pero con diferentes niveles de datos
+      const primaryEmail = user.emailAddresses.find(email => email.id === user.primaryEmailAddressId);
+      const userEmail = primaryEmail?.emailAddress;
+      
+      fetchAnalytics(userEmail);
+    }
+  }, [isLoaded, user]);
 
-  const fetchAnalytics = async () => {
+  const fetchAnalytics = async (userEmail?: string) => {
     try {
-      const response = await fetch('/api/admin/analytics');
+      // Pasar el email del usuario como parámetro para determinar el nivel de datos
+      const url = userEmail ? `/api/admin/analytics?userEmail=${encodeURIComponent(userEmail)}` : '/api/admin/analytics';
+      const response = await fetch(url);
       if (response.ok) {
         const analyticsData = await response.json();
         setData(analyticsData);
@@ -69,6 +79,11 @@ export default function AnalyticsPage() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleRetry = () => {
+    const primaryEmail = user?.emailAddresses.find(email => email.id === user?.primaryEmailAddressId);
+    fetchAnalytics(primaryEmail?.emailAddress);
   };
 
   const formatNumber = (num: number) => {
@@ -129,7 +144,7 @@ export default function AnalyticsPage() {
         <div className="text-center py-8">
           <p className="text-red-600">{error}</p>
           <button
-            onClick={fetchAnalytics}
+            onClick={handleRetry}
             className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
           >
             Retry
@@ -139,12 +154,25 @@ export default function AnalyticsPage() {
     );
   }
 
+  // Check if user is not authorized
+  if (!isLoaded || !user) {
+    return (
+      <div className="p-6">
+        <Card className="border-red-200 bg-red-50">
+          <CardContent className="p-6 text-center">
+            <p className="text-red-700">Please sign in to access this page.</p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       <div className="border-b border-slate-200 pb-6">
-        <h1 className="text-2xl font-bold text-slate-900">My Analytics</h1>
+        <h1 className="text-2xl font-bold text-slate-900">Analytics Dashboard</h1>
         <p className="text-slate-600 mt-1">
-          Your personal usage metrics and statistics
+          Platform analytics and usage metrics
         </p>
       </div>
 

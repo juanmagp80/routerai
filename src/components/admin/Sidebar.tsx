@@ -17,20 +17,24 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useUser } from '@clerk/nextjs';
 
-const navigation = [
+const baseNavigation = [
   { name: 'Dashboard', href: '/admin', icon: LayoutDashboard },
   { name: 'AI Chat', href: '/admin/chat', icon: MessageSquare },
   { name: 'API Keys', href: '/admin/keys', icon: Key },
   { name: 'Analytics', href: '/admin/analytics', icon: BarChart3 },
-  { name: 'Adaptive Learning', href: '/admin/learning', icon: Brain },
   { name: 'Users', href: '/admin/users', icon: Users },
-  { name: 'System Status', href: '/admin/system', icon: Shield },
   { name: 'Billing', href: '/admin/billing', icon: CreditCard },
   { name: 'Notifications', href: '/admin/notifications', icon: Bell },
   { name: 'Profile', href: '/admin/profile', icon: User },
   { name: 'Settings', href: '/admin/settings', icon: Settings },
   { name: 'Help', href: '/admin/help', icon: HelpCircle },
+];
+
+const restrictedNavigation = [
+  { name: 'Adaptive Learning', href: '/admin/learning', icon: Brain },
+  { name: 'System Status', href: '/admin/system', icon: Shield },
 ];
 
 interface SidebarProps {
@@ -39,6 +43,13 @@ interface SidebarProps {
 
 export function Sidebar({ className }: SidebarProps) {
   const pathname = usePathname();
+  const { user } = useUser();
+  
+  // Determinar qué navegación mostrar según el usuario
+  const isAuthorizedUser = user?.emailAddresses?.[0]?.emailAddress === 'agentroutermcp@gmail.com';
+  const navigation = isAuthorizedUser
+    ? [...baseNavigation.slice(0, 4), ...restrictedNavigation, ...baseNavigation.slice(4)]
+    : baseNavigation;
 
   return (
     <div className={cn("flex h-full w-64 flex-col bg-slate-900", className)}>

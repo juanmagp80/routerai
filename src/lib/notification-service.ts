@@ -34,8 +34,24 @@ export class NotificationService {
     // ========== NOTIFICACIONES AUTOMÁTICAS INTELIGENTES ==========
 
     // Verificar y notificar sobre límites de uso
-    static async checkAndNotifyUsageLimits(userId: string): Promise<boolean> {
+    static async checkAndNotifyUsageLimits(userId: string, customThreshold?: number): Promise<boolean> {
         try {
+            // Obtener configuración del usuario
+            const { data: settingsData } = await supabase
+                .from('user_settings')
+                .select('settings')
+                .eq('user_id', userId)
+                .single();
+
+            const userSettings = settingsData?.settings || {};
+            const usageAlertsEnabled = userSettings.usageAlerts !== false; // Default true
+            const alertThreshold = customThreshold || userSettings.usageAlertThreshold || 80;
+
+            // Si las alertas están deshabilitadas, no notificar
+            if (!usageAlertsEnabled) {
+                return false;
+            }
+
             // Obtener datos de uso del usuario
             const result = await PlanLimitsService.getUserLimitsAndUsage(userId);
             if (!result) return false;
@@ -45,25 +61,22 @@ export class NotificationService {
             const requestsUsed = usage.requests.current;
             const requestsLimit = usage.requests.limit;
 
-            // Notificar en diferentes umbrales
-            if (usagePercentage >= 90 && usagePercentage < 100) {
-                // 90% - Advertencia crítica
+            // Notificar basado en el umbral configurado por el usuario
+            if (usagePercentage >= alertThreshold && usagePercentage < 100) {
+                // Umbral personalizado - Advertencia
+                const alertLevel = usagePercentage >= 90 ? 'Critical' : 'High';
+                const alertIcon = usagePercentage >= 90 ? '🚨' : '⚠️';
+                
                 await this.sendNotification({
                     userId,
                     type: 'limit_warning',
-                    title: '🚨 Critical Usage Warning',
+                    title: `${alertIcon} ${alertLevel} Usage Alert`,
                     message: `You've used ${usagePercentage.toFixed(1)}% of your monthly API quota. Only ${requestsLimit - requestsUsed} requests remaining.`,
-                    metadata: { usage_percentage: usagePercentage, remaining: requestsLimit - requestsUsed }
-                });
-                return true;
-            } else if (usagePercentage >= 80 && usagePercentage < 90) {
-                // 80% - Advertencia
-                await this.sendNotification({
-                    userId,
-                    type: 'limit_warning',
-                    title: '⚠️ High Usage Alert',
-                    message: `You've used ${usagePercentage.toFixed(1)}% of your monthly API quota. Consider monitoring your usage to avoid interruptions.`,
-                    metadata: { usage_percentage: usagePercentage }
+                    metadata: { 
+                        usage_percentage: usagePercentage, 
+                        remaining: requestsLimit - requestsUsed,
+                        alert_threshold: alertThreshold 
+                    }
                 });
                 return true;
             } else if (usagePercentage >= 100) {

@@ -1,6 +1,7 @@
 import { supabase } from '@/lib/supabase';
 import { auth } from '@clerk/nextjs/server';
 import { NextResponse } from 'next/server';
+import { requireSaasDataAccess } from '@/lib/auth-restrictions';
 
 export async function GET() {
     try {
@@ -8,6 +9,16 @@ export async function GET() {
 
         if (!userId) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
+
+        // Check if user is authorized to access SaaS data
+        try {
+            await requireSaasDataAccess();
+        } catch {
+            return NextResponse.json({ 
+                error: 'Access denied', 
+                details: 'This endpoint is restricted to authorized administrators only.' 
+            }, { status: 403 });
         }
 
         console.log('🔍 Learning stats API called for user:', userId);

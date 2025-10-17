@@ -3,6 +3,7 @@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { useUser } from '@clerk/nextjs';
 import {
     AlertTriangle,
     CheckCircle,
@@ -40,9 +41,12 @@ interface SystemStatus {
 }
 
 export default function SystemStatusPage() {
+    const { user, isLoaded } = useUser();
     const [status, setStatus] = useState<SystemStatus | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [, setIsAuthorized] = useState(false);
+    const [authError, setAuthError] = useState<string | null>(null);
 
     const fetchStatus = async () => {
         try {
@@ -64,8 +68,49 @@ export default function SystemStatusPage() {
     };
 
     useEffect(() => {
-        fetchStatus();
-    }, []);
+        if (isLoaded && user) {
+            // Check if user is authorized to view system data
+            const primaryEmail = user.emailAddresses.find(email => email.id === user.primaryEmailAddressId);
+            const userEmail = primaryEmail?.emailAddress;
+            
+            if (userEmail === 'agentroutermcp@gmail.com') {
+                setIsAuthorized(true);
+                fetchStatus();
+            } else {
+                setIsAuthorized(false);
+                setLoading(false);
+                setAuthError('Access denied: System status is restricted to authorized administrators only.');
+            }
+        }
+    }, [isLoaded, user]);
+
+    // Check if user is not authorized
+    if (!isLoaded || !user) {
+        return (
+            <div className="p-6">
+                <Card className="border-red-200 bg-red-50">
+                    <CardContent className="p-6 text-center">
+                        <p className="text-red-700">Please sign in to access this page.</p>
+                    </CardContent>
+                </Card>
+            </div>
+        );
+    }
+
+    if (authError) {
+        // Redirigir silenciosamente al dashboard
+        if (typeof window !== 'undefined') {
+            window.location.href = '/admin';
+        }
+        return (
+            <div className="flex items-center justify-center min-h-screen">
+                <div className="text-center">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+                    <p className="text-slate-400">Redirecting...</p>
+                </div>
+            </div>
+        );
+    }
 
     if (loading) {
         return (
