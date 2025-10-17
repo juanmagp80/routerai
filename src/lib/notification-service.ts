@@ -66,16 +66,16 @@ export class NotificationService {
                 // Umbral personalizado - Advertencia
                 const alertLevel = usagePercentage >= 90 ? 'Critical' : 'High';
                 const alertIcon = usagePercentage >= 90 ? '🚨' : '⚠️';
-                
+
                 await this.sendNotification({
                     userId,
                     type: 'limit_warning',
                     title: `${alertIcon} ${alertLevel} Usage Alert`,
                     message: `You've used ${usagePercentage.toFixed(1)}% of your monthly API quota. Only ${requestsLimit - requestsUsed} requests remaining.`,
-                    metadata: { 
-                        usage_percentage: usagePercentage, 
+                    metadata: {
+                        usage_percentage: usagePercentage,
                         remaining: requestsLimit - requestsUsed,
-                        alert_threshold: alertThreshold 
+                        alert_threshold: alertThreshold
                     }
                 });
                 return true;

@@ -72,7 +72,7 @@ export default function SystemStatusPage() {
             // Check if user is authorized to view system data
             const primaryEmail = user.emailAddresses.find(email => email.id === user.primaryEmailAddressId);
             const userEmail = primaryEmail?.emailAddress;
-            
+
             if (userEmail === 'agentroutermcp@gmail.com') {
                 setIsAuthorized(true);
                 fetchStatus();

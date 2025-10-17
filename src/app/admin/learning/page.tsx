@@ -63,7 +63,7 @@ export default function AdaptiveLearningPage() {
             // Check if user is authorized to view SaaS data
             const primaryEmail = user.emailAddresses.find(email => email.id === user.primaryEmailAddressId);
             const userEmail = primaryEmail?.emailAddress;
-            
+
             if (userEmail === 'agentroutermcp@gmail.com') {
                 setIsAuthorized(true);
                 fetchLearningData();
@@ -153,7 +153,7 @@ export default function AdaptiveLearningPage() {
                 </div>
             );
         }
-        
+
         // Para otros errores, mostrar el mensaje de error normal
         return (
             <div className="p-6">

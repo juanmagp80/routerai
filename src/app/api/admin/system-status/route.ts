@@ -1,7 +1,7 @@
+import { requireSaasDataAccess } from '@/lib/auth-restrictions';
 import { supabaseAdmin, TABLES } from '@/lib/supabase';
 import { currentUser } from '@clerk/nextjs/server';
 import { NextResponse } from 'next/server';
-import { requireSaasDataAccess } from '@/lib/auth-restrictions';
 
 // GET /api/admin/system-status - Verificar estado del sistema de administración
 export async function GET() {
@@ -16,9 +16,9 @@ export async function GET() {
         try {
             await requireSaasDataAccess();
         } catch {
-            return NextResponse.json({ 
-                error: 'Access denied', 
-                details: 'System status is restricted to authorized administrators only.' 
+            return NextResponse.json({
+                error: 'Access denied',
+                details: 'System status is restricted to authorized administrators only.'
             }, { status: 403 });
         }
 

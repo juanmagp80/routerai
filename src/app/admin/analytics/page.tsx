@@ -1,8 +1,8 @@
 'use client';
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ActivityIcon, DollarSignIcon, KeyIcon, TrendingDownIcon, TrendingUpIcon, UsersIcon } from "lucide-react";
 import { useUser } from '@clerk/nextjs';
+import { ActivityIcon, DollarSignIcon, KeyIcon, TrendingDownIcon, TrendingUpIcon, UsersIcon } from "lucide-react";
 import { useEffect, useState } from 'react';
 
 interface AnalyticsData {
@@ -57,7 +57,7 @@ export default function AnalyticsPage() {
       // Todos los usuarios pueden ver analytics, pero con diferentes niveles de datos
       const primaryEmail = user.emailAddresses.find(email => email.id === user.primaryEmailAddressId);
       const userEmail = primaryEmail?.emailAddress;
-      
+
       fetchAnalytics(userEmail);
     }
   }, [isLoaded, user]);

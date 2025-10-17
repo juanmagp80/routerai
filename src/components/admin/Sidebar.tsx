@@ -1,6 +1,7 @@
 'use client';
 
 import { cn } from '@/lib/utils';
+import { useUser } from '@clerk/nextjs';
 import {
   BarChart3,
   Bell,
@@ -17,7 +18,6 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useUser } from '@clerk/nextjs';
 
 const baseNavigation = [
   { name: 'Dashboard', href: '/admin', icon: LayoutDashboard },
@@ -44,7 +44,7 @@ interface SidebarProps {
 export function Sidebar({ className }: SidebarProps) {
   const pathname = usePathname();
   const { user } = useUser();
-  
+
   // Determinar qué navegación mostrar según el usuario
   const isAuthorizedUser = user?.emailAddresses?.[0]?.emailAddress === 'agentroutermcp@gmail.com';
   const navigation = isAuthorizedUser

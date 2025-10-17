@@ -1,8 +1,8 @@
+import { requireSaasDataAccess } from '@/lib/auth-restrictions';
 import { PlanLimitsService } from '@/lib/plan-limits-service';
 import { supabase } from '@/lib/supabase';
 import { auth } from '@clerk/nextjs/server';
 import { NextResponse } from 'next/server';
-import { requireSaasDataAccess } from '@/lib/auth-restrictions';
 
 export async function GET(request: Request) {
     try {
@@ -18,7 +18,7 @@ export async function GET(request: Request) {
         // Obtener el email del usuario desde los parámetros de la URL
         const { searchParams } = new URL(request.url);
         const userEmail = searchParams.get('userEmail');
-        
+
         // Determinar si es el usuario autorizado para ver datos globales del SaaS
         const isAuthorizedForSaasData = userEmail === 'agentroutermcp@gmail.com';
 
@@ -236,8 +236,8 @@ async function getSaasAnalytics() {
             plan: user.plan || 'free',
             requests: userRequestsMap.get(user.clerk_user_id) || 0
         }))
-        .sort((a, b) => b.requests - a.requests)
-        .slice(0, 5) || [];
+            .sort((a, b) => b.requests - a.requests)
+            .slice(0, 5) || [];
 
         // Top modelos
         const modelRequestsMap = new Map();

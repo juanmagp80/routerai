@@ -182,7 +182,7 @@ export class AIRouterService {
           const providerFilteredModels = availableModels.filter(model =>
             preferredProviders.includes(model.provider)
           );
-          
+
           if (providerFilteredModels.length > 0) {
             availableModels = providerFilteredModels;
             console.log('🎯 Filtered by preferred providers:', preferredProviders);
@@ -241,7 +241,7 @@ export class AIRouterService {
       try {
         console.log('🔍 Loading user preferences for model selection...');
         console.log('🔍 User ID:', request.userId);
-        
+
         const { data: settingsData, error: settingsError } = await supabase
           .from('user_settings')
           .select('settings')
@@ -275,7 +275,7 @@ export class AIRouterService {
         // Si no tiene modelo por defecto pero tiene proveedores preferidos, 
         // usar el mejor modelo de esos proveedores
         if (preferredProviders.length > 0) {
-          const providerModels = availableModels.filter(m => 
+          const providerModels = availableModels.filter(m =>
             preferredProviders.includes(m.provider)
           );
           if (providerModels.length > 0) {

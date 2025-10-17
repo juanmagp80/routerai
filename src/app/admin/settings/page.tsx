@@ -7,9 +7,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { BellIcon, BrainIcon, PaletteIcon, BarChart3Icon } from "lucide-react";
 import { useUser } from '@clerk/nextjs';
-import { useState, useEffect } from 'react';
+import { BarChart3Icon, BellIcon, BrainIcon, PaletteIcon } from "lucide-react";
+import { useEffect, useState } from 'react';
 
 export default function SettingsPage() {
   const { user } = useUser();
@@ -40,7 +40,7 @@ export default function SettingsPage() {
         if (response.ok) {
           const data = await response.json();
           setSettings(data);
-          
+
           // Aplicar tema inmediatamente
           if (data.theme === 'dark') {
             document.documentElement.classList.add('dark');
@@ -50,7 +50,7 @@ export default function SettingsPage() {
             const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
             document.documentElement.classList.toggle('dark', isDark);
           }
-          
+
           // Guardar tema en localStorage
           localStorage.setItem('theme', data.theme);
         }
@@ -68,7 +68,7 @@ export default function SettingsPage() {
     setLoading(true);
     try {
       console.log('Saving settings:', settings);
-      
+
       const response = await fetch('/api/user/settings', {
         method: 'POST',
         headers: {
@@ -95,7 +95,7 @@ export default function SettingsPage() {
         const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
         document.documentElement.classList.toggle('dark', isDark);
       }
-      
+
       // Guardar tema en localStorage
       localStorage.setItem('theme', settings.theme);
 
@@ -122,7 +122,7 @@ export default function SettingsPage() {
   // Mapeo de nombres mostrados a nombres internos (keys del AI_PROVIDERS)
   const providerMapping: Record<string, string> = {
     'OpenAI': 'openai',
-    'Anthropic': 'anthropic', 
+    'Anthropic': 'anthropic',
     'Google': 'google',
     'Together/Meta': 'meta',
     'Mistral': 'mistral',
@@ -171,8 +171,8 @@ export default function SettingsPage() {
           <CardContent className="space-y-4">
             <div>
               <Label htmlFor="defaultModel">Modelo por Defecto</Label>
-              <Select value={settings.defaultModel} onValueChange={(value) => 
-                setSettings({...settings, defaultModel: value})}>
+              <Select value={settings.defaultModel} onValueChange={(value) =>
+                setSettings({ ...settings, defaultModel: value })}>
                 <SelectTrigger className="mt-1">
                   <SelectValue />
                 </SelectTrigger>
@@ -183,7 +183,7 @@ export default function SettingsPage() {
                 </SelectContent>
               </Select>
             </div>
-            
+
             <div>
               <Label>Proveedores Preferidos</Label>
               <div className="grid grid-cols-2 gap-2 mt-2">
@@ -196,7 +196,7 @@ export default function SettingsPage() {
                       settings.preferredProviders.includes('Meta (Llama)') ||
                       settings.preferredProviders.includes('meta')
                     ));
-                  
+
                   return (
                     <div key={provider} className="flex items-center space-x-2">
                       <Switch
@@ -204,21 +204,21 @@ export default function SettingsPage() {
                         onCheckedChange={(checked) => {
                           if (checked) {
                             // Limpiar versiones anteriores y añadir la correcta
-                            const cleanProviders = settings.preferredProviders.filter(p => 
-                              p !== 'Together' && 
-                              p !== 'Meta (Llama)' && 
+                            const cleanProviders = settings.preferredProviders.filter(p =>
+                              p !== 'Together' &&
+                              p !== 'Meta (Llama)' &&
                               p !== internalName &&
                               p !== 'meta'
                             );
                             setSettings({
-                              ...settings, 
+                              ...settings,
                               preferredProviders: [...cleanProviders, internalName]
                             });
                           } else {
                             setSettings({
                               ...settings,
-                              preferredProviders: settings.preferredProviders.filter(p => 
-                                p !== internalName && 
+                              preferredProviders: settings.preferredProviders.filter(p =>
+                                p !== internalName &&
                                 p !== 'Together' &&
                                 p !== 'Meta (Llama)' &&
                                 p !== 'meta'
@@ -255,11 +255,11 @@ export default function SettingsPage() {
               </div>
               <Switch
                 checked={settings.emailNotifications}
-                onCheckedChange={(checked) => 
-                  setSettings({...settings, emailNotifications: checked})}
+                onCheckedChange={(checked) =>
+                  setSettings({ ...settings, emailNotifications: checked })}
               />
             </div>
-            
+
             <div className="flex items-center justify-between">
               <div>
                 <Label>Alertas de Uso</Label>
@@ -267,11 +267,11 @@ export default function SettingsPage() {
               </div>
               <Switch
                 checked={settings.usageAlerts}
-                onCheckedChange={(checked) => 
-                  setSettings({...settings, usageAlerts: checked})}
+                onCheckedChange={(checked) =>
+                  setSettings({ ...settings, usageAlerts: checked })}
               />
             </div>
-            
+
             <div className="flex items-center justify-between">
               <div>
                 <Label>Reportes Semanales</Label>
@@ -279,8 +279,8 @@ export default function SettingsPage() {
               </div>
               <Switch
                 checked={settings.weeklyReports}
-                onCheckedChange={(checked) => 
-                  setSettings({...settings, weeklyReports: checked})}
+                onCheckedChange={(checked) =>
+                  setSettings({ ...settings, weeklyReports: checked })}
               />
             </div>
 
@@ -294,7 +294,7 @@ export default function SettingsPage() {
                   max="95"
                   value={settings.usageAlertThreshold}
                   onChange={(e) => setSettings({
-                    ...settings, 
+                    ...settings,
                     usageAlertThreshold: parseInt(e.target.value) || 80
                   })}
                   className="mt-1"
@@ -321,8 +321,8 @@ export default function SettingsPage() {
           <CardContent className="space-y-4">
             <div>
               <Label htmlFor="theme">Tema</Label>
-              <Select value={settings.theme} onValueChange={(value) => 
-                setSettings({...settings, theme: value})}>
+              <Select value={settings.theme} onValueChange={(value) =>
+                setSettings({ ...settings, theme: value })}>
                 <SelectTrigger className="mt-1">
                   <SelectValue />
                 </SelectTrigger>
@@ -333,11 +333,11 @@ export default function SettingsPage() {
                 </SelectContent>
               </Select>
             </div>
-            
+
             <div>
               <Label htmlFor="language">Idioma</Label>
-              <Select value={settings.language} onValueChange={(value) => 
-                setSettings({...settings, language: value})}>
+              <Select value={settings.language} onValueChange={(value) =>
+                setSettings({ ...settings, language: value })}>
                 <SelectTrigger className="mt-1">
                   <SelectValue />
                 </SelectTrigger>
@@ -348,7 +348,7 @@ export default function SettingsPage() {
                 </SelectContent>
               </Select>
             </div>
-            
+
             <div className="flex items-center justify-between">
               <div>
                 <Label>Vista Compacta</Label>
@@ -356,8 +356,8 @@ export default function SettingsPage() {
               </div>
               <Switch
                 checked={settings.compactView}
-                onCheckedChange={(checked) => 
-                  setSettings({...settings, compactView: checked})}
+                onCheckedChange={(checked) =>
+                  setSettings({ ...settings, compactView: checked })}
               />
             </div>
           </CardContent>
@@ -383,7 +383,7 @@ export default function SettingsPage() {
                 className="mt-1 bg-slate-50"
               />
             </div>
-            
+
             <div>
               <Label>Plan Actual</Label>
               <div className="flex items-center space-x-2 mt-1">
@@ -391,7 +391,7 @@ export default function SettingsPage() {
                 <span className="text-sm text-slate-500">0 / 1000 requests mensuales</span>
               </div>
             </div>
-            
+
             <div>
               <Label>Miembro desde</Label>
               <Input
@@ -406,8 +406,8 @@ export default function SettingsPage() {
 
       {/* Botón de Guardar */}
       <div className="flex justify-end pt-6 border-t border-slate-200">
-        <Button 
-          onClick={handleSave} 
+        <Button
+          onClick={handleSave}
           disabled={loading}
           className="min-w-[120px]"
         >
