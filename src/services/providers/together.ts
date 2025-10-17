@@ -13,23 +13,46 @@ export class TogetherProvider {
         const startTime = Date.now();
 
         try {
+            console.log('🔧 Together: Starting request with model:', request.model);
+            
+            // Map model names to Together API format
+            const modelMap: Record<string, string> = {
+                'llama-3.1-8b': 'meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo',
+                'llama-3.1-70b': 'meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo',
+                'llama-3.1-405b': 'meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo',
+                'llama-3.2-3b': 'meta-llama/Llama-3.2-3B-Instruct-Turbo',
+                'llama-3.2-90b': 'meta-llama/Llama-3.2-90B-Vision-Instruct-Turbo'
+            };
+
+            const togetherModel = modelMap[request.model || 'llama-3.1-8b'] || 'meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo';
+            console.log('🔧 Together: Using model:', togetherModel);
+            console.log('🔧 Together: API key present:', !!process.env.TOGETHER_API_KEY);
+
+            const payload = {
+                model: togetherModel,
+                messages: [
+                    ...(request.systemPrompt ? [{ role: 'system', content: request.systemPrompt }] : []),
+                    { role: 'user', content: request.message }
+                ],
+                max_tokens: request.maxTokens || 8192,
+                temperature: request.temperature || 0.7,
+                stream: false
+            };
+
+            console.log('🔧 Together: Payload:', JSON.stringify(payload, null, 2));
+
             const response = await fetch(`${this.baseUrl}/chat/completions`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${process.env.TOGETHER_API_KEY}`,
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({
-                    model: request.model || 'meta-llama/Llama-3-8b-chat-hf',
-                    messages: [
-                        ...(request.systemPrompt ? [{ role: 'system', content: request.systemPrompt }] : []),
-                        { role: 'user', content: request.message }
-                    ],
-                    max_tokens: request.maxTokens || 8192,
-                    temperature: request.temperature || 0.7,
-                    stream: false
-                })
+                body: JSON.stringify(payload),
+                signal: AbortSignal.timeout(60000) // 60 second timeout
             });
+
+            console.log('🔧 Together: Response status:', response.status);
+            console.log('🔧 Together: Response headers:', Object.fromEntries(response.headers.entries()));
 
             if (!response.ok) {
                 const errorText = await response.text();

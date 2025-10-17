@@ -18,8 +18,8 @@ export async function GET() {
         // Test 2: Hacer una consulta simple
         const { data, error } = await supabaseAdmin
             .from('users')
-            .select('count(*)')
-            .limit(1);
+            .select('id, email')
+            .limit(5);
 
         if (error) {
             return NextResponse.json({
