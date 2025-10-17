@@ -14,7 +14,7 @@ export class TogetherProvider {
 
         try {
             console.log('🔧 Together: Starting request with model:', request.model);
-            
+
             // Map model names to Together API format
             const modelMap: Record<string, string> = {
                 'llama-3.1-8b': 'meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo',

@@ -32,12 +32,12 @@ console.log('🌐 Making request to:', options.hostname + options.path);
 const req = https.request(options, (res) => {
     console.log('✅ Response status:', res.statusCode);
     console.log('📋 Response headers:', res.headers);
-    
+
     let data = '';
     res.on('data', (chunk) => {
         data += chunk;
     });
-    
+
     res.on('end', () => {
         console.log('📄 Response body:', data);
         try {
