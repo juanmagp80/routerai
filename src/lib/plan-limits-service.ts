@@ -20,20 +20,28 @@ export interface UserUsage {
 }
 
 export class PlanLimitsService {
-    // Obtener límites de un plan específico
+    // Obtener límites de un plan específico (con cache)
     static async getPlanLimits(planName: string): Promise<PlanLimits | null> {
-        const { data, error } = await supabase
-            .from('plan_limits')
-            .select('*')
-            .eq('plan_name', planName)
-            .single()
+        try {
+            const { CacheHelpers } = await import('./cache-service');
+            return await CacheHelpers.getCachedPlanLimits(planName, async () => {
+                const { data, error } = await supabase
+                    .from('plan_limits')
+                    .select('*')
+                    .eq('plan_name', planName)
+                    .single()
 
-        if (error) {
-            console.error('Error fetching plan limits:', error)
+                if (error) {
+                    console.error('Error fetching plan limits:', error)
+                    return null
+                }
+
+                return data
+            });
+        } catch (error) {
+            console.error('Error in getPlanLimits with cache:', error)
             return null
         }
-
-        return data
     }
 
     // Obtener todos los planes disponibles
@@ -355,7 +363,7 @@ export class PlanLimitsService {
         }
     }
 
-    private static async canMakeRequestInternal(realUserId: string, user: { is_active: boolean; plan: string; free_trial_expires_at?: string; monthly_requests_used: number; last_reset_date?: string }): Promise<{ allowed: boolean, reason?: string, current: number, limit: number, percentage: number }> {
+    private static async canMakeRequestInternal(clerkUserId: string, user: { is_active: boolean; plan: string; free_trial_expires_at?: string; monthly_requests_used: number; last_reset_date?: string }): Promise<{ allowed: boolean, reason?: string, current: number, limit: number, percentage: number }> {
         // Verificar si el usuario está activo
         if (!user.is_active) {
             return { allowed: false, reason: 'Cuenta desactivada', current: 0, limit: 0, percentage: 0 }
@@ -374,25 +382,53 @@ export class PlanLimitsService {
             return { allowed: false, reason: 'Plan no válido', current: 0, limit: 0, percentage: 0 }
         }
 
-        // Verificar si necesitamos resetear el contador mensual
-        const lastReset = new Date(user.last_reset_date || Date.now())
-        const now = new Date()
-        const shouldReset = lastReset.getMonth() !== now.getMonth() || lastReset.getFullYear() !== now.getFullYear()
+        // Calcular uso real desde usage_records (como hace analytics)
+        console.log('🔍 Calculating real usage for user:', clerkUserId);
+        
+        // Obtener el ID de base de datos del usuario
+        const { data: dbUser } = await supabase
+            .from('users')
+            .select('id')
+            .eq('clerk_user_id', clerkUserId)
+            .single();
 
-        let currentUsage = user.monthly_requests_used || 0
+        // Buscar con Clerk ID primero, luego con database ID
+        const [usageWithClerkId, usageWithDbId] = await Promise.all([
+            supabase
+                .from('usage_records')
+                .select('id')
+                .eq('user_id', clerkUserId)
+                .gte('created_at', new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString()),
+            dbUser ? supabase
+                .from('usage_records')
+                .select('id')  
+                .eq('user_id', dbUser.id)
+                .gte('created_at', new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString())
+                : Promise.resolve({ data: [] })
+        ]);
 
-        if (shouldReset) {
-            // Resetear contador mensual usando ID real directamente
-            await supabase
+        // Si no hay datos del mes actual, usar todos los registros históricos
+        let currentUsage = 0;
+        if (usageWithClerkId.data?.length) {
+            currentUsage = usageWithClerkId.data.length;
+        } else if (usageWithDbId.data?.length) {
+            currentUsage = usageWithDbId.data.length;
+        } else {
+            // Buscar registros históricos
+            const { data: fullUser } = await supabase
                 .from('users')
-                .update({
-                    monthly_requests_used: 0,
-                    last_reset_date: now.toISOString().split('T')[0]
-                })
-                .eq('id', realUserId)
+                .select('id')
+                .eq('clerk_user_id', clerkUserId)
+                .single();
 
-            currentUsage = 0
+            const [allUsageClerk, allUsageDb] = await Promise.all([
+                supabase.from('usage_records').select('id').eq('user_id', clerkUserId),
+                fullUser ? supabase.from('usage_records').select('id').eq('user_id', fullUser.id) : Promise.resolve({ data: [] })
+            ]);
+            currentUsage = allUsageClerk.data?.length || allUsageDb.data?.length || 0;
         }
+
+        console.log('📊 Real usage calculated:', currentUsage, 'requests');
 
         const limit = planLimits.monthly_request_limit
         const percentage = (currentUsage / limit) * 100
@@ -403,7 +439,7 @@ export class PlanLimitsService {
             reason: allowed ? undefined : `Límite mensual de ${limit} requests alcanzado`,
             current: currentUsage,
             limit,
-            percentage
+            percentage: Math.round(percentage * 100) / 100
         }
     }
 
@@ -441,7 +477,7 @@ export class PlanLimitsService {
         }
 
         const apiKeyCheck = await this.canCreateApiKeyInternal(realUserId, user.plan)
-        const requestCheck = await this.canMakeRequestInternal(realUserId, user)
+        const requestCheck = await this.canMakeRequestInternal(userId, user)
 
         // Calcular días restantes de prueba
         let trialDaysRemaining = null

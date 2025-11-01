@@ -24,15 +24,14 @@ export async function GET() {
         // Devolver configuración por defecto si no existe
         if (!settings) {
             const defaultSettings = {
-                defaultModel: 'gpt-4o-mini',
+                defaultModel: 'auto', // Cambiado de gpt-4o-mini a auto para más variedad
                 preferredProviders: [],
                 emailNotifications: true,
                 usageAlerts: true,
-                weeklyReports: false,
-                theme: 'light',
-                language: 'es',
-                compactView: false,
                 usageAlertThreshold: 80,
+                dailyLimit: undefined,
+                costProtection: true,
+                autoModelRotation: false,
             }
             return NextResponse.json(defaultSettings)
         }
@@ -58,15 +57,14 @@ export async function POST(request: NextRequest) {
 
         // Validar que los datos sean correctos
         const validatedSettings = {
-            defaultModel: settings.defaultModel || 'gpt-4o-mini',
+            defaultModel: settings.defaultModel || 'auto',
             preferredProviders: Array.isArray(settings.preferredProviders) ? settings.preferredProviders : [],
             emailNotifications: Boolean(settings.emailNotifications),
             usageAlerts: Boolean(settings.usageAlerts),
-            weeklyReports: Boolean(settings.weeklyReports),
-            theme: ['light', 'dark', 'auto'].includes(settings.theme) ? settings.theme : 'light',
-            language: ['es', 'en', 'fr'].includes(settings.language) ? settings.language : 'es',
-            compactView: Boolean(settings.compactView),
             usageAlertThreshold: Math.min(95, Math.max(50, parseInt(settings.usageAlertThreshold) || 80)),
+            dailyLimit: settings.dailyLimit ? Math.max(1, parseInt(settings.dailyLimit)) : undefined,
+            costProtection: settings.costProtection !== undefined ? Boolean(settings.costProtection) : true,
+            autoModelRotation: Boolean(settings.autoModelRotation),
         }
 
         console.log('💾 Validated settings:', validatedSettings);

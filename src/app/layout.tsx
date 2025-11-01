@@ -1,7 +1,9 @@
 import { ThemeProvider } from "@/components/ThemeProvider";
+import { GlobalDemoBanner } from "@/components/GlobalDemoBanner";
 import { ClerkProvider } from '@clerk/nextjs';
 import type { Metadata } from "next";
 import localFont from "next/font/local";
+import { Toaster } from 'react-hot-toast';
 import "./globals.css";
 
 const geistSans = localFont({
@@ -16,7 +18,7 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Roulix - Intelligent AI Model Router",
+  title: "Roulyx - Intelligent AI Model Router",
   description: "Smart AI routing platform that automatically selects the best AI model based on cost, speed, and quality",
 };
 
@@ -32,7 +34,29 @@ export default function RootLayout({
           className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         >
           <ThemeProvider>
+            {/* Only show demo banner in production */}
+            {process.env.NODE_ENV === 'production' && <GlobalDemoBanner />}
             {children}
+            <Toaster
+              position="top-right"
+              toastOptions={{
+                duration: 4000,
+                style: {
+                  background: '#363636',
+                  color: '#fff',
+                },
+                success: {
+                  style: {
+                    background: '#10B981',
+                  },
+                },
+                error: {
+                  style: {
+                    background: '#EF4444',
+                  },
+                },
+              }}
+            />
           </ThemeProvider>
         </body>
       </html>

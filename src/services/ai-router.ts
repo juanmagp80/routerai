@@ -261,8 +261,11 @@ export class AIRouterService {
         console.log('👤 User settings loaded:', { defaultModel, preferredProviders });
         console.log('👤 Available models before filtering:', availableModels.map(m => `${m.name} (${m.provider})`));
 
-        // Si el usuario tiene un modelo por defecto, intentar usarlo
-        if (defaultModel) {
+        // Si el usuario tiene un modelo por defecto específico (no "auto"), usarlo solo 40% del tiempo para dar variedad
+        const useDefaultModel = Math.random() < 0.4;
+        console.log(`🎲 Default model usage roll: ${useDefaultModel ? 'USE' : 'SKIP'} (${useDefaultModel ? '40%' : '60%'} chance)`);
+        
+        if (defaultModel && defaultModel !== 'auto' && useDefaultModel) {
           const preferredModel = availableModels.find(m => m.name === defaultModel);
           if (preferredModel) {
             console.log('🎯 Using user default model preference:', defaultModel);
@@ -270,6 +273,10 @@ export class AIRouterService {
           } else {
             console.log('⚠️ User preferred model not available:', defaultModel);
           }
+        } else if (defaultModel && defaultModel !== 'auto') {
+          console.log('🎲 Skipping user default model for variety - continuing to intelligent selection');
+        } else if (defaultModel === 'auto') {
+          console.log('🤖 User selected auto mode - using intelligent selection');
         }
 
         // Si no tiene modelo por defecto pero tiene proveedores preferidos, 
@@ -383,78 +390,123 @@ export class AIRouterService {
         const isCodeTask = this.isCodeTask(request.message);
         const isCreativeTask = this.isCreativeTask(request.message);
 
-        // For code tasks, prefer models good at programming
+        // For code tasks, prefer models good at programming with variety
         if (isCodeTask) {
           const codeModels = availableModels.filter(m =>
-            m.name.includes('gpt-4') || m.name.includes('claude-3.5-sonnet') || m.name.includes('o1-')
+            m.name.includes('claude-3.5-sonnet') || m.name.includes('gpt-4') || 
+            m.name.includes('codestral')
           );
           if (codeModels.length > 0) {
-            console.log('💻 Selected code task model:', codeModels[0].name);
-            return codeModels[0];
+            // Add variety - rotate between good coding models
+            const selectedIndex = Math.floor(Math.random() * Math.min(2, codeModels.length));
+            console.log('💻 Selected code task model:', codeModels[selectedIndex].name);
+            return codeModels[selectedIndex];
           }
         }
 
-        // For creative tasks, prefer Claude or GPT-4
+        // For creative tasks, prefer Claude or diverse creative models
         if (isCreativeTask) {
           const creativeModels = availableModels.filter(m =>
-            m.name.includes('claude-3.5-sonnet') || m.name.includes('gpt-4o') || m.name.includes('opus')
+            m.name.includes('claude-3.5-sonnet') || m.name.includes('opus') || 
+            m.name.includes('gemini-1.5-pro') || m.name.includes('gpt-4o')
           );
           if (creativeModels.length > 0) {
-            console.log('🎨 Selected creative task model:', creativeModels[0].name);
-            return creativeModels[0];
+            const selectedIndex = Math.floor(Math.random() * Math.min(2, creativeModels.length));
+            console.log('🎨 Selected creative task model:', creativeModels[selectedIndex].name);
+            return creativeModels[selectedIndex];
           }
         }
 
-        // For complex tasks, prefer high-quality models
+        // For complex tasks, prefer high-quality models with variety
         if (isComplexTask) {
           const complexModels = availableModels.filter(m =>
-            m.name.includes('gpt-4') || m.name.includes('opus') || m.name.includes('claude-3.5-sonnet')
+            m.name.includes('claude-3.5-sonnet') || m.name.includes('opus') || 
+            m.name.includes('gemini-1.5-pro') || m.name.includes('gpt-4')
           );
           if (complexModels.length > 0) {
-            console.log('🧠 Selected complex task model:', complexModels[0].name);
-            return complexModels[0];
+            const selectedIndex = Math.floor(Math.random() * Math.min(2, complexModels.length));
+            console.log('🧠 Selected complex task model:', complexModels[selectedIndex].name);
+            return complexModels[selectedIndex];
           }
         }
 
-        // For medium messages (200-500 chars), prefer balanced models
+        // For medium messages (200-500 chars), prefer balanced models with variety
         if (messageLength >= 200 && messageLength <= 500) {
           const balancedModels = availableModels.filter(m =>
-            m.name.includes('claude-3-sonnet') || m.name.includes('gpt-4o') || m.name.includes('gemini-1.5-pro')
+            m.name.includes('claude-3.5-sonnet') || m.name.includes('gpt-4o') || 
+            m.name.includes('gemini-1.5-pro') || m.name.includes('claude-3-sonnet') ||
+            m.name.includes('gemini-2.0-flash')
           );
           if (balancedModels.length > 0) {
-            console.log('⚖️ Selected balanced model for medium message:', balancedModels[0].name);
-            return balancedModels[0];
+            const randomIndex = Math.floor(Math.random() * Math.min(3, balancedModels.length));
+            console.log('⚖️ Selected balanced model for medium message:', balancedModels[randomIndex].name);
+            return balancedModels[randomIndex];
           }
         }
 
-        // For short messages, use a variety of fast models (not always the same)
+        // For short messages, use a variety of fast models with better diversity
         if (messageLength < 200) {
-          const quickModels = availableModels.filter(m =>
-            m.name.includes('gpt-3.5') || m.name.includes('haiku') ||
-            m.name.includes('gemini-2.0-flash') || m.name.includes('gpt-4o-mini') ||
+          // Prioritize variety and avoid always using the same model
+          const fastHighQuality = availableModels.filter(m =>
+            m.name.includes('claude-3.5-sonnet') || m.name.includes('gemini-2.0-flash') ||
             m.name.includes('claude-3-sonnet')
           );
+          
+          const fastBudget = availableModels.filter(m =>
+            m.name.includes('gpt-4o-mini') || m.name.includes('gpt-3.5') || 
+            m.name.includes('haiku') || m.name.includes('gemini-2.5-flash')
+          );
 
-          if (quickModels.length > 1) {
-            // Add some randomness to avoid always picking the same model
-            const randomIndex = Math.floor(Math.random() * Math.min(3, quickModels.length));
-            console.log('🏃 Selected varied quick model:', quickModels[randomIndex].name);
-            return quickModels[randomIndex];
-          } else if (quickModels.length > 0) {
-            console.log('🏃 Selected quick model:', quickModels[0].name);
-            return quickModels[0];
+          // 60% chance for high quality, 40% for budget (better variety)
+          const useHighQuality = Math.random() < 0.6;
+          const candidateModels = useHighQuality && fastHighQuality.length > 0 ? fastHighQuality : fastBudget;
+
+          if (candidateModels.length > 0) {
+            const randomIndex = Math.floor(Math.random() * candidateModels.length);
+            console.log(`🏃 Selected ${useHighQuality ? 'high-quality' : 'budget'} quick model:`, candidateModels[randomIndex].name);
+            return candidateModels[randomIndex];
           }
         }
 
-        // Default: prefer a good balanced model over just the cheapest
-        const preferredModels = availableModels.filter(m =>
-          m.name.includes('claude-3-sonnet') || m.name.includes('gpt-4o') ||
-          m.name.includes('gemini-1.5-pro') || m.name.includes('gpt-3.5-turbo')
+        // Default: Smart selection with real variety, avoid always picking the same model
+        const topTierModels = availableModels.filter(m =>
+          m.name.includes('claude-3.5-sonnet') || m.name.includes('gpt-4o') || 
+          m.name.includes('gemini-1.5-pro')
         );
 
-        if (preferredModels.length > 0) {
-          console.log('🎯 Selected preferred default model:', preferredModels[0].name);
-          return preferredModels[0];
+        const midTierModels = availableModels.filter(m =>
+          m.name.includes('claude-3-sonnet') || m.name.includes('gemini-2.0-flash') ||
+          m.name.includes('gpt-4-turbo') || m.name.includes('gemini-2.5-pro')
+        );
+
+        const budgetModels = availableModels.filter(m =>
+          m.name.includes('gpt-4o-mini') || m.name.includes('gpt-3.5-turbo') ||
+          m.name.includes('haiku') || m.name.includes('gemini-2.5-flash')
+        );
+
+        // Weighted selection: 50% top-tier, 30% mid-tier, 20% budget
+        const random = Math.random();
+        let selectedModels, tier;
+        
+        if (random < 0.5 && topTierModels.length > 0) {
+          selectedModels = topTierModels;
+          tier = 'top-tier';
+        } else if (random < 0.8 && midTierModels.length > 0) {
+          selectedModels = midTierModels;
+          tier = 'mid-tier';
+        } else if (budgetModels.length > 0) {
+          selectedModels = budgetModels;
+          tier = 'budget';
+        } else {
+          // Fallback to any available model
+          selectedModels = availableModels;
+          tier = 'fallback';
+        }
+
+        if (selectedModels.length > 0) {
+          const randomIndex = Math.floor(Math.random() * selectedModels.length);
+          console.log(`🎯 Selected ${tier} default model:`, selectedModels[randomIndex].name);
+          return selectedModels[randomIndex];
         }
 
         // Last resort: return first available model

@@ -24,30 +24,47 @@ export interface UserStats {
 
 export class StatsService {
     // Obtener estadísticas del dashboard específicas del usuario
-    static async getDashboardStats(company?: string, userId?: string): Promise<DashboardStats> {
+    static async getDashboardStats(company?: string, clerkUserId?: string): Promise<DashboardStats> {
         try {
+            console.log('🔍 Getting dashboard stats for Clerk User ID:', clerkUserId);
+
             // Obtener número total de llamadas API del último mes
             const thirtyDaysAgo = new Date();
             thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
-            // Si se provee userId, filtrar por usuario específico, sino mostrar estadísticas generales
-            let usageQuery = supabase.from('usage_records').select('*').gte('created_at', thirtyDaysAgo.toISOString());
-            if (userId) {
-                // Primero necesitamos obtener el ID real del usuario si es un Clerk ID
-                let realUserId = userId;
-                if (userId.startsWith('user_')) {
-                    const { data: user } = await supabase
-                        .from('users')
+            let usageRecords: any[] = [];
+
+            if (clerkUserId) {
+                // Buscar usage records con Clerk ID primero, luego con database ID si no encuentra
+                const [clerkIdUsage, dbIdUsage] = await Promise.all([
+                    supabase.from('usage_records')
+                        .select('*')
+                        .eq('user_id', clerkUserId)
+                        .gte('created_at', thirtyDaysAgo.toISOString()),
+                    supabase.from('users')
                         .select('id')
-                        .eq('clerk_user_id', userId)
-                        .single();
-                    if (user) realUserId = user.id;
-                }
-                usageQuery = usageQuery.eq('user_id', realUserId);
-            } else if (company) {
-                usageQuery = usageQuery.eq('company', company as string);
+                        .eq('clerk_user_id', clerkUserId)
+                        .single()
+                        .then(async ({ data: user }) => {
+                            if (user) {
+                                return supabase.from('usage_records')
+                                    .select('*')
+                                    .eq('user_id', user.id)
+                                    .gte('created_at', thirtyDaysAgo.toISOString());
+                            }
+                            return { data: [] };
+                        })
+                ]);
+
+                usageRecords = clerkIdUsage.data?.length ? clerkIdUsage.data : (dbIdUsage.data || []);
+                console.log('📊 Found usage records for user:', usageRecords.length);
+            } else {
+                // Si no hay userId específico, obtener todos los registros
+                const { data } = await supabase.from('usage_records')
+                    .select('*')
+                    .gte('created_at', thirtyDaysAgo.toISOString());
+                usageRecords = data || [];
             }
-            const { data: usageRecords } = await usageQuery;
 
 
 
@@ -56,33 +73,57 @@ export class StatsService {
             let activeUserCount = 0;
             const debugList: Array<{ id: string; email?: string | null; name?: string | null; source?: string }> = [];
 
-            if (userId) {
-                // Para usuario específico, contar sus API keys activas
-                let realUserId = userId;
-                if (userId.startsWith('user_')) {
-                    const { data: user } = await supabase
-                        .from('users')
-                        .select('id')
-                        .eq('clerk_user_id', userId)
-                        .single();
-                    if (user) realUserId = user.id;
-                }
+            if (clerkUserId) {
+                // Para usuario específico, obtener sus datos y contar API keys
+                const { data: userData } = await supabase
+                    .from('users')
+                    .select('id, email, name, clerk_user_id')
+                    .eq('clerk_user_id', clerkUserId)
+                    .single();
 
-                const { data: userApiKeys } = await supabase
+                if (userData) {
+                    const { data: userApiKeys } = await supabase
+                        .from('api_keys')
+                        .select('id')
+                        .eq('user_id', userData.id)
+                        .eq('is_active', true);
+
+                    activeUserCount = userApiKeys?.length || 0;
+                    console.log('🔑 User API keys count:', activeUserCount);
+                    
+                    // Agregar el usuario actual a la lista de debug
+                    debugList.push({
+                        id: userData.id,
+                        email: userData.email,
+                        name: userData.name,
+                        source: 'current_user'
+                    });
+                }
+            } else {
+                // Para estadísticas generales, contar todos los usuarios con API keys activas
+                const { data: allApiKeys } = await supabase
                     .from('api_keys')
-                    .select('id')
-                    .eq('user_id', realUserId)
+                    .select('user_id')
                     .eq('is_active', true);
 
-                activeUserCount = userApiKeys?.length || 0;
-            } else {
-                // Lógica original para estadísticas generales
-                try {
-                    // ... [mantener la lógica original para casos no específicos de usuario]
-                    activeUserCount = 0; // Simplificado por ahora
-                } catch (err) {
-                    console.error('Error calculating active users from usage_records/api_keys:', err);
-                    activeUserCount = 0;
+                const uniqueUsers = new Set(allApiKeys?.map(key => key.user_id));
+                activeUserCount = uniqueUsers.size;
+                
+                // Si está habilitado el debug, obtener información de usuarios activos
+                if (process.env.NEXT_PUBLIC_STATS_DEBUG === 'true') {
+                    const { data: activeUsersData } = await supabase
+                        .from('users')
+                        .select('id, email, name, clerk_user_id')
+                        .in('id', Array.from(uniqueUsers));
+                    
+                    if (activeUsersData) {
+                        debugList.push(...activeUsersData.map(user => ({
+                            id: user.id,
+                            email: user.email,
+                            name: user.name,
+                            source: 'active_api_keys'
+                        })));
+                    }
                 }
             }
 
@@ -127,22 +168,12 @@ export class StatsService {
 
             // Calcular modelos disponibles según el plan del usuario
             let modelsAvailable = 8; // Valor por defecto
-            if (userId) {
-                let realUserId = userId;
-                if (userId.startsWith('user_')) {
-                    const { data: user } = await supabase
-                        .from('users')
-                        .select('id')
-                        .eq('clerk_user_id', userId)
-                        .single();
-                    if (user) realUserId = user.id;
-                }
-
+            if (clerkUserId) {
                 // Obtener el plan del usuario
                 const { data: userData } = await supabase
                     .from('users')
                     .select('plan')
-                    .eq('id', realUserId)
+                    .eq('clerk_user_id', clerkUserId)
                     .single();
 
                 if (userData) {
@@ -155,6 +186,7 @@ export class StatsService {
 
                     if (planData && planData.allowed_models) {
                         modelsAvailable = planData.allowed_models.length;
+                        console.log('🤖 Models available for plan', userData.plan, ':', modelsAvailable);
                     }
                 }
             }
@@ -172,6 +204,7 @@ export class StatsService {
 
             // Adjuntar debug info si se solicita vía variable de entorno
             if (process.env.NEXT_PUBLIC_STATS_DEBUG === 'true') {
+                console.log('🐛 Debug mode enabled, adding debug_active_users:', debugList.length, 'users');
                 (baseResult as DashboardStats & { debug_active_users?: typeof debugList }).debug_active_users = debugList;
             }
 

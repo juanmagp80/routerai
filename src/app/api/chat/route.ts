@@ -19,6 +19,13 @@ export async function POST(request: NextRequest) {
     // Primero necesitamos leer el body para obtener el modelo para validación
     const body = await request.json();
 
+    // Extraer mensaje para validaciones de demo
+    let messageForValidation = body.message;
+    if (!messageForValidation && body.messages && Array.isArray(body.messages)) {
+      const userMessages = body.messages.filter((msg: { role: string; content: string }) => msg.role === 'user');
+      messageForValidation = userMessages[userMessages.length - 1]?.content || '';
+    }
+
     // Usar el nuevo middleware para validar API key y límites
     return await ApiMiddleware.handleApiRequest(request, async (userId: string) => {
       try {
@@ -158,7 +165,7 @@ export async function POST(request: NextRequest) {
           { status: 500 }
         );
       }
-    }, body?.model || 'auto'); // Pasar el modelo para validación
+    }, body?.model || 'auto', messageForValidation); // Pasar el modelo y mensaje para validación
 
   } catch (parseError) {
     console.error('Error parsing request body:', parseError);

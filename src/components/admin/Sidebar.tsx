@@ -13,8 +13,7 @@ import {
   MessageSquare,
   Settings,
   Shield,
-  User,
-  Users
+  User
 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -24,7 +23,6 @@ const baseNavigation = [
   { name: 'AI Chat', href: '/admin/chat', icon: MessageSquare },
   { name: 'API Keys', href: '/admin/keys', icon: Key },
   { name: 'Analytics', href: '/admin/analytics', icon: BarChart3 },
-  { name: 'Users', href: '/admin/users', icon: Users },
   { name: 'Billing', href: '/admin/billing', icon: CreditCard },
   { name: 'Notifications', href: '/admin/notifications', icon: Bell },
   { name: 'Profile', href: '/admin/profile', icon: User },
@@ -34,6 +32,7 @@ const baseNavigation = [
 
 const restrictedNavigation = [
   { name: 'Adaptive Learning', href: '/admin/learning', icon: Brain },
+  { name: 'Cost Monitoring', href: '/admin/cost-monitoring', icon: Shield },
   { name: 'System Status', href: '/admin/system', icon: Shield },
 ];
 
@@ -113,7 +112,7 @@ export function Sidebar({ className }: SidebarProps) {
               </g>
             </svg>
           </div>
-          <h1 className="text-xl font-bold text-white">Roulix</h1>
+          <h1 className="text-xl font-bold text-white">Roulyx</h1>
         </div>
       </div>
 

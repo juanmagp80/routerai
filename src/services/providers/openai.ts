@@ -58,7 +58,7 @@ export class OpenAIProvider {
 
       return {
         content: completion.choices[0]?.message?.content || '',
-        model: completion.model,
+        model: request.model || 'gpt-3.5-turbo', // Use the model we requested, not what OpenAI returns
         provider: 'openai',
         tokensUsed: {
           input: usage.prompt_tokens,

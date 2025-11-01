@@ -15,20 +15,8 @@ export async function GET(request: Request) {
             );
         }
 
-        // Obtener el email del usuario desde los parámetros de la URL
-        const { searchParams } = new URL(request.url);
-        const userEmail = searchParams.get('userEmail');
-
-        // Determinar si es el usuario autorizado para ver datos globales del SaaS
-        const isAuthorizedForSaasData = userEmail === 'agentroutermcp@gmail.com';
-
-        if (isAuthorizedForSaasData) {
-            // Retornar datos globales del SaaS
-            return await getSaasAnalytics();
-        } else {
-            // Retornar datos personales del usuario
-            return await getUserAnalytics(userId);
-        }
+        // Siempre retornar datos personales del usuario logueado
+        return await getUserAnalytics(userId);
     } catch (error) {
         console.error('Error in analytics API:', error);
         return NextResponse.json(
@@ -38,80 +26,113 @@ export async function GET(request: Request) {
     }
 }
 
-async function getUserAnalytics(userId: string) {
+async function getUserAnalytics(clerkUserId: string) {
     try {
-        // Obtener datos del usuario usando el mismo servicio que Billing
-        const limitsAndUsage = await PlanLimitsService.getUserLimitsAndUsage(userId);
+        console.log('🔍 Getting analytics for Clerk User ID:', clerkUserId);
 
-        if (!limitsAndUsage) {
-            return NextResponse.json(
-                { error: 'User not found' },
-                { status: 404 }
-            );
-        }
-
-        // Obtener el ID del usuario en la base de datos
-        const { data: userData } = await supabase
+        // Obtener datos del usuario
+        const { data: userData, error: userError } = await supabase
             .from('users')
-            .select('id, email, created_at')
-            .eq('clerk_user_id', userId)
+            .select('id, email, plan, created_at, name')
+            .eq('clerk_user_id', clerkUserId)
             .single();
 
-        if (!userData) {
+        if (userError || !userData) {
+            console.error('User not found:', userError);
             return NextResponse.json(
                 { error: 'User not found in database' },
                 { status: 404 }
             );
         }
 
-        const dbUserId = userData.id;
-        const userIdForRecords = userId;
+        console.log('✅ Found user:', userData.email, 'Plan:', userData.plan);
 
-        // Obtener métricas del usuario específico
-        const [
-            totalRequestsResult,
-            totalApiKeysResult,
-            topModelsResult,
-            recentUsageResult
-        ] = await Promise.all([
-            // Total requests del usuario este mes
+        // Obtener límites del plan
+        const { data: planLimits } = await supabase
+            .from('plan_limits')
+            .select('*')
+            .eq('plan_name', userData.plan)
+            .single();
+
+        console.log('📋 Plan limits:', planLimits);
+
+        // Calcular fecha de inicio del mes actual
+        const startOfMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString();
+        console.log('📅 Searching from:', startOfMonth);
+        console.log('🔍 Searching with Clerk ID:', clerkUserId);
+        console.log('🔍 Searching with Database ID:', userData.id);
+
+        // Buscar usage_records con ambos IDs posibles (Clerk ID y Database ID)
+        const [usageWithClerkId, usageWithDbId] = await Promise.all([
             supabase
                 .from('usage_records')
                 .select('*')
-                .eq('user_id', userIdForRecords)
-                .gte('created_at', new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString()),
-
-            // API keys del usuario
-            supabase
-                .from('api_keys')
-                .select('*', { count: 'exact' })
-                .eq('user_id', dbUserId)
-                .eq('is_active', true),
-
-            // Modelos utilizados por el usuario
+                .eq('user_id', clerkUserId)
+                .gte('created_at', startOfMonth),
             supabase
                 .from('usage_records')
-                .select('model_used')
-                .eq('user_id', userIdForRecords)
-                .gte('created_at', new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString()),
-
-            // Uso reciente de la API del usuario
-            supabase
-                .from('usage_records')
-                .select('created_at, model_used')
-                .eq('user_id', userIdForRecords)
-                .order('created_at', { ascending: false })
-                .limit(10)
+                .select('*')
+                .eq('user_id', userData.id)
+                .gte('created_at', startOfMonth)
         ]);
 
-        const totalRequests = totalRequestsResult.data?.length || 0;
-        const totalApiKeys = totalApiKeysResult.count || 0;
-        const userEmail = userData.email || 'Unknown';
-        const userPlan = limitsAndUsage.user.plan;
+        console.log('📊 Usage with Clerk ID:', usageWithClerkId.data?.length || 0, 'records');
+        console.log('📊 Usage with Database ID:', usageWithDbId.data?.length || 0, 'records');
+
+        // Usar los datos que contengan registros, si no hay del mes actual, usar todos los registros
+        let finalUsageData = usageWithClerkId.data?.length ? usageWithClerkId.data : usageWithDbId.data;
+        
+        // Si no encontramos datos del mes actual, buscar TODOS los registros del usuario
+        if (!finalUsageData?.length) {
+            console.log('⚠️ No data for current month, searching ALL records...');
+            const [allUsageClerk, allUsageDb] = await Promise.all([
+                supabase
+                    .from('usage_records')
+                    .select('*')
+                    .eq('user_id', clerkUserId)
+                    .order('created_at', { ascending: false }),
+                supabase
+                    .from('usage_records')
+                    .select('*')
+                    .eq('user_id', userData.id)
+                    .order('created_at', { ascending: false })
+            ]);
+            
+            finalUsageData = allUsageClerk.data?.length ? allUsageClerk.data : allUsageDb.data;
+            console.log('📊 Using historical records:', finalUsageData?.length || 0);
+            
+            if (finalUsageData?.length) {
+                console.log('📅 Date range of records:');
+                console.log('   Oldest:', finalUsageData[finalUsageData.length - 1]?.created_at);
+                console.log('   Newest:', finalUsageData[0]?.created_at);
+            }
+        } else {
+            console.log('✅ Using current month data:', finalUsageData.length, 'records');
+        }
+
+        // Obtener API keys del usuario
+        const { data: apiKeysData, count: apiKeysCount } = await supabase
+            .from('api_keys')
+            .select('*', { count: 'exact' })
+            .eq('user_id', userData.id)
+            .eq('is_active', true);
+
+        console.log('🔑 Found API keys:', apiKeysCount || 0);
+
+        const totalRequests = finalUsageData?.length || 0;
+        const totalApiKeys = apiKeysCount || 0;
+
+        // Calcular el costo total real
+        const totalCost = finalUsageData?.reduce((sum: number, record: any) => {
+            const cost = parseFloat(record.cost?.toString() || '0') || 0;
+            return sum + cost;
+        }, 0) || 0;
+
+        console.log('💰 Total cost calculated:', totalCost);
 
         // Top modelos del usuario
         const modelRequestsMap = new Map();
-        topModelsResult.data?.forEach(record => {
+        finalUsageData?.forEach((record: any) => {
             const model = record.model_used || 'unknown';
             const existing = modelRequestsMap.get(model) || 0;
             modelRequestsMap.set(model, existing + 1);
@@ -127,39 +148,51 @@ async function getUserAnalytics(userId: string) {
             .slice(0, 5);
 
         // Actividad reciente del usuario
-        const recentActivity = recentUsageResult.data?.map(usage => ({
+        const recentActivity = finalUsageData?.slice(0, 10).map((usage: any) => ({
             timestamp: usage.created_at,
-            userId: dbUserId.toString(),
-            email: userEmail,
+            userId: userData.id,
+            email: userData.email,
             action: 'API Usage',
-            details: `Made API request using ${usage.model_used}`
+            details: `Used ${usage.model_used || 'unknown model'} - Cost: $${usage.cost || 0}`
         })) || [];
 
         const userAnalytics = {
             totalRequests,
             totalUsers: 1,
             totalApiKeys,
-            totalRevenue: 0, // No mostramos revenue para usuarios individuales
-            requestsGrowth: 0,
+            totalRevenue: totalCost,
+            totalCost,
+            requestsGrowth: 0, // TODO: Calcular crecimiento real
             usersGrowth: 0,
             revenueGrowth: 0,
             apiKeysGrowth: 0,
-            userPlan,
-            userEmail,
+            userPlan: userData.plan,
+            userEmail: userData.email,
             topUsers: [{
-                userId: dbUserId.toString(),
-                email: userEmail,
-                plan: userPlan,
+                userId: userData.id,
+                email: userData.email,
+                plan: userData.plan,
                 requests: totalRequests
             }],
             topModels,
-            recentActivity: recentActivity.slice(0, 20),
-            planLimits: limitsAndUsage.limits
+            recentActivity,
+            planLimits: planLimits ? {
+                monthlyRequestLimit: planLimits.monthly_request_limit,
+                apiKeyLimit: planLimits.api_key_limit,
+                allowedModels: planLimits.allowed_models
+            } : null
         };
+
+        console.log('📈 Analytics result:', {
+            totalRequests: userAnalytics.totalRequests,
+            totalCost: userAnalytics.totalCost,
+            totalApiKeys: userAnalytics.totalApiKeys,
+            userPlan: userAnalytics.userPlan
+        });
 
         return NextResponse.json(userAnalytics);
     } catch (error) {
-        console.error('Error getting user analytics:', error);
+        console.error('❌ Error getting user analytics:', error);
         return NextResponse.json(
             { error: 'Internal server error' },
             { status: 500 }

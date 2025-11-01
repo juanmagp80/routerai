@@ -126,7 +126,7 @@ const Navigation = () => {
             {/* Brand name */}
             <div className="flex items-center">
               <span className="text-2xl font-bold text-white tracking-tight bg-gradient-to-r from-white via-slate-100 to-emerald-100 bg-clip-text text-transparent">
-                <span className="bg-gradient-to-r from-emerald-400 via-emerald-300 to-cyan-300 bg-clip-text text-transparent font-black">Roulix</span>
+                <span className="bg-gradient-to-r from-emerald-400 via-emerald-300 to-cyan-300 bg-clip-text text-transparent font-black">Roulyx</span>
               </span>
             </div>
           </motion.div>
@@ -165,7 +165,7 @@ const Navigation = () => {
 const HeroSection = () => {
   const [typedText, setTypedText] = useState("");
   const [currentStep, setCurrentStep] = useState(0);
-  const fullText = "curl -X POST https://api.roulix.com/v1/route";
+  const fullText = "curl -X POST https://api.roulyx.com/v1/route";
 
   useEffect(() => {
     if (currentStep < fullText.length) {
@@ -332,7 +332,7 @@ const HeroSection = () => {
                 <div className="w-3 h-3 bg-red-500 rounded-full"></div>
                 <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
                 <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                <span className="text-slate-400 text-sm font-mono ml-4">roulix-api</span>
+                <span className="text-slate-400 text-sm font-mono ml-4">roulyx-api</span>
               </div>
 
               {/* Terminal content */}
@@ -429,7 +429,7 @@ const RouterSection = () => {
             >
               <div className="bg-emerald-500 rounded-xl p-6 mb-4 relative overflow-hidden">
                 <Brain className="w-12 h-12 text-white mx-auto mb-4" />
-                <div className="text-white font-bold">Roulix</div>
+                <div className="text-white font-bold">Roulyx</div>
                 <div className="text-emerald-100 text-xs mt-2">
                   Analyzing...
                 </div>
@@ -493,7 +493,7 @@ const SavingsSection = () => {
             <span className="text-emerald-600">Real</span> and <span className="text-emerald-600">Measurable</span> Savings
           </h2>
           <p className="text-xl text-slate-600">
-            Real cost comparison: before vs after Roulix
+            Real cost comparison: before vs after Roulyx
           </p>
         </motion.div>
 
@@ -551,7 +551,7 @@ const SavingsSection = () => {
                   <TrendingDown className="w-8 h-8 text-white rotate-180" />
                 </div>
                 <h3 className="text-2xl font-bold text-emerald-700">AFTER</h3>
-                <p className="text-emerald-600">With Roulix</p>
+                <p className="text-emerald-600">With Roulyx</p>
               </div>
 
               <div className="space-y-4">
@@ -900,7 +900,7 @@ const PricingSection = () => {
             <span className="text-emerald-400">Simple</span> Pricing
           </h2>
           <p className="text-xl text-slate-400">
-            $0.01 per task + model cost. No surprises.
+            Transparent pricing with built-in cost protection. No surprises.
           </p>
         </motion.div>
 
@@ -909,7 +909,7 @@ const PricingSection = () => {
             {
               name: "FREE",
               price: "€0",
-              tasks: "25 requests per week",
+              tasks: "10 requests/month",
               features: ["3 API keys", "Forever free", "Basic models access", "Community support"],
               highlight: false,
               period: "/forever",
@@ -917,27 +917,27 @@ const PricingSection = () => {
             },
             {
               name: "STARTER",
-              price: "€29",
-              tasks: "10,000 requests/month",
-              features: ["10 API keys", "All AI models", "Priority support", "Analytics dashboard"],
-              highlight: false,
-              period: "/month",
-              badge: null
-            },
-            {
-              name: "PRO",
-              price: "€49",
-              tasks: "100,000 requests/month",
-              features: ["25 API keys", "All AI models", "Priority support", "Advanced analytics", "Custom integrations"],
+              price: "€39",
+              tasks: "5,000 requests/month",
+              features: ["10 API keys", "All AI models", "Priority support", "Analytics dashboard", "Cost protection"],
               highlight: true,
               period: "/month",
               badge: "Most Popular"
             },
             {
+              name: "PRO",
+              price: "€79",
+              tasks: "20,000 requests/month",
+              features: ["25 API keys", "All AI models", "Priority support", "Advanced analytics", "Custom integrations", "Enhanced cost protection"],
+              highlight: false,
+              period: "/month",
+              badge: null
+            },
+            {
               name: "ENTERPRISE",
-              price: "€199",
-              tasks: "1,000,000 requests/month",
-              features: ["Unlimited API keys", "All AI models", "24/7 dedicated support", "Custom analytics", "On-premise deployment", "SLA guarantees"],
+              price: "€299",
+              tasks: "80,000 requests/month",
+              features: ["Unlimited API keys", "All AI models", "24/7 dedicated support", "Custom analytics", "On-premise deployment", "SLA guarantees", "Maximum cost protection"],
               highlight: false,
               period: "/month",
               badge: null
@@ -1071,7 +1071,7 @@ const TestimonialsSection = () => {
               name: "Alex Chen",
               role: "Senior Backend Engineer",
               company: "TechCorp",
-              content: "I literally changed one line of code and started saving $2K per month. Roulix is incredibly smart.",
+              content: "I literally changed one line of code and started saving $2K per month. Roulyx is incredibly smart.",
               savings: "$2,000/month",
               tech: "Node.js + Express"
             },
@@ -1184,7 +1184,7 @@ const Footer = () => {
               </svg>
             </div>
             <div>
-              <span className="text-lg font-black">Roulix</span>
+              <span className="text-lg font-black">Roulyx</span>
               <div className="text-xs text-slate-400 font-mono">v1.0.0</div>
             </div>
           </div>
@@ -1204,7 +1204,7 @@ const Footer = () => {
 
         <div className="mt-12 pt-8 border-t border-slate-800 text-center">
           <p className="text-slate-500 text-sm font-mono">
-            © 2024 Roulix • Intelligent routing since 2024
+            © 2024 Roulyx • Intelligent routing since 2024
           </p>
         </div>
       </div>

@@ -8,25 +8,23 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { useUser } from '@clerk/nextjs';
-import { BarChart3Icon, BellIcon, BrainIcon, PaletteIcon } from "lucide-react";
+import { BarChart3Icon, BellIcon, BrainIcon, ShieldIcon } from "lucide-react";
 import { useEffect, useState } from 'react';
 
 export default function SettingsPage() {
   const { user } = useUser();
   const [settings, setSettings] = useState({
     // Preferencias de modelos
-    defaultModel: 'gpt-4o-mini',
+    defaultModel: 'auto',
     preferredProviders: [] as string[],
     // Notificaciones
     emailNotifications: true,
     usageAlerts: true,
-    weeklyReports: false,
-    // UI/UX
-    theme: 'light',
-    language: 'es',
-    compactView: false,
     // Límites y alertas
     usageAlertThreshold: 80,
+    dailyLimit: undefined as number | undefined,
+    costProtection: true,
+    autoModelRotation: false,
   });
   const [loading, setLoading] = useState(false);
   const [loadingSettings, setLoadingSettings] = useState(true);
@@ -40,19 +38,6 @@ export default function SettingsPage() {
         if (response.ok) {
           const data = await response.json();
           setSettings(data);
-
-          // Aplicar tema inmediatamente
-          if (data.theme === 'dark') {
-            document.documentElement.classList.add('dark');
-          } else if (data.theme === 'light') {
-            document.documentElement.classList.remove('dark');
-          } else if (data.theme === 'auto') {
-            const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-            document.documentElement.classList.toggle('dark', isDark);
-          }
-
-          // Guardar tema en localStorage
-          localStorage.setItem('theme', data.theme);
         }
       } catch (error) {
         console.error('Error loading settings:', error);
@@ -86,19 +71,6 @@ export default function SettingsPage() {
       const result = await response.json();
       console.log('Settings saved successfully:', result);
 
-      // Aplicar tema inmediatamente
-      if (settings.theme === 'dark') {
-        document.documentElement.classList.add('dark');
-      } else if (settings.theme === 'light') {
-        document.documentElement.classList.remove('dark');
-      } else if (settings.theme === 'auto') {
-        const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        document.documentElement.classList.toggle('dark', isDark);
-      }
-
-      // Guardar tema en localStorage
-      localStorage.setItem('theme', settings.theme);
-
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);
     } catch (error) {
@@ -110,11 +82,15 @@ export default function SettingsPage() {
   };
 
   const availableModels = [
+    'auto',
     'gpt-4o-mini',
     'gpt-4o',
     'claude-3-haiku',
     'claude-3-sonnet',
+    'claude-3.5-sonnet',
     'gemini-pro',
+    'gemini-1.5-pro',
+    'gemini-2.0-flash',
     'llama-3.1-8b',
     'mixtral-8x7b'
   ];
@@ -152,7 +128,7 @@ export default function SettingsPage() {
       <div className="border-b border-slate-200 pb-6">
         <h1 className="text-2xl font-bold text-slate-900">Settings</h1>
         <p className="text-slate-600 mt-1">
-          Configure your Roulix account and preferences
+          Configure your Roulyx account and preferences
         </p>
       </div>
 
@@ -272,17 +248,7 @@ export default function SettingsPage() {
               />
             </div>
 
-            <div className="flex items-center justify-between">
-              <div>
-                <Label>Reportes Semanales</Label>
-                <p className="text-sm text-slate-500">Recibir resumen semanal de uso</p>
-              </div>
-              <Switch
-                checked={settings.weeklyReports}
-                onCheckedChange={(checked) =>
-                  setSettings({ ...settings, weeklyReports: checked })}
-              />
-            </div>
+
 
             {settings.usageAlerts && (
               <div>
@@ -307,57 +273,59 @@ export default function SettingsPage() {
           </CardContent>
         </Card>
 
-        {/* Interfaz de Usuario */}
+        {/* Configuración de Seguridad */}
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center text-lg font-semibold text-slate-900">
-              <PaletteIcon className="w-5 h-5 mr-2" />
-              Interfaz de Usuario
+              <ShieldIcon className="w-5 h-5 mr-2" />
+              Límites y Seguridad
             </CardTitle>
             <CardDescription>
-              Personaliza la apariencia de la aplicación
+              Configura límites de uso y alertas de seguridad
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <Label htmlFor="theme">Tema</Label>
-              <Select value={settings.theme} onValueChange={(value) =>
-                setSettings({ ...settings, theme: value })}>
-                <SelectTrigger className="mt-1">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="light">Claro</SelectItem>
-                  <SelectItem value="dark">Oscuro</SelectItem>
-                  <SelectItem value="auto">Automático</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div>
-              <Label htmlFor="language">Idioma</Label>
-              <Select value={settings.language} onValueChange={(value) =>
-                setSettings({ ...settings, language: value })}>
-                <SelectTrigger className="mt-1">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="es">Español</SelectItem>
-                  <SelectItem value="en">English</SelectItem>
-                  <SelectItem value="fr">Français</SelectItem>
-                </SelectContent>
-              </Select>
+              <Label htmlFor="dailyLimit">Límite Diario de Requests (opcional)</Label>
+              <Input
+                id="dailyLimit"
+                type="number"
+                min="1"
+                max="1000"
+                placeholder="Sin límite"
+                value={settings.dailyLimit || ''}
+                onChange={(e) => setSettings({
+                  ...settings,
+                  dailyLimit: e.target.value ? parseInt(e.target.value) : undefined
+                })}
+                className="mt-1"
+              />
+              <p className="text-xs text-slate-500 mt-1">
+                Opcional: Establece un límite diario para controlar gastos
+              </p>
             </div>
 
             <div className="flex items-center justify-between">
               <div>
-                <Label>Vista Compacta</Label>
-                <p className="text-sm text-slate-500">Mostrar más información en menos espacio</p>
+                <Label>Protección de Costos</Label>
+                <p className="text-sm text-slate-500">Pausar automáticamente si hay picos inusuales</p>
               </div>
               <Switch
-                checked={settings.compactView}
+                checked={settings.costProtection || true}
                 onCheckedChange={(checked) =>
-                  setSettings({ ...settings, compactView: checked })}
+                  setSettings({ ...settings, costProtection: checked })}
+              />
+            </div>
+
+            <div className="flex items-center justify-between">
+              <div>
+                <Label>Rotación Automática de Modelos</Label>
+                <p className="text-sm text-slate-500">Cambiar automáticamente si un modelo falla</p>
+              </div>
+              <Switch
+                checked={settings.autoModelRotation || false}
+                onCheckedChange={(checked) =>
+                  setSettings({ ...settings, autoModelRotation: checked })}
               />
             </div>
           </CardContent>
@@ -384,22 +352,7 @@ export default function SettingsPage() {
               />
             </div>
 
-            <div>
-              <Label>Plan Actual</Label>
-              <div className="flex items-center space-x-2 mt-1">
-                <Badge variant="outline">Free</Badge>
-                <span className="text-sm text-slate-500">0 / 1000 requests mensuales</span>
-              </div>
-            </div>
-
-            <div>
-              <Label>Miembro desde</Label>
-              <Input
-                value={user?.createdAt ? new Date(user.createdAt).toLocaleDateString('es-ES') : ''}
-                disabled
-                className="mt-1 bg-slate-50"
-              />
-            </div>
+            <AccountInfoSection />
           </CardContent>
         </Card>
       </div>
@@ -424,5 +377,118 @@ export default function SettingsPage() {
         </Button>
       </div>
     </div>
+  );
+}
+
+// Componente para mostrar información real de la cuenta
+function AccountInfoSection() {
+  const [accountInfo, setAccountInfo] = useState<{
+    plan: string;
+    usage: number;
+    limit: number;
+    apiKeys: number;
+    memberSince: string | null;
+    loading: boolean;
+  }>({
+    plan: 'loading...',
+    usage: 0,
+    limit: 0,
+    apiKeys: 0,
+    memberSince: null,
+    loading: true
+  });
+
+  useEffect(() => {
+    const loadAccountInfo = async () => {
+      try {
+        console.log('🔍 Loading account info...');
+        const response = await fetch('/api/user/account-info');
+        
+        if (response.ok) {
+          const data = await response.json();
+          console.log('✅ Account info loaded:', data);
+          
+          setAccountInfo({
+            plan: data.plan || 'free',
+            usage: data.usage || 0,
+            limit: data.limit || 0,
+            apiKeys: data.apiKeys || 0,
+            memberSince: data.memberSince,
+            loading: false
+          });
+        } else {
+          console.error('❌ Failed to load account info:', response.status);
+          setAccountInfo(prev => ({ ...prev, loading: false }));
+        }
+      } catch (error) {
+        console.error('❌ Error loading account info:', error);
+        setAccountInfo(prev => ({ ...prev, loading: false }));
+      }
+    };
+
+    loadAccountInfo();
+  }, []);
+
+  if (accountInfo.loading) {
+    return (
+      <div className="flex justify-center py-4">
+        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
+
+  const planNames: Record<string, string> = {
+    free: 'Free',
+    starter: 'Starter',
+    pro: 'Pro',
+    enterprise: 'Enterprise'
+  };
+
+  const planColors: Record<string, 'default' | 'secondary' | 'destructive' | 'outline'> = {
+    free: 'outline',
+    starter: 'secondary', 
+    pro: 'default',
+    enterprise: 'destructive'
+  };
+
+  return (
+    <>
+      <div>
+        <Label>Plan Actual</Label>
+        <div className="flex items-center space-x-2 mt-1">
+          <Badge variant={planColors[accountInfo.plan]}>
+            {planNames[accountInfo.plan] || accountInfo.plan}
+          </Badge>
+          <span className="text-sm text-slate-500">
+            {accountInfo.usage.toLocaleString()} / {accountInfo.limit.toLocaleString()} requests mensuales
+          </span>
+        </div>
+      </div>
+
+      <div>
+        <Label>API Keys Activas</Label>
+        <div className="flex items-center space-x-2 mt-1">
+          <Badge variant="outline">{accountInfo.apiKeys}</Badge>
+          <span className="text-sm text-slate-500">
+            claves API configuradas
+          </span>
+        </div>
+      </div>
+
+      {accountInfo.memberSince && (
+        <div>
+          <Label>Miembro desde</Label>
+          <Input
+            value={new Date(accountInfo.memberSince).toLocaleDateString('es-ES', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric'
+            })}
+            disabled
+            className="mt-1 bg-slate-50"
+          />
+        </div>
+      )}
+    </>
   );
 }

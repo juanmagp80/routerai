@@ -7,9 +7,11 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Input } from "@/components/ui/input";
 import { ApiKeyService } from "@/lib/api-key-service";
 import { PlanLimitsService } from "@/lib/plan-limits-service";
+import { showConfirmDialog, showError, showSuccess, showWarning } from "@/lib/toast-helpers";
 import { useAuth } from "@clerk/nextjs";
 import { AlertTriangleIcon, CopyIcon, EyeIcon, EyeOffIcon, InfoIcon, KeyIcon, PlusIcon, TrashIcon } from "lucide-react";
 import { useEffect, useState } from "react";
+import toast from 'react-hot-toast';
 
 interface ApiKey {
   id: string;
@@ -36,6 +38,9 @@ export default function ApiKeysPage() {
   const [visibleKeys, setVisibleKeys] = useState<Set<string>>(new Set());
   const [newlyCreatedKey, setNewlyCreatedKey] = useState<{ key: string, name: string } | null>(null);
   const [showNewKeyDialog, setShowNewKeyDialog] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [keyToDelete, setKeyToDelete] = useState<{ id: string; name: string } | null>(null);
   const [userLimits, setUserLimits] = useState<{
     user: {
       plan: string;
@@ -52,7 +57,6 @@ export default function ApiKeysPage() {
     usage: {
       apiKeys: {
         allowed: boolean;
-        reason?: string;
         current: number;
         limit: number;
       };
@@ -65,28 +69,34 @@ export default function ApiKeysPage() {
     };
   } | null>(null);
 
+  // Función para recargar todos los datos
+  const reloadData = async () => {
+    if (!userId) return;
+    
+    try {
+      setLoading(true);
+      
+      // Cargar API keys del usuario
+      const userApiKeys = await ApiKeyService.getApiKeysByUserId(userId);
+      setApiKeys(userApiKeys);
+
+      // Cargar límites y uso del usuario
+      const limitsAndUsage = await PlanLimitsService.getUserLimitsAndUsage(userId);
+      setUserLimits(limitsAndUsage);
+
+      console.log('✅ Data reloaded - API Keys:', userApiKeys.length, 'Limits:', limitsAndUsage?.usage?.apiKeys?.current);
+
+    } catch (err) {
+      console.error('Error loading data:', err);
+      setError(err instanceof Error ? err.message : 'Error desconocido');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     if (!isLoaded || !userId) return;
-
-    const loadApiKeysAndLimits = async () => {
-      try {
-        // Cargar API keys del usuario
-        const userApiKeys = await ApiKeyService.getApiKeysByUserId(userId);
-        setApiKeys(userApiKeys);
-
-        // Cargar límites y uso del usuario
-        const limitsAndUsage = await PlanLimitsService.getUserLimitsAndUsage(userId);
-        setUserLimits(limitsAndUsage);
-
-      } catch (err) {
-        console.error('Error loading data:', err);
-        setError(err instanceof Error ? err.message : 'Error desconocido');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadApiKeysAndLimits();
+    reloadData();
   }, [isLoaded, userId]);
 
   const createApiKey = async () => {
@@ -100,6 +110,7 @@ export default function ApiKeysPage() {
       const canCreate = await PlanLimitsService.canCreateApiKey(userId);
 
       if (!canCreate.allowed) {
+        showError(canCreate.reason || 'Cannot create more API keys');
         setError(canCreate.reason || 'Cannot create more API keys');
         return;
       }
@@ -131,11 +142,14 @@ export default function ApiKeysPage() {
         // Mostrar modal especial con la nueva API key
         setNewlyCreatedKey({ key: keyValue, name: newKeyWithValue.name });
         setShowNewKeyDialog(true);
+        
+        showSuccess(`API key "${newKeyWithValue.name}" created successfully!`);
       } else {
         throw new Error('Could not create API key');
       }
     } catch (err) {
       console.error('Error creating API key:', err);
+      showError(err instanceof Error ? err.message : 'Error creating API key');
       setError(err instanceof Error ? err.message : 'Error creating API key');
     } finally {
       setIsCreatingKey(false);
@@ -144,27 +158,9 @@ export default function ApiKeysPage() {
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text).then(() => {
-      // Mejor feedback visual en lugar de alert
-      const notification = document.createElement('div');
-      notification.textContent = '✓ API Key copied to clipboard!';
-      notification.style.cssText = `
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        background: #10B981;
-        color: white;
-        padding: 12px 24px;
-        border-radius: 8px;
-        z-index: 1000;
-        font-weight: 500;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-      `;
-      document.body.appendChild(notification);
-      setTimeout(() => {
-        document.body.removeChild(notification);
-      }, 3000);
+      showSuccess('API Key copied to clipboard! 📋');
     }).catch(() => {
-      alert('Error al copiar. Por favor, selecciona y copia manualmente.');
+      showError('Failed to copy to clipboard');
     });
   };
 
@@ -178,22 +174,39 @@ export default function ApiKeysPage() {
     setVisibleKeys(newVisibleKeys);
   };
 
-  const deleteApiKey = async (keyId: string) => {
-    if (!confirm('Are you sure you want to delete this API key?')) {
-      return;
+  const handleDeleteClick = (keyId: string) => {
+    const key = apiKeys.find(k => k.id === keyId);
+    if (key) {
+      setKeyToDelete({ id: keyId, name: key.name });
+      setShowDeleteDialog(true);
     }
+  };
 
+  const confirmDelete = async () => {
+    if (!keyToDelete) return;
+
+    setIsDeleting(true);
+    
     try {
-      const success = await ApiKeyService.deleteApiKey(keyId, userId!);
+      const success = await ApiKeyService.deleteApiKey(keyToDelete.id, userId!);
       if (success) {
-        setApiKeys(apiKeys.filter(key => key.id !== keyId));
-        alert('API Key deleted successfully');
+        console.log('🗑️ API Key deleted, reloading data...');
+        
+        // Recargar todos los datos para actualizar contadores y botones
+        await reloadData();
+        
+        showSuccess(`API key "${keyToDelete.name}" deleted successfully`);
+        setShowDeleteDialog(false);
+        setKeyToDelete(null);
       } else {
         throw new Error('Could not delete API key');
       }
     } catch (err) {
       console.error('Error deleting API key:', err);
+      showError(err instanceof Error ? err.message : 'Error deleting API key');
       setError(err instanceof Error ? err.message : 'Error deleting API key');
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -221,7 +234,7 @@ export default function ApiKeysPage() {
       <div className="border-b border-slate-200 pb-6">
         <h1 className="text-2xl font-bold text-slate-900">API Keys</h1>
         <p className="text-slate-600 mt-1">
-          Manage your Roulix API access keys
+          Manage your Roulyx API access keys
         </p>
       </div>
 
@@ -415,7 +428,7 @@ export default function ApiKeysPage() {
                   title={
                     loading ? 'Loading limits...' :
                       (userLimits?.usage.apiKeys.allowed === false)
-                        ? userLimits.usage.apiKeys.reason || 'Cannot create more API keys'
+                        ? 'Cannot create more API keys'
                         : 'Create new API key'
                   }
                 >
@@ -486,7 +499,7 @@ export default function ApiKeysPage() {
                 No API Keys configured
               </h3>
               <p className="text-slate-600 mb-6">
-                Create your first API key to start using Roulix
+                Create your first API key to start using Roulyx
               </p>
             </div>
           ) : (
@@ -567,7 +580,7 @@ export default function ApiKeysPage() {
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => deleteApiKey(key.id)}
+                        onClick={() => handleDeleteClick(key.id)}
                         className="text-red-600 hover:text-red-800 hover:bg-red-50"
                       >
                         <TrashIcon className="w-4 h-4" />
@@ -594,7 +607,7 @@ export default function ApiKeysPage() {
               <h4 className="text-sm font-medium text-slate-900 mb-2">HTTP Authentication</h4>
               <div className="bg-slate-50 rounded-md p-3">
                 <code className="text-sm text-slate-800">
-                  curl -H &quot;Authorization: Bearer YOUR_API_KEY&quot; https://api.roulix.com/v1/chat
+                  curl -H &quot;Authorization: Bearer YOUR_API_KEY&quot; https://api.roulyx.com/v1/chat
                 </code>
               </div>
             </div>
@@ -602,7 +615,7 @@ export default function ApiKeysPage() {
               <h4 className="text-sm font-medium text-slate-900 mb-2">JavaScript/Node.js</h4>
               <div className="bg-slate-50 rounded-md p-3">
                 <code className="text-sm text-slate-800">
-                  {`const response = await fetch('https://api.roulix.com/v1/chat', {
+                  {`const response = await fetch('https://api.roulyx.com/v1/chat', {
   headers: { 'Authorization': 'Bearer YOUR_API_KEY' }
 });`}
                 </code>
@@ -614,7 +627,7 @@ export default function ApiKeysPage() {
                 <code className="text-sm text-slate-800">
                   {`import requests
 headers = {'Authorization': 'Bearer YOUR_API_KEY'}
-response = requests.post('https://api.roulix.com/v1/chat', headers=headers)`}
+response = requests.post('https://api.roulyx.com/v1/chat', headers=headers)`}
                 </code>
               </div>
             </div>
@@ -674,7 +687,7 @@ response = requests.post('https://api.roulix.com/v1/chat', headers=headers)`}
             <div className="bg-slate-50 rounded-lg p-4">
               <h4 className="text-sm font-medium text-slate-800 mb-2">Quick usage example:</h4>
               <code className="text-xs text-slate-600 break-all">
-                curl -H &quot;Authorization: Bearer {newlyCreatedKey?.key || 'YOUR_API_KEY'}&quot; https://api.roulix.com/v1/chat
+                curl -H &quot;Authorization: Bearer {newlyCreatedKey?.key || 'YOUR_API_KEY'}&quot; https://api.roulyx.com/v1/chat
               </code>
             </div>
 
@@ -696,6 +709,61 @@ response = requests.post('https://api.roulix.com/v1/chat', headers=headers)`}
                 ✓ I&apos;ve copied it
               </Button>
             </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center text-red-600">
+              <AlertTriangleIcon className="w-5 h-5 mr-2" />
+              Confirm Deletion
+            </DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete this API key? This action cannot be undone and will immediately revoke access for this key.
+            </DialogDescription>
+          </DialogHeader>
+          
+          {keyToDelete && (
+            <div className="bg-red-50 border border-red-200 rounded-lg p-3 my-4">
+              <p className="text-sm text-red-800">
+                <strong>Key:</strong> {keyToDelete.name}
+              </p>
+              <p className="text-sm text-red-600 mt-1">
+                <strong>ID:</strong> {keyToDelete.id}
+              </p>
+            </div>
+          )}
+
+          <div className="flex justify-end space-x-3 pt-4">
+            <Button
+              variant="outline"
+              onClick={() => {
+                setShowDeleteDialog(false);
+                setKeyToDelete(null);
+              }}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={confirmDelete}
+              className="bg-red-600 hover:bg-red-700 text-white"
+              disabled={isDeleting}
+            >
+              {isDeleting ? (
+                <>
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                  Deleting...
+                </>
+              ) : (
+                <>
+                  <TrashIcon className="w-4 h-4 mr-2" />
+                  Delete Key
+                </>
+              )}
+            </Button>
           </div>
         </DialogContent>
       </Dialog>

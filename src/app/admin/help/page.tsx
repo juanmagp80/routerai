@@ -29,7 +29,7 @@ export default function HelpPage() {
     };
 
     const quickStartExample = `// Quick Start - Your first API call
-curl -X POST https://api.roulix.com/v1/chat \
+curl -X POST https://api.roulyx.com/v1/chat \
   -H "Authorization: Bearer YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
@@ -38,7 +38,7 @@ curl -X POST https://api.roulix.com/v1/chat \
   }'`;
 
     const apiKeyExample = `// Using your API key in JavaScript
-const response = await fetch('https://api.roulix.com/v1/chat', {
+const response = await fetch('https://api.roulyx.com/v1/chat', {
   method: 'POST',
   headers: {
     'Authorization': 'Bearer YOUR_API_KEY',
@@ -64,7 +64,7 @@ const response = await fetch('https://api.roulix.com/v1/chat', {
         {
             icon: PlayCircle,
             title: "Getting Started",
-            description: "Learn the basics of using Roulix",
+            description: "Learn the basics of using Roulyx",
             items: [
                 "Set up your first API key",
                 "Make your first request",
@@ -110,7 +110,7 @@ const response = await fetch('https://api.roulix.com/v1/chat', {
     const faqItems = [
         {
             question: "How does intelligent routing work?",
-            answer: "Roulix analyzes your request content, complexity, and requirements to automatically select the best AI model. This ensures optimal performance while minimizing costs."
+            answer: "Roulyx analyzes your request content, complexity, and requirements to automatically select the best AI model. This ensures optimal performance while minimizing costs."
         },
         {
             question: "Can I force a specific model?",
@@ -122,7 +122,7 @@ const response = await fetch('https://api.roulix.com/v1/chat', {
         },
         {
             question: "What happens if a model is unavailable?",
-            answer: "Roulix automatically fails over to backup models based on your configuration. You can set custom fallback chains in your dashboard."
+            answer: "Roulyx automatically fails over to backup models based on your configuration. You can set custom fallback chains in your dashboard."
         },
         {
             question: "How do I monitor my usage?",
@@ -150,15 +150,15 @@ const response = await fetch('https://api.roulix.com/v1/chat', {
                             <div className="w-12 h-12 bg-emerald-500 rounded-xl flex items-center justify-center mr-4">
                                 <HelpCircle className="w-6 h-6 text-white" />
                             </div>
-                            <span className="text-xl font-bold text-white">Roulix Help Center</span>
+                            <span className="text-xl font-bold text-white">Roulyx Help Center</span>
                         </div>
 
                         <h1 className="text-4xl font-black text-white mb-6 leading-tight">
-                            Get the Most Out of Roulix
+                            Get the Most Out of Roulyx
                         </h1>
 
                         <p className="text-xl text-slate-300 leading-relaxed max-w-3xl mx-auto mb-8">
-                            Everything you need to know about using Roulix&apos;s intelligent AI routing platform effectively.
+                            Everything you need to know about using Roulyx&apos;s intelligent AI routing platform effectively.
                         </p>
 
                         <div className="flex flex-wrap justify-center gap-4">
@@ -196,7 +196,7 @@ const response = await fetch('https://api.roulix.com/v1/chat', {
                                 Quick Start Guide
                             </CardTitle>
                             <CardDescription>
-                                Get up and running with Roulix in minutes
+                                Get up and running with Roulyx in minutes
                             </CardDescription>
                         </CardHeader>
                         <CardContent>
@@ -300,7 +300,7 @@ const response = await fetch('https://api.roulix.com/v1/chat', {
                                 JavaScript Integration
                             </CardTitle>
                             <CardDescription>
-                                How to integrate Roulix in your JavaScript applications
+                                How to integrate Roulyx in your JavaScript applications
                             </CardDescription>
                         </CardHeader>
                         <CardContent>
@@ -398,7 +398,7 @@ const response = await fetch('https://api.roulix.com/v1/chat', {
                                 Still Need Help?
                             </h3>
                             <p className="text-slate-600 mb-6 max-w-2xl mx-auto">
-                                Can&apos;t find what you&apos;re looking for? Our support team is here to help you get the most out of Roulix.
+                                Can&apos;t find what you&apos;re looking for? Our support team is here to help you get the most out of Roulyx.
                             </p>
                             <div className="flex flex-col sm:flex-row gap-4 justify-center">
                                 <Button size="lg" asChild>

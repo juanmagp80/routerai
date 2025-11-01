@@ -7,9 +7,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { useUserSync } from "@/hooks/useUserSync";
 import { StatsService, UserStats } from "@/lib/stats-service";
 import { Activity, BarChart3, DollarSign, Key, TrendingUp, XCircle } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function UserProfile() {
+  const router = useRouter();
   const { dbUser, clerkUser, isLoading: userLoading, error: userError } = useUserSync();
   const [userStats, setUserStats] = useState<UserStats | null>(null);
   const [isLoadingStats, setIsLoadingStats] = useState(true);
@@ -116,6 +118,14 @@ export default function UserProfile() {
     } finally {
       setIsCanceling(false);
     }
+  };
+
+  const handleManageApiKeys = () => {
+    router.push('/admin/keys');
+  };
+
+  const handleViewDetailedStatistics = () => {
+    router.push('/admin/analytics');
   };
 
   return (
@@ -325,12 +335,12 @@ export default function UserProfile() {
       </div>
 
       {/* Actions */}
-      <div className="flex space-x-4">
-        <Button>
+      <div className="flex flex-col sm:flex-row gap-3 sm:space-x-4 sm:space-y-0">
+        <Button onClick={handleManageApiKeys} className="w-full sm:w-auto">
           <Key className="mr-2 h-4 w-4" />
           Manage API Keys
         </Button>
-        <Button variant="outline">
+        <Button variant="outline" onClick={handleViewDetailedStatistics} className="w-full sm:w-auto">
           <BarChart3 className="mr-2 h-4 w-4" />
           View Detailed Statistics
         </Button>

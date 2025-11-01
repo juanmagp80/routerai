@@ -85,7 +85,7 @@ export class NotificationService {
                     userId,
                     type: 'limit_reached',
                     title: '🛑 API Limit Reached',
-                    message: 'You have reached your monthly API quota. Upgrade your plan to continue using Roulix.',
+                    message: 'You have reached your monthly API quota. Upgrade your plan to continue using Roulyx.',
                     metadata: { usage_percentage: usagePercentage, plan: limits.plan_name }
                 });
                 return true;
@@ -158,7 +158,7 @@ export class NotificationService {
             await this.sendNotification({
                 userId,
                 type: 'welcome',
-                title: '🎉 Welcome to Roulix!',
+                title: '🎉 Welcome to Roulyx!',
                 message: 'Your API key has been created successfully. Check out our documentation to get started with your first AI request.',
                 metadata: { milestone: 'first_api_key' }
             });
@@ -173,9 +173,9 @@ export class NotificationService {
     static async notifyUsageMilestone(userId: string, milestone: number): Promise<boolean> {
         try {
             const milestoneMessages = {
-                100: '🎯 First 100 API calls completed! You\'re getting the hang of Roulix.',
+                100: '🎯 First 100 API calls completed! You\'re getting the hang of Roulyx.',
                 1000: '🚀 1,000 API calls milestone reached! You\'re building something amazing.',
-                10000: '⭐ 10,000 API calls! You\'re a Roulix power user.',
+                10000: '⭐ 10,000 API calls! You\'re a Roulyx power user.',
                 100000: '🏆 100,000 API calls! Consider our Enterprise plan for even better rates.'
             };
 
@@ -335,7 +335,7 @@ export class NotificationService {
                     userId,
                     type: 'limit_reached',
                     title: '🚫 Límite de requests alcanzado',
-                    message: `Has alcanzado tu límite de ${usage.requests.limit} requests este mes. Actualiza tu plan para continuar usando Roulix.`,
+                    message: `Has alcanzado tu límite de ${usage.requests.limit} requests este mes. Actualiza tu plan para continuar usando Roulyx.`,
                     metadata: {
                         current: usage.requests.current,
                         limit: usage.requests.limit,
@@ -353,7 +353,7 @@ export class NotificationService {
                     userId,
                     type: 'upgrade_suggestion',
                     title: '🚀 ¿Listo para más poder?',
-                    message: `Has usado ${usage.requests.percentage.toFixed(1)}% de tus requests gratuitos. Con el plan Starter obtienes 10,000 requests por solo €29/mes.`,
+                    message: `Has usado ${usage.requests.percentage.toFixed(1)}% de tus requests gratuitos. Con el plan Starter obtienes 5,000 requests por solo €39/mes.`,
                     metadata: {
                         currentPlan: user.plan,
                         recommendedPlan: 'starter',

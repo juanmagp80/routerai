@@ -19,19 +19,19 @@ export interface StripeConfig {
 export const stripeConfig: StripeConfig = {
     plans: {
         starter: {
-            priceId: 'price_1SDp0o2ULfqKVBqVsydpZwiU', // Roulix Starter - €29/mes
-            name: 'Roulix Starter',
-            price: 29
+            priceId: 'price_1SDp0o2ULfqKVBqVsydpZwiU', // Roulyx Starter - €39/mes
+            name: 'Roulyx Starter',
+            price: 39
         },
         pro: {
-            priceId: 'price_1SCLNc2ULfqKVBqVKXWa5Va4', // Roulix Pro - €49/mes
-            name: 'Roulix Pro',
-            price: 49
+            priceId: 'price_1SCLNc2ULfqKVBqVKXWa5Va4', // Roulyx Pro - €79/mes
+            name: 'Roulyx Pro',
+            price: 79
         },
         enterprise: {
-            priceId: 'price_1SCLO32ULfqKVBqV0CitIdp0', // Roulix Enterprise - €199/mes
-            name: 'Roulix Enterprise',
-            price: 199
+            priceId: 'price_1SCLO32ULfqKVBqV0CitIdp0', // Roulyx Enterprise - €299/mes
+            name: 'Roulyx Enterprise',
+            price: 299
         }
     }
 }

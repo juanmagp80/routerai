@@ -33,7 +33,7 @@ export async function POST() {
                 userId,
                 type: 'trial_expiring' as const,
                 title: 'Trial Ending Soon',
-                message: 'Your free trial expires in 3 days. Upgrade now to continue using Roulix without interruption.',
+                message: 'Your free trial expires in 3 days. Upgrade now to continue using Roulyx without interruption.',
                 metadata: { days_remaining: 3 }
             }
         ];

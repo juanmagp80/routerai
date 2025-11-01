@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { getModelsForPlan } from "@/config/ai-providers";
+import { generateDemoCurlCommand } from "@/config/demo-urls";
 import { ModelConfig } from "@/types/ai";
 import { CheckCircle, Clock, Code, Copy, DollarSign, Eye, EyeOff, Play, Settings, Star, Zap } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -217,10 +218,7 @@ export default function ApiConsolePage() {
       maxTokens: maxTokens
     };
 
-    return `curl -X ${method} "${typeof window !== 'undefined' ? window.location.origin : 'https://yourdomain.com'}${endpoint}" \\
-  -H "Content-Type: application/json" \\
-  -H "Authorization: Bearer ${apiKey}" \\
-  -d '${JSON.stringify(requestData, null, 2)}'`;
+    return generateDemoCurlCommand(endpoint, method, requestData, apiKey);
   };
 
   return (

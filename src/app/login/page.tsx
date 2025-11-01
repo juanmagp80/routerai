@@ -2,12 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
-// Ajusta las rutas de importación según tu estructura
-// import { supabase } from '../../config/database';
-// import { OAUTH_CONFIG } from '../../config/oauth';
-// import { useAuth } from '../../contexts/AuthContext';
 import { SignIn } from '@clerk/nextjs';
-// import { useNotifications } from '../../hooks/useNotifications';
 
 export default function LoginPage() {
     const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
@@ -49,7 +44,7 @@ export default function LoginPage() {
                         <h1 className="text-4xl font-bold text-white mb-4 leading-tight">
                             Welcome back to
                             <span className="block bg-gradient-to-r from-emerald-400 to-emerald-600 bg-clip-text text-transparent">
-                                Roulix
+                                Roulyx
                             </span>
                         </h1>
                         <p className="text-gray-400 text-lg leading-relaxed">
@@ -75,7 +70,7 @@ export default function LoginPage() {
                     <div className="w-full max-w-md">
                         <div className="text-center mb-8">
                             <h2 className="text-3xl font-bold text-white mb-2">Sign In</h2>
-                            <p className="text-gray-400">Access your Roulix dashboard</p>
+                            <p className="text-gray-400">Access your Roulyx dashboard</p>
                         </div>
                         <div className="bg-white/5 backdrop-blur-lg rounded-3xl p-8 border border-white/10 shadow-2xl">
                             <SignIn appearance={{

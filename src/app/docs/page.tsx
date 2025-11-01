@@ -31,7 +31,7 @@ export default function DocsPage() {
     };
 
     const chatbotExample = `// Chatbot - Fast responses for customer service
-curl -X POST https://api.roulix.com/v1/chat \\
+curl -X POST https://api.roulyx.com/v1/chat \\
   -H "Authorization: Bearer YOUR_API_KEY" \\
   -H "Content-Type: application/json" \\
   -d '{
@@ -42,7 +42,7 @@ curl -X POST https://api.roulix.com/v1/chat \\
   }'`;
 
     const summaryExample = `// Document summarization - Quality focused
-curl -X POST https://api.roulix.com/v1/chat \\
+curl -X POST https://api.roulyx.com/v1/chat \\
   -H "Authorization: Bearer YOUR_API_KEY" \\
   -H "Content-Type: application/json" \\
   -d '{
@@ -53,7 +53,7 @@ curl -X POST https://api.roulix.com/v1/chat \\
   }'`;
 
     const sentimentExample = `// Sentiment analysis - Cost optimized
-curl -X POST https://api.roulix.com/v1/chat \\
+curl -X POST https://api.roulyx.com/v1/chat \\
   -H "Authorization: Bearer YOUR_API_KEY" \\
   -H "Content-Type: application/json" \\
   -d '{
@@ -65,10 +65,10 @@ curl -X POST https://api.roulix.com/v1/chat \\
     const errorResponseExample = `{
   "error": {
     "message": "Your API key seems invalid or expired. Check your dashboard.",
-    "hint": "Visit https://roulix.ai/admin/keys to refresh it.",
+    "hint": "Visit https://roulyx.ai/admin/keys to refresh it.",
     "type": "authentication_error", 
     "code": 401,
-    "docs": "https://roulix.ai/docs#authentication"
+    "docs": "https://roulyx.ai/docs#authentication"
   }
 }`;
 
@@ -88,7 +88,7 @@ curl -X POST https://api.roulix.com/v1/chat \\
                             <div className="w-12 h-12 bg-emerald-500 rounded-xl flex items-center justify-center mr-4">
                                 <Code className="w-6 h-6 text-white" />
                             </div>
-                            <span className="text-xl font-bold text-white">Roulix Docs</span>
+                            <span className="text-xl font-bold text-white">Roulyx Docs</span>
                         </div>
 
                         <h1 className="text-5xl font-black text-white mb-6 leading-tight">
@@ -96,7 +96,7 @@ curl -X POST https://api.roulix.com/v1/chat \\
                         </h1>
 
                         <p className="text-xl text-slate-300 leading-relaxed max-w-3xl mx-auto mb-8">
-                            Roulix automatically routes your AI requests to the best model — faster, cheaper, and smarter than any single provider.
+                            Roulyx automatically routes your AI requests to the best model — faster, cheaper, and smarter than any single provider.
                         </p>
 
                         <div className="flex flex-wrap justify-center gap-4">
@@ -115,7 +115,7 @@ curl -X POST https://api.roulix.com/v1/chat \\
                         </div>
                     </motion.div>
 
-                    {/* How Roulix Works - Visual Flow */}
+                    {/* How Roulyx Works - Visual Flow */}
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -123,7 +123,7 @@ curl -X POST https://api.roulix.com/v1/chat \\
                         className="mb-16"
                     >
                         <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-white/20">
-                            <h3 className="text-2xl font-bold text-white mb-8 text-center">How Roulix Works</h3>
+                            <h3 className="text-2xl font-bold text-white mb-8 text-center">How Roulyx Works</h3>
                             <div className="grid grid-cols-1 md:grid-cols-4 gap-6 text-center">
                                 <div>
                                     <div className="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-3">
@@ -187,7 +187,7 @@ curl -X POST https://api.roulix.com/v1/chat \\
                                 Smart Routing = Real Savings
                             </CardTitle>
                             <CardDescription>
-                                See how Roulix optimizes costs compared to direct provider calls
+                                See how Roulyx optimizes costs compared to direct provider calls
                             </CardDescription>
                         </CardHeader>
                         <CardContent>
@@ -201,7 +201,7 @@ curl -X POST https://api.roulix.com/v1/chat \\
                                 </div>
                                 <div className="text-center">
                                     <div className="bg-emerald-100 rounded-lg p-6 mb-4">
-                                        <h4 className="font-semibold text-emerald-800 mb-2">With Roulix Routing</h4>
+                                        <h4 className="font-semibold text-emerald-800 mb-2">With Roulyx Routing</h4>
                                         <div className="text-3xl font-bold text-emerald-600">$508/month</div>
                                         <p className="text-sm text-emerald-600 mt-2">Intelligent model selection per request</p>
                                     </div>
@@ -327,7 +327,7 @@ curl -X POST https://api.roulix.com/v1/chat \\
                             Authentication
                         </CardTitle>
                         <CardDescription>
-                            Roulix uses API keys to authenticate requests. You can manage your API keys in your{" "}
+                            Roulyx uses API keys to authenticate requests. You can manage your API keys in your{" "}
                             <a href="/admin/keys" className="text-emerald-600 hover:underline">
                                 dashboard
                             </a>
@@ -361,7 +361,7 @@ curl -X POST https://api.roulix.com/v1/chat \\
                     <CardHeader>
                         <CardTitle>Enhanced Error Handling</CardTitle>
                         <CardDescription>
-                            Roulix provides developer-friendly error messages with actionable hints
+                            Roulyx provides developer-friendly error messages with actionable hints
                         </CardDescription>
                     </CardHeader>
                     <CardContent>
@@ -425,7 +425,7 @@ curl -X POST https://api.roulix.com/v1/chat \\
                                 Ready to optimize your AI costs?
                             </h3>
                             <p className="text-slate-600 mb-6 max-w-2xl mx-auto">
-                                Create your account and start building with Roulix&apos;s intelligent API routing in minutes.
+                                Create your account and start building with Roulyx&apos;s intelligent API routing in minutes.
                             </p>
                             <div className="flex flex-col sm:flex-row gap-4 justify-center">
                                 <Button size="lg" asChild>

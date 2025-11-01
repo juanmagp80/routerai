@@ -48,7 +48,7 @@ SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
 3. **Navigate to Webhooks** (in the left sidebar)
 4. **Click "Add Endpoint"**
 5. **Configure the webhook**:
-   - **Endpoint URL**: `https://yourdomain.com/api/webhooks/clerk`
+   - **Endpoint URL**: `https://your-deployed-app.vercel.app/api/webhooks/clerk`
    - **Events to listen for**: 
      - ✅ `user.created`
    - **Click "Create"**

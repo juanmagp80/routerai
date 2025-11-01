@@ -4,12 +4,15 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { DemoModeWarning } from "@/components/DemoModeWarning";
 import { useUserSync } from "@/hooks/useUserSync";
 import { DashboardStats, StatsService } from "@/lib/stats-service";
+import { showError, showSuccess } from "@/lib/toast-helpers";
 import { useUser } from "@clerk/nextjs";
-import { Activity, BarChart3, Clock, Cpu, Eye, Key, Plus, Settings, TrendingUp, Users, Zap } from "lucide-react";
+import { Activity, BarChart3, Clock, Cpu, Eye, Key, Plus, Settings, TrendingUp, Zap } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import toast from 'react-hot-toast';
 
 interface UsageData {
   currentPlan: string;
@@ -25,7 +28,6 @@ export default function AdminDashboard() {
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [isLoadingStats, setIsLoadingStats] = useState(true);
   const [isCreatingApiKey, setIsCreatingApiKey] = useState(false);
-  const [showStatsModal, setShowStatsModal] = useState(false);
   const [showUsageModal, setShowUsageModal] = useState(false);
   const [usageData, setUsageData] = useState<UsageData | null>(null);
   const router = useRouter();
@@ -39,21 +41,6 @@ export default function AdminDashboard() {
           user?.id // Pasar el Clerk ID del usuario logueado
         );
         setStats(dashboardStats);
-        // Si la variable de entorno pública de debug está activa, y el backend devolvió
-        // debug_active_users, imprimimos tabla en consola para inspección rápida.
-        const debugStats = dashboardStats as unknown as { debug_active_users?: Array<{ id: string; email?: string; name?: string; source?: string }> };
-        if (process.env.NEXT_PUBLIC_STATS_DEBUG === 'true' && debugStats.debug_active_users) {
-          try {
-            // eslint-disable-next-line no-console
-            console.groupCollapsed('Stats Debug: active users');
-            // eslint-disable-next-line no-console
-            console.table(debugStats.debug_active_users);
-            // eslint-disable-next-line no-console
-            console.groupEnd();
-          } catch {
-            // ignore console errors
-          }
-        }
       } catch (error) {
         console.error('Error loading statistics:', error);
       } finally {
@@ -68,10 +55,6 @@ export default function AdminDashboard() {
   }, [dbUser, user?.id]);
 
   // Funciones de navegación para acciones rápidas
-  const handleManageUsers = () => {
-    router.push('/admin/users');
-  };
-
   const handleConfigureModels = () => {
     router.push('/admin/settings');
   };
@@ -88,7 +71,33 @@ export default function AdminDashboard() {
     router.push('/admin/chat');
   };
 
+  const handleTestNotification = async () => {
+    try {
+      const response = await fetch('/api/test-notification', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
 
+      const result = await response.json();
+
+      if (response.ok && result.success) {
+        showSuccess(`✅ Notificación de prueba enviada a ${result.notification?.userEmail}`);
+        
+        if (result.email?.sent) {
+          toast.success(`📧 Email enviado correctamente (ID: ${result.email.messageId})`);
+        } else if (result.email?.error) {
+          toast.error(`❌ Error enviando email: ${result.email.error}`);
+        }
+      } else {
+        showError(result.message || 'Error creando notificación de prueba');
+      }
+    } catch (error) {
+      console.error('Error testing notification:', error);
+      showError('Error enviando notificación de prueba');
+    }
+  };
 
   const handleCreateApiKey = async () => {
     try {
@@ -106,22 +115,19 @@ export default function AdminDashboard() {
       const result = await response.json();
 
       if (response.ok) {
+        showSuccess('API key created successfully!');
         // Redirigir a la página de keys para ver la nueva clave
         router.push('/admin/keys?highlight=' + result.apiKey.id);
       } else {
         console.error('Error creating API key:', result.error);
-        alert(result.error || 'Error creating API key');
+        showError(result.error || 'Error creating API key');
       }
     } catch (error) {
       console.error('Error creating API key:', error);
-      alert('Error creating API key');
+      showError('Error creating API key');
     } finally {
       setIsCreatingApiKey(false);
     }
-  };
-
-  const handleQuickStats = () => {
-    setShowStatsModal(true);
   };
 
   const handleQuickUsage = async () => {
@@ -133,11 +139,11 @@ export default function AdminDashboard() {
         setUsageData(userLimits);
         setShowUsageModal(true);
       } else {
-        alert('Error fetching usage information');
+        showError('Error fetching usage information');
       }
     } catch (error) {
       console.error('Error fetching usage:', error);
-      alert('Error fetching usage information');
+      showError('Error fetching usage information');
     }
   };
 
@@ -182,18 +188,19 @@ export default function AdminDashboard() {
     }
   };
 
-  return (
-    <div className="flex-1 space-y-6 p-8 pt-6">
-      <div className="flex items-center justify-between space-y-2">
-        <div>
-          <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
-          <p className="text-muted-foreground">
-            Welcome back, {dbUser?.name}
-          </p>
-        </div>
-      </div>
+    return (
+        <div className="flex-1 space-y-6 p-8 pt-6">
+            <div className="flex items-center justify-between space-y-2">
+                <div>
+                    <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
+                    <p className="text-muted-foreground">
+                        Welcome back, {dbUser?.name}
+                    </p>
+                </div>
+            </div>
 
-      {/* Stats Grid */}
+            {/* Demo Mode Warning */}
+            <DemoModeWarning />      {/* Stats Grid */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -350,14 +357,6 @@ export default function AdminDashboard() {
               <Button
                 className="w-full justify-start"
                 variant="outline"
-                onClick={handleManageUsers}
-              >
-                <Users className="mr-2 h-4 w-4" />
-                Manage Users
-              </Button>
-              <Button
-                className="w-full justify-start"
-                variant="outline"
                 onClick={handleManageKeys}
               >
                 <Key className="mr-2 h-4 w-4" />
@@ -410,17 +409,6 @@ export default function AdminDashboard() {
                   {isCreatingApiKey ? 'Creating...' : 'Create New API Key'}
                 </Button>
 
-
-
-                <Button
-                  className="w-full justify-start"
-                  variant="outline"
-                  onClick={handleQuickStats}
-                >
-                  <Zap className="mr-2 h-4 w-4" />
-                  View Quick Stats
-                </Button>
-
                 <Button
                   className="w-full justify-start"
                   variant="outline"
@@ -430,64 +418,19 @@ export default function AdminDashboard() {
                   View Current Usage
                 </Button>
 
-
+                <Button
+                  className="w-full justify-start"
+                  variant="outline"
+                  onClick={handleTestNotification}
+                >
+                  <Zap className="mr-2 h-4 w-4" />
+                  Test Email Notification
+                </Button>
               </div>
             </div>
           </CardContent>
         </Card>
       </div>
-
-      {/* Quick Stats Modal */}
-      <Dialog open={showStatsModal} onOpenChange={setShowStatsModal}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle>📊 Quick Stats</DialogTitle>
-            <DialogDescription>Quick overview of recent activity</DialogDescription>
-          </DialogHeader>
-
-          <div className="space-y-4">
-            <Button
-              className="w-full justify-start"
-              variant="default"
-              onClick={handleCreateApiKey}
-              disabled={isCreatingApiKey}
-            >
-              <Plus className="mr-2 h-4 w-4" />
-              {isCreatingApiKey ? 'Creating...' : 'Create New API Key'}
-            </Button>
-
-            {/* Debug: print active users to console when env flag is enabled */}
-            {process.env.NEXT_PUBLIC_STATS_DEBUG === 'true' && (
-              <Button
-                className="w-full justify-start"
-                variant="outline"
-                onClick={() => {
-                  try {
-                    if (stats && (stats as { debug_active_users?: unknown }).debug_active_users) {
-                      // eslint-disable-next-line no-console
-                      console.groupCollapsed('Stats Debug: active users (manual)');
-                      // eslint-disable-next-line no-console
-                      console.table((stats as { debug_active_users: unknown }).debug_active_users);
-                      // eslint-disable-next-line no-console
-                      console.groupEnd();
-                    } else {
-                      // eslint-disable-next-line no-console
-                      console.info('No debug_active_users available in stats object.');
-                    }
-                  } catch {
-                    // ignore
-                  }
-                }}
-              >
-                <Eye className="mr-2 h-4 w-4" />
-                Print debug active users
-              </Button>
-            )}
-
-            <p className="text-sm text-muted-foreground">Use the button above to print the debug list in your browser console.</p>
-          </div>
-        </DialogContent>
-      </Dialog>
 
       {/* Current Usage Modal */}
       <Dialog open={showUsageModal} onOpenChange={setShowUsageModal}>
@@ -567,6 +510,8 @@ export default function AdminDashboard() {
           </div>
         </DialogContent>
       </Dialog>
+
+
     </div>
   );
 }

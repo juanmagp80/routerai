@@ -25,6 +25,7 @@ interface AnalyticsData {
   planLimits?: {
     monthlyRequestLimit: number;
     apiKeyLimit: number;
+    allowedModels?: string[];
   };
   topUsers: Array<{
     userId: string;
@@ -250,7 +251,7 @@ export default function AnalyticsPage() {
               <div className="flex-1">
                 <p className="text-sm font-medium text-slate-600">Monthly Cost</p>
                 <p className="text-2xl font-bold text-slate-900">
-                  {formatCurrency(data?.totalRevenue || 0)}
+                  ${(data?.totalCost || 0).toFixed(3)}
                 </p>
                 <div className="flex items-center mt-1">
                   {getGrowthIcon(data?.revenueGrowth || 0)}

@@ -4,7 +4,7 @@ export const AI_PROVIDERS: Record<string, AIProvider> = {
   openai: {
     name: 'OpenAI',
     baseUrl: 'https://api.openai.com/v1',
-    models: ['gpt-3.5-turbo', 'gpt-4', 'gpt-4-turbo', 'gpt-4-32k', 'gpt-4o-mini', 'gpt-4o', 'gpt-4-vision', 'o1-preview', 'o1-mini'],
+    models: ['gpt-3.5-turbo', 'gpt-4', 'gpt-4-turbo', 'gpt-4o-mini', 'gpt-4o', 'gpt-4-vision'],
     costPer1kTokens: {
       input: 0.03,
       output: 0.06
@@ -26,7 +26,7 @@ export const AI_PROVIDERS: Record<string, AIProvider> = {
   google: {
     name: 'Google',
     baseUrl: 'https://generativelanguage.googleapis.com',
-    models: ['gemini-pro', 'gemini-1.5-pro', 'gemini-1.5-flash', 'gemini-2.0-flash', 'gemini-2.5-flash', 'gemini-2.5-pro', 'gemini-ultra'],
+    models: ['gemini-pro', 'gemini-1.5-pro', 'gemini-1.5-flash', 'gemini-2.0-flash', 'gemini-2.5-flash', 'gemini-2.5-pro'],
     costPer1kTokens: {
       input: 0.000075,
       output: 0.0003
@@ -144,14 +144,7 @@ export const MODEL_CONFIGS: ModelConfig[] = [
     priority: 4,
     available: !!process.env.OPENAI_API_KEY
   },
-  {
-    name: 'gpt-4-32k',
-    provider: 'openai',
-    maxTokens: 32768,
-    costPer1kTokens: { input: 0.06, output: 0.12 },
-    priority: 2,
-    available: !!process.env.OPENAI_API_KEY
-  },
+
   {
     name: 'gpt-4-vision',
     provider: 'openai',
@@ -160,22 +153,7 @@ export const MODEL_CONFIGS: ModelConfig[] = [
     priority: 5,
     available: !!process.env.OPENAI_API_KEY
   },
-  {
-    name: 'o1-preview',
-    provider: 'openai',
-    maxTokens: 32768,
-    costPer1kTokens: { input: 0.015, output: 0.06 },
-    priority: 1,
-    available: !!process.env.OPENAI_API_KEY
-  },
-  {
-    name: 'o1-mini',
-    provider: 'openai',
-    maxTokens: 16384,
-    costPer1kTokens: { input: 0.003, output: 0.012 },
-    priority: 6,
-    available: !!process.env.OPENAI_API_KEY
-  },
+
 
   // Anthropic Models
   {
@@ -268,14 +246,7 @@ export const MODEL_CONFIGS: ModelConfig[] = [
     priority: 3,
     available: !!process.env.GEMINI_API_KEY
   },
-  {
-    name: 'gemini-ultra',
-    provider: 'google',
-    maxTokens: 32768,
-    costPer1kTokens: { input: 0.0125, output: 0.0375 },
-    priority: 1,
-    available: !!process.env.GEMINI_API_KEY
-  },
+
 
   // Meta Llama Models
   {
@@ -506,7 +477,7 @@ export function getModelsByPriceCategory(): {
 
   const starterModels = [...freeModels, 'gpt-4', 'gpt-4o', 'gpt-4-vision', 'claude-3-sonnet', 'gemini-pro', 'gemini-1.5-pro', 'gemini-2.5-pro', 'llama-3.1-70b', 'mixtral-8x7b', 'codestral'];
 
-  const proModels = [...starterModels, 'gpt-4-turbo', 'gpt-4-32k', 'o1-preview', 'o1-mini', 'claude-3-opus', 'claude-3.5-opus', 'gemini-ultra', 'llama-3.1-405b', 'grok-beta', 'grok-2', 'command-r', 'command-r-plus'];
+  const proModels = [...starterModels, 'gpt-4-turbo', 'claude-3-opus', 'claude-3.5-opus', 'llama-3.1-405b', 'grok-beta', 'grok-2', 'command-r', 'command-r-plus'];
 
   const enterpriseModels = [...proModels, 'llama-3.2-3b', 'llama-3.2-90b', 'mistral-small', 'codellama-34b', 'deepseek-coder', 'starcoder2', 'pplx-7b-online', 'pplx-70b-online', 'stable-beluga', 'stable-code', 'zephyr-7b', 'falcon-180b'];
 
