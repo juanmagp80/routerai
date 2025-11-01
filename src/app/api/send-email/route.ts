@@ -7,8 +7,8 @@ export async function POST(req: NextRequest) {
 
     if (!process.env.RESEND_API_KEY) {
       console.log('⚠️ RESEND_API_KEY not configured, skipping email');
-      return NextResponse.json({ 
-        success: false, 
+      return NextResponse.json({
+        success: false,
         message: 'Email service not configured',
         note: 'This is expected in demo mode - configure RESEND_API_KEY for email functionality'
       });
