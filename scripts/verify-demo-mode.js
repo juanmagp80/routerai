@@ -58,6 +58,14 @@ if (process.env.NEXT_PUBLIC_SUPABASE_URL) {
     console.log('❌ Supabase: Not configured');
 }
 
+// Check email service
+console.log('\n📧 EMAIL SERVICE:');
+if (process.env.RESEND_API_KEY) {
+    console.log('✅ Resend: Configured (emails will be sent)');
+} else {
+    console.log('⚠️  Resend: Not configured (demo will work without emails)');
+}
+
 // Safety summary
 console.log(`
 🛡️  SAFETY SUMMARY:
@@ -79,6 +87,9 @@ Your app is configured safely for demo purposes.
 Employers can test all features without any payment risk.
 
 💡 TEST CARD FOR DEMOS: 4242 4242 4242 4242
+
+📧 NOTE: Email service is optional for demo.
+   Configure RESEND_API_KEY in Vercel for full email functionality.
 `);
 
 // Check if we're in production mode
