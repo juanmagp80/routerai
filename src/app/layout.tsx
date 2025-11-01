@@ -1,5 +1,5 @@
-import { ThemeProvider } from "@/components/ThemeProvider";
 import { GlobalDemoBanner } from "@/components/GlobalDemoBanner";
+import { ThemeProvider } from "@/components/ThemeProvider";
 import { ClerkProvider } from '@clerk/nextjs';
 import type { Metadata } from "next";
 import localFont from "next/font/local";

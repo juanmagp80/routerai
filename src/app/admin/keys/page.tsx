@@ -7,11 +7,10 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Input } from "@/components/ui/input";
 import { ApiKeyService } from "@/lib/api-key-service";
 import { PlanLimitsService } from "@/lib/plan-limits-service";
-import { showConfirmDialog, showError, showSuccess, showWarning } from "@/lib/toast-helpers";
+import { showError, showSuccess } from "@/lib/toast-helpers";
 import { useAuth } from "@clerk/nextjs";
 import { AlertTriangleIcon, CopyIcon, EyeIcon, EyeOffIcon, InfoIcon, KeyIcon, PlusIcon, TrashIcon } from "lucide-react";
 import { useEffect, useState } from "react";
-import toast from 'react-hot-toast';
 
 interface ApiKey {
   id: string;
@@ -72,10 +71,10 @@ export default function ApiKeysPage() {
   // Función para recargar todos los datos
   const reloadData = async () => {
     if (!userId) return;
-    
+
     try {
       setLoading(true);
-      
+
       // Cargar API keys del usuario
       const userApiKeys = await ApiKeyService.getApiKeysByUserId(userId);
       setApiKeys(userApiKeys);
@@ -142,7 +141,7 @@ export default function ApiKeysPage() {
         // Mostrar modal especial con la nueva API key
         setNewlyCreatedKey({ key: keyValue, name: newKeyWithValue.name });
         setShowNewKeyDialog(true);
-        
+
         showSuccess(`API key "${newKeyWithValue.name}" created successfully!`);
       } else {
         throw new Error('Could not create API key');
@@ -186,15 +185,15 @@ export default function ApiKeysPage() {
     if (!keyToDelete) return;
 
     setIsDeleting(true);
-    
+
     try {
       const success = await ApiKeyService.deleteApiKey(keyToDelete.id, userId!);
       if (success) {
         console.log('🗑️ API Key deleted, reloading data...');
-        
+
         // Recargar todos los datos para actualizar contadores y botones
         await reloadData();
-        
+
         showSuccess(`API key "${keyToDelete.name}" deleted successfully`);
         setShowDeleteDialog(false);
         setKeyToDelete(null);
@@ -725,7 +724,7 @@ response = requests.post('https://api.roulyx.com/v1/chat', headers=headers)`}
               Are you sure you want to delete this API key? This action cannot be undone and will immediately revoke access for this key.
             </DialogDescription>
           </DialogHeader>
-          
+
           {keyToDelete && (
             <div className="bg-red-50 border border-red-200 rounded-lg p-3 my-4">
               <p className="text-sm text-red-800">

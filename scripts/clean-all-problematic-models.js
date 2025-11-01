@@ -64,7 +64,7 @@ async function cleanAllProblematicModels() {
         console.log(`🔧 Cleaning ${plan.plan_name}:`);
         console.log(`   Removed: ${removedModels.join(', ')}`);
         console.log(`   Count: ${originalCount} → ${cleanedModels.length} models`);
-        
+
         const { error: updateError } = await supabase
           .from('plan_limits')
           .update({ allowed_models: cleanedModels })
@@ -89,7 +89,7 @@ async function cleanAllProblematicModels() {
 
     updatedPlans.forEach(plan => {
       console.log(`\n  ${plan.plan_name.toUpperCase()}: ${plan.allowed_models.length} models`);
-      
+
       // Group models by provider for better readability
       const modelsByProvider = {};
       plan.allowed_models.forEach(model => {

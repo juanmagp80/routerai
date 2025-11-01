@@ -28,15 +28,15 @@ async function removeProblematicModels() {
       const originalCount = allowedModels.length;
 
       // Remove problematic models
-      allowedModels = allowedModels.filter(model => 
-        model !== 'o1-preview' && 
-        model !== 'o1-mini' && 
+      allowedModels = allowedModels.filter(model =>
+        model !== 'o1-preview' &&
+        model !== 'o1-mini' &&
         model !== 'gemini-ultra'
       );
 
       if (allowedModels.length !== originalCount) {
         console.log(`🔧 Updating ${plan.plan_name}: ${originalCount} → ${allowedModels.length} models`);
-        
+
         const { error: updateError } = await supabase
           .from('plan_limits')
           .update({ allowed_models: allowedModels })

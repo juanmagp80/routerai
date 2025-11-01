@@ -1,7 +1,7 @@
 import { requireSaasDataAccess } from '@/lib/auth-restrictions';
-import { supabase } from '@/lib/supabase';
-import { COST_PROTECTION_CONFIG } from '@/lib/cost-protection';
 import { CacheHelpers } from '@/lib/cache-service';
+import { COST_PROTECTION_CONFIG } from '@/lib/cost-protection';
+import { supabase } from '@/lib/supabase';
 import { auth } from '@clerk/nextjs/server';
 import { NextResponse } from 'next/server';
 
@@ -21,7 +21,7 @@ export async function GET() {
 
         // Obtener estadísticas globales del día
         const today = new Date().toISOString().split('T')[0];
-        
+
         // Costo global del día
         const { data: todayRecords } = await supabase
             .from('usage_records')
@@ -29,7 +29,7 @@ export async function GET() {
             .gte('created_at', `${today}T00:00:00.000Z`)
             .lt('created_at', `${today}T23:59:59.999Z`);
 
-        const dailyCost = todayRecords?.reduce((sum, record) => 
+        const dailyCost = todayRecords?.reduce((sum, record) =>
             sum + (parseFloat(record.cost?.toString() || '0') || 0), 0) || 0;
 
         const requestsToday = todayRecords?.length || 0;
@@ -59,7 +59,7 @@ export async function GET() {
                 const user = users?.find(u => u.clerk_user_id === userId);
                 const userPlan = (user?.plan || 'free') as keyof typeof COST_PROTECTION_CONFIG.dailyCostLimits;
                 const dailyLimit = COST_PROTECTION_CONFIG.dailyCostLimits[userPlan];
-                
+
                 return {
                     userId,
                     email: user?.email || 'Unknown',

@@ -16,7 +16,7 @@ async function debugUserData() {
     const { data: users, error: usersError } = await supabase
       .from('users')
       .select('*');
-    
+
     if (usersError) {
       console.error('Error obteniendo usuarios:', usersError);
       return;
@@ -84,7 +84,7 @@ async function debugUserData() {
     console.log('4. ANÁLISIS DE RELACIONES:');
     if (users.length > 0 && usageRecords.length > 0) {
       console.log('Verificando si los user_id en usage_records coinciden con los usuarios:');
-      
+
       const userIds = users.map(u => u.id);
       const clerkIds = users.map(u => u.clerk_user_id);
       const usageUserIds = [...new Set(usageRecords.map(r => r.user_id))];

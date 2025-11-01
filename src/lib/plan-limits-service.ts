@@ -384,7 +384,7 @@ export class PlanLimitsService {
 
         // Calcular uso real desde usage_records (como hace analytics)
         console.log('🔍 Calculating real usage for user:', clerkUserId);
-        
+
         // Obtener el ID de base de datos del usuario
         const { data: dbUser } = await supabase
             .from('users')
@@ -401,7 +401,7 @@ export class PlanLimitsService {
                 .gte('created_at', new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString()),
             dbUser ? supabase
                 .from('usage_records')
-                .select('id')  
+                .select('id')
                 .eq('user_id', dbUser.id)
                 .gte('created_at', new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString())
                 : Promise.resolve({ data: [] })

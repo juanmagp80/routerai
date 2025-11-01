@@ -1,5 +1,5 @@
-import OpenAI from 'openai';
 import { AIRequest, AIResponse } from '@/types/ai';
+import OpenAI from 'openai';
 
 export class OpenAIProvider {
   private client: OpenAI;
@@ -8,7 +8,7 @@ export class OpenAIProvider {
     if (!process.env.OPENAI_API_KEY) {
       throw new Error('OpenAI API key not configured');
     }
-    
+
     this.client = new OpenAI({
       apiKey: process.env.OPENAI_API_KEY,
     });
@@ -16,17 +16,17 @@ export class OpenAIProvider {
 
   async generateResponse(request: AIRequest): Promise<AIResponse> {
     const startTime = Date.now();
-    
+
     try {
       const messages: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = [];
-      
+
       if (request.systemPrompt) {
         messages.push({
           role: 'system',
           content: request.systemPrompt
         });
       }
-      
+
       messages.push({
         role: 'user',
         content: request.message
@@ -41,11 +41,11 @@ export class OpenAIProvider {
 
       const responseTime = Date.now() - startTime;
       const usage = completion.usage || { prompt_tokens: 0, completion_tokens: 0, total_tokens: 0 };
-      
+
       // Calculate cost based on model
       let inputCost = 0.001; // Default for gpt-3.5-turbo
       let outputCost = 0.002;
-      
+
       if (request.model?.includes('gpt-4-turbo')) {
         inputCost = 0.01;
         outputCost = 0.03;
@@ -53,7 +53,7 @@ export class OpenAIProvider {
         inputCost = 0.03;
         outputCost = 0.06;
       }
-      
+
       const cost = (usage.prompt_tokens * inputCost + usage.completion_tokens * outputCost) / 1000;
 
       return {
@@ -69,10 +69,10 @@ export class OpenAIProvider {
         responseTime,
         success: true
       };
-      
+
     } catch (error) {
       const responseTime = Date.now() - startTime;
-      
+
       return {
         content: '',
         model: request.model || 'gpt-3.5-turbo',

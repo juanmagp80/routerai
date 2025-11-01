@@ -1,8 +1,8 @@
 import { ApiKeyService } from '@/lib/api-key-service'
-import { PlanLimitsService } from '@/lib/plan-limits-service'
-import { CostProtectionService } from '@/lib/cost-protection'
 import { CacheHelpers } from '@/lib/cache-service'
+import { CostProtectionService } from '@/lib/cost-protection'
 import { DemoLimitManager } from '@/lib/demo-limit-manager'
+import { PlanLimitsService } from '@/lib/plan-limits-service'
 import { NextRequest, NextResponse } from 'next/server'
 
 export interface ApiValidationResult {
@@ -36,7 +36,7 @@ export class ApiMiddleware {
                 .single();
 
             const dailyLimit = userSettings?.settings?.dailyLimit;
-            
+
             // Si no hay límite diario configurado, permitir
             if (!dailyLimit || typeof dailyLimit !== 'number') {
                 return { allowed: true, current: 0 };
@@ -72,10 +72,10 @@ export class ApiMiddleware {
                 };
             }
 
-            return { 
-                allowed: true, 
+            return {
+                allowed: true,
                 current: currentDailyUsage,
-                limit: dailyLimit 
+                limit: dailyLimit
             };
 
         } catch (error) {
@@ -90,7 +90,7 @@ export class ApiMiddleware {
             // 🧪 DEMO MODE INFO (non-blocking, just for logging)
             if (DemoLimitManager.isDemoMode()) {
                 console.log('🧪 Demo mode active - provider limits configured for cost protection');
-                
+
                 // Log cost optimization suggestions
                 if (modelName && messageContent) {
                     const suggestions = DemoLimitManager.getCostOptimizationSuggestions(modelName, messageContent.length);
@@ -144,13 +144,13 @@ export class ApiMiddleware {
             // VERIFICAR LÍMITE DIARIO PERSONALIZADO
             const dailyLimitCheck = await this.checkDailyLimit(userId);
             console.log(`🚦 Daily limit check for ${userId}:`, dailyLimitCheck);
-            
+
             if (!dailyLimitCheck.allowed) {
                 console.log(`❌ Daily limit exceeded for ${userId}: ${dailyLimitCheck.current}/${dailyLimitCheck.limit}`);
-                
+
                 // Crear notificación de límite diario alcanzado
                 this.createDailyLimitNotification(userId, dailyLimitCheck.current, dailyLimitCheck.limit!);
-                
+
                 return {
                     success: false,
                     error: dailyLimitCheck.reason,
@@ -262,7 +262,7 @@ export class ApiMiddleware {
             headers['X-Cost-Daily-Limit'] = result.costProtection.dailyLimit.toFixed(2)
             headers['X-Rate-Current'] = result.costProtection.currentRate.toString()
             headers['X-Rate-Limit'] = result.costProtection.rateLimit.toString()
-            
+
             if (result.costProtection.isSpike) {
                 headers['X-Cost-Spike-Warning'] = `${result.costProtection.spikeMultiplier.toFixed(1)}x normal usage`
             }
@@ -278,18 +278,18 @@ export class ApiMiddleware {
             try {
                 const { NotificationService } = await import('@/services/NotificationService');
                 const { currentUser } = await import('@clerk/nextjs/server');
-                
+
                 // Get user email
                 const user = await currentUser();
                 const userEmail = user?.emailAddresses?.[0]?.emailAddress || 'unknown';
-                
+
                 console.log(`🔍 Checking notifications for user: ${userEmail} (${userId})`);
-                
+
                 // Check and create notifications based on actual usage
                 await NotificationService.checkAndCreateUsageNotifications(userId, userEmail);
-                
+
                 console.log(`✅ Notification check completed for ${userEmail}`);
-                
+
             } catch (error) {
                 console.log('⚠️ Error checking notifications:', error);
             }

@@ -147,7 +147,7 @@ export class NotificationService {
 
         // Send email if enabled
         if (created && emailNotifications) {
-          this.sendEmailNotification(userEmail, 'API Limit Reached', 
+          this.sendEmailNotification(userEmail, 'API Limit Reached',
             `Your monthly API limit of ${monthlyLimit.toLocaleString()} requests has been reached.`);
         }
       } else if (usagePercentage >= customThreshold) {
@@ -168,7 +168,7 @@ export class NotificationService {
 
         // Send email if enabled
         if (created && emailNotifications) {
-          this.sendEmailNotification(userEmail, 'API Usage Alert', 
+          this.sendEmailNotification(userEmail, 'API Usage Alert',
             `You've reached ${usagePercentage.toFixed(1)}% of your API usage limit (${totalRequests.toLocaleString()}/${monthlyLimit.toLocaleString()} requests).`);
         }
       }
@@ -191,7 +191,7 @@ export class NotificationService {
 
         // Send email if enabled
         if (created && emailNotifications) {
-          this.sendEmailNotification(userEmail, 'Upgrade Recommended', 
+          this.sendEmailNotification(userEmail, 'Upgrade Recommended',
             `You're using ${usagePercentage.toFixed(1)}% of your ${user.plan} plan. Upgrade to Pro for higher limits and better features.`);
         }
       }

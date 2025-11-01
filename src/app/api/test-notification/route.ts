@@ -1,15 +1,14 @@
-import { NextRequest, NextResponse } from 'next/server';
 import { auth, currentUser } from '@clerk/nextjs/server';
-import { NotificationService } from '@/services/NotificationService';
 import { createClient } from '@supabase/supabase-js';
+import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(req: NextRequest) {
   try {
     console.log('🚀 Starting test notification process...');
-    
+
     const { userId } = await auth();
     console.log('👤 Auth result:', { userId });
-    
+
     if (!userId) {
       console.log('❌ No user ID found');
       return NextResponse.json(
@@ -45,13 +44,13 @@ export async function POST(req: NextRequest) {
     };
 
     console.log('📝 Inserting notification data:', testNotificationData);
-    
+
     const { data: notificationData, error: notificationError } = await supabase
       .from('notifications')
       .insert(testNotificationData)
       .select()
       .single();
-      
+
     console.log('📊 Supabase response:', { data: notificationData, error: notificationError });
 
     if (notificationError) {
@@ -68,7 +67,7 @@ export async function POST(req: NextRequest) {
 
     if (created) {
       console.log(`✅ Test notification created for ${userEmail}:`, notificationData.id);
-      
+
       // También enviar email directamente para probar
       try {
         const emailResponse = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/send-email`, {
@@ -96,7 +95,7 @@ export async function POST(req: NextRequest) {
         });
 
         const emailResult = await emailResponse.json();
-        
+
         return NextResponse.json({
           success: true,
           message: 'Notificación de prueba creada',
@@ -114,7 +113,7 @@ export async function POST(req: NextRequest) {
 
       } catch (emailError) {
         console.error('❌ Error sending test email:', emailError);
-        
+
         return NextResponse.json({
           success: true,
           message: 'Notificación creada pero error enviando email',

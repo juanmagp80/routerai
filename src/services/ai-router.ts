@@ -264,7 +264,7 @@ export class AIRouterService {
         // Si el usuario tiene un modelo por defecto específico (no "auto"), usarlo solo 40% del tiempo para dar variedad
         const useDefaultModel = Math.random() < 0.4;
         console.log(`🎲 Default model usage roll: ${useDefaultModel ? 'USE' : 'SKIP'} (${useDefaultModel ? '40%' : '60%'} chance)`);
-        
+
         if (defaultModel && defaultModel !== 'auto' && useDefaultModel) {
           const preferredModel = availableModels.find(m => m.name === defaultModel);
           if (preferredModel) {
@@ -393,7 +393,7 @@ export class AIRouterService {
         // For code tasks, prefer models good at programming with variety
         if (isCodeTask) {
           const codeModels = availableModels.filter(m =>
-            m.name.includes('claude-3.5-sonnet') || m.name.includes('gpt-4') || 
+            m.name.includes('claude-3.5-sonnet') || m.name.includes('gpt-4') ||
             m.name.includes('codestral')
           );
           if (codeModels.length > 0) {
@@ -407,7 +407,7 @@ export class AIRouterService {
         // For creative tasks, prefer Claude or diverse creative models
         if (isCreativeTask) {
           const creativeModels = availableModels.filter(m =>
-            m.name.includes('claude-3.5-sonnet') || m.name.includes('opus') || 
+            m.name.includes('claude-3.5-sonnet') || m.name.includes('opus') ||
             m.name.includes('gemini-1.5-pro') || m.name.includes('gpt-4o')
           );
           if (creativeModels.length > 0) {
@@ -420,7 +420,7 @@ export class AIRouterService {
         // For complex tasks, prefer high-quality models with variety
         if (isComplexTask) {
           const complexModels = availableModels.filter(m =>
-            m.name.includes('claude-3.5-sonnet') || m.name.includes('opus') || 
+            m.name.includes('claude-3.5-sonnet') || m.name.includes('opus') ||
             m.name.includes('gemini-1.5-pro') || m.name.includes('gpt-4')
           );
           if (complexModels.length > 0) {
@@ -433,7 +433,7 @@ export class AIRouterService {
         // For medium messages (200-500 chars), prefer balanced models with variety
         if (messageLength >= 200 && messageLength <= 500) {
           const balancedModels = availableModels.filter(m =>
-            m.name.includes('claude-3.5-sonnet') || m.name.includes('gpt-4o') || 
+            m.name.includes('claude-3.5-sonnet') || m.name.includes('gpt-4o') ||
             m.name.includes('gemini-1.5-pro') || m.name.includes('claude-3-sonnet') ||
             m.name.includes('gemini-2.0-flash')
           );
@@ -451,9 +451,9 @@ export class AIRouterService {
             m.name.includes('claude-3.5-sonnet') || m.name.includes('gemini-2.0-flash') ||
             m.name.includes('claude-3-sonnet')
           );
-          
+
           const fastBudget = availableModels.filter(m =>
-            m.name.includes('gpt-4o-mini') || m.name.includes('gpt-3.5') || 
+            m.name.includes('gpt-4o-mini') || m.name.includes('gpt-3.5') ||
             m.name.includes('haiku') || m.name.includes('gemini-2.5-flash')
           );
 
@@ -470,7 +470,7 @@ export class AIRouterService {
 
         // Default: Smart selection with real variety, avoid always picking the same model
         const topTierModels = availableModels.filter(m =>
-          m.name.includes('claude-3.5-sonnet') || m.name.includes('gpt-4o') || 
+          m.name.includes('claude-3.5-sonnet') || m.name.includes('gpt-4o') ||
           m.name.includes('gemini-1.5-pro')
         );
 
@@ -487,7 +487,7 @@ export class AIRouterService {
         // Weighted selection: 50% top-tier, 30% mid-tier, 20% budget
         const random = Math.random();
         let selectedModels, tier;
-        
+
         if (random < 0.5 && topTierModels.length > 0) {
           selectedModels = topTierModels;
           tier = 'top-tier';

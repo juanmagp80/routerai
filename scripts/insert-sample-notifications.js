@@ -15,7 +15,7 @@ const supabase = createClient(supabaseUrl, supabaseServiceKey);
 async function insertSampleNotifications() {
   try {
     console.log('🔍 Finding users...');
-    
+
     // Primero obtenemos un usuario existente
     const { data: users, error: usersError } = await supabase
       .from('users')

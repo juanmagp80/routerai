@@ -9,7 +9,7 @@ const COST_PROTECTION_CONFIG = {
     pro: 8.00,       // $8.00/día máximo
     enterprise: 32.00 // $32.00/día máximo
   },
-  
+
   // Rate limiting estricto (requests por minuto)
   RATE_LIMITS: {
     free: 2,        // 2 req/min
@@ -17,7 +17,7 @@ const COST_PROTECTION_CONFIG = {
     pro: 25,        // 25 req/min
     enterprise: 50  // 50 req/min
   },
-  
+
   // Alertas automáticas
   COST_ALERTS: {
     DAILY_80_PERCENT: true,  // Alerta al 80% del límite diario
@@ -32,11 +32,11 @@ const COST_PROTECTION_CONFIG = {
 export async function costProtectionMiddleware(userId, userPlan) {
   const todayCost = await getTodayCostForUser(userId);
   const dailyLimit = COST_PROTECTION_CONFIG.DAILY_COST_LIMIT[userPlan];
-  
+
   if (todayCost >= dailyLimit) {
     throw new Error(`Límite de costo diario alcanzado: $${dailyLimit}`);
   }
-  
+
   return true;
 }
 

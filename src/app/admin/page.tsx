@@ -1,10 +1,10 @@
 'use client';
 
+import { DemoModeWarning } from "@/components/DemoModeWarning";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { DemoModeWarning } from "@/components/DemoModeWarning";
 import { useUserSync } from "@/hooks/useUserSync";
 import { DashboardStats, StatsService } from "@/lib/stats-service";
 import { showError, showSuccess } from "@/lib/toast-helpers";
@@ -84,7 +84,7 @@ export default function AdminDashboard() {
 
       if (response.ok && result.success) {
         showSuccess(`✅ Notificación de prueba enviada a ${result.notification?.userEmail}`);
-        
+
         if (result.email?.sent) {
           toast.success(`📧 Email enviado correctamente (ID: ${result.email.messageId})`);
         } else if (result.email?.error) {
@@ -188,19 +188,19 @@ export default function AdminDashboard() {
     }
   };
 
-    return (
-        <div className="flex-1 space-y-6 p-8 pt-6">
-            <div className="flex items-center justify-between space-y-2">
-                <div>
-                    <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
-                    <p className="text-muted-foreground">
-                        Welcome back, {dbUser?.name}
-                    </p>
-                </div>
-            </div>
+  return (
+    <div className="flex-1 space-y-6 p-8 pt-6">
+      <div className="flex items-center justify-between space-y-2">
+        <div>
+          <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
+          <p className="text-muted-foreground">
+            Welcome back, {dbUser?.name}
+          </p>
+        </div>
+      </div>
 
-            {/* Demo Mode Warning */}
-            <DemoModeWarning />      {/* Stats Grid */}
+      {/* Demo Mode Warning */}
+      <DemoModeWarning />      {/* Stats Grid */}
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">

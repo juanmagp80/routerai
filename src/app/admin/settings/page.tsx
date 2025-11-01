@@ -403,11 +403,11 @@ function AccountInfoSection() {
       try {
         console.log('🔍 Loading account info...');
         const response = await fetch('/api/user/account-info');
-        
+
         if (response.ok) {
           const data = await response.json();
           console.log('✅ Account info loaded:', data);
-          
+
           setAccountInfo({
             plan: data.plan || 'free',
             usage: data.usage || 0,
@@ -446,7 +446,7 @@ function AccountInfoSection() {
 
   const planColors: Record<string, 'default' | 'secondary' | 'destructive' | 'outline'> = {
     free: 'outline',
-    starter: 'secondary', 
+    starter: 'secondary',
     pro: 'default',
     enterprise: 'destructive'
   };

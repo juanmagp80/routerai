@@ -1,5 +1,5 @@
-import { supabase } from './supabase';
 import { COST_PROTECTION_CONFIG } from './cost-protection';
+import { supabase } from './supabase';
 
 export interface CostAlert {
   id: string;
@@ -43,7 +43,7 @@ export class CostAlertService {
         .gte('created_at', `${today}T00:00:00.000Z`)
         .lt('created_at', `${today}T23:59:59.999Z`);
 
-      const dailyCost = todayRecords?.reduce((sum, record) => 
+      const dailyCost = todayRecords?.reduce((sum, record) =>
         sum + (parseFloat(record.cost?.toString() || '0') || 0), 0) || 0;
 
       const percentage = (dailyCost / dailyLimit) * 100;
@@ -205,7 +205,7 @@ export class CostAlertService {
         .gte('created_at', `${today}T00:00:00.000Z`)
         .lt('created_at', `${today}T23:59:59.999Z`);
 
-      const globalCostToday = todayRecords?.reduce((sum, record) => 
+      const globalCostToday = todayRecords?.reduce((sum, record) =>
         sum + (parseFloat(record.cost?.toString() || '0') || 0), 0) || 0;
 
       const globalLimit = COST_PROTECTION_CONFIG.emergencyShutoff.dailyGlobalLimit;
@@ -269,7 +269,7 @@ export class CostAlertService {
       allAlerts.push(...dailyAlerts, ...monthlyAlerts, ...spikeAlerts);
 
       // Filtrar alertas duplicadas por ID
-      const uniqueAlerts = allAlerts.filter((alert, index, arr) => 
+      const uniqueAlerts = allAlerts.filter((alert, index, arr) =>
         arr.findIndex(a => a.id === alert.id) === index
       );
 
@@ -319,13 +319,13 @@ export class CostAlertService {
         // - Slack webhook
         // - Discord webhook
         // - SMS
-        
+
         console.log(`🚨 ALERTA ${alert.severity.toUpperCase()}: ${alert.message}`);
-        
+
         // TODO: Implementar envío real de notificaciones
         // await sendEmailAlert(alert);
         // await sendSlackAlert(alert);
-        
+
       } catch (error) {
         console.error('Error sending alert notification:', error);
       }

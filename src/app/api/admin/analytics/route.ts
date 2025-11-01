@@ -1,5 +1,4 @@
 import { requireSaasDataAccess } from '@/lib/auth-restrictions';
-import { PlanLimitsService } from '@/lib/plan-limits-service';
 import { supabase } from '@/lib/supabase';
 import { auth } from '@clerk/nextjs/server';
 import { NextResponse } from 'next/server';
@@ -81,7 +80,7 @@ async function getUserAnalytics(clerkUserId: string) {
 
         // Usar los datos que contengan registros, si no hay del mes actual, usar todos los registros
         let finalUsageData = usageWithClerkId.data?.length ? usageWithClerkId.data : usageWithDbId.data;
-        
+
         // Si no encontramos datos del mes actual, buscar TODOS los registros del usuario
         if (!finalUsageData?.length) {
             console.log('⚠️ No data for current month, searching ALL records...');
@@ -97,10 +96,10 @@ async function getUserAnalytics(clerkUserId: string) {
                     .eq('user_id', userData.id)
                     .order('created_at', { ascending: false })
             ]);
-            
+
             finalUsageData = allUsageClerk.data?.length ? allUsageClerk.data : allUsageDb.data;
             console.log('📊 Using historical records:', finalUsageData?.length || 0);
-            
+
             if (finalUsageData?.length) {
                 console.log('📅 Date range of records:');
                 console.log('   Oldest:', finalUsageData[finalUsageData.length - 1]?.created_at);

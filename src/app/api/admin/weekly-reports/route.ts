@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabase';
+import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(req: NextRequest) {
   try {
@@ -34,11 +34,11 @@ export async function POST(req: NextRequest) {
       try {
         const userId = userSetting.user_id;
         const user = (userSetting as any).users;
-        
+
         // Calculate weekly stats
         const weekAgo = new Date();
         weekAgo.setDate(weekAgo.getDate() - 7);
-        
+
         // Get usage from last week
         const { data: weeklyUsage } = await supabase
           .from('usage_records')
@@ -74,7 +74,7 @@ export async function POST(req: NextRequest) {
           weeklyCost: weeklyCost,
           monthlyCost: monthlyCost,
           monthlyLimit: planLimits?.monthly_request_limit || 0,
-          usagePercentage: planLimits?.monthly_request_limit 
+          usagePercentage: planLimits?.monthly_request_limit
             ? ((monthlyUsage?.length || 0) / planLimits.monthly_request_limit * 100)
             : 0
         };

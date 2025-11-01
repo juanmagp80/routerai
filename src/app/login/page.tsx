@@ -1,8 +1,8 @@
 "use client";
 
+import { SignIn } from '@clerk/nextjs';
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
-import { SignIn } from '@clerk/nextjs';
 
 export default function LoginPage() {
     const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });

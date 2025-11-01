@@ -1,11 +1,11 @@
 'use client';
 
+import { DemoModeWarning } from "@/components/DemoModeWarning";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { DemoModeWarning } from "@/components/DemoModeWarning";
-import { CheckIcon, CreditCardIcon, DollarSignIcon, TrendingUpIcon } from "lucide-react";
 import { showError, showSuccess, showWarning } from "@/lib/toast-helpers";
+import { CheckIcon, CreditCardIcon, DollarSignIcon, TrendingUpIcon } from "lucide-react";
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Suspense, useEffect, useState } from 'react';
 
@@ -431,7 +431,7 @@ function BillingPageContent() {
                 {((((userLimits?.requestsUsed || 0) / (userLimits?.requestsLimit || 1)) * 100)).toFixed(1)}% of monthly quota used
               </p>
             </div>
-            
+
             <div>
               <div className="flex justify-between items-center mb-3">
                 <span className="font-medium text-slate-900">API Keys created</span>

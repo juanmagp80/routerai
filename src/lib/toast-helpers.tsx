@@ -33,7 +33,7 @@ export const showError = (message: string, duration?: number) => {
 };
 
 export const showInfo = (message: string, duration?: number) => {
-  toast(message, { 
+  toast(message, {
     icon: 'ℹ️',
     duration,
     style: {

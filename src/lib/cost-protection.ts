@@ -27,7 +27,7 @@ export const COST_PROTECTION_CONFIG: CostProtectionConfig = {
     pro: 8.00,       // $8.00/día máximo
     enterprise: 32.00 // $32.00/día máximo
   },
-  
+
   // Rate limiting por minuto
   rateLimits: {
     free: 2,        // 2 req/min
@@ -35,7 +35,7 @@ export const COST_PROTECTION_CONFIG: CostProtectionConfig = {
     pro: 25,        // 25 req/min
     enterprise: 50  // 50 req/min
   },
-  
+
   // Protección de emergencia global
   emergencyShutoff: {
     dailyGlobalLimit: 500.00,  // $500/día límite global
@@ -75,7 +75,7 @@ export class CostProtectionService {
         .gte('created_at', `${today}T00:00:00.000Z`)
         .lt('created_at', `${today}T23:59:59.999Z`);
 
-      const dailyCost = todayRecords?.reduce((sum, record) => 
+      const dailyCost = todayRecords?.reduce((sum, record) =>
         sum + (parseFloat(record.cost?.toString() || '0') || 0), 0) || 0;
 
       // Verificar límite diario del usuario
@@ -115,7 +115,7 @@ export class CostProtectionService {
       .gte('created_at', `${today}T00:00:00.000Z`)
       .lt('created_at', `${today}T23:59:59.999Z`);
 
-    return todayRecords?.reduce((sum, record) => 
+    return todayRecords?.reduce((sum, record) =>
       sum + (parseFloat(record.cost?.toString() || '0') || 0), 0) || 0;
   }
 
@@ -184,7 +184,7 @@ export class CostProtectionService {
         .gte('created_at', `${today}T00:00:00.000Z`)
         .lt('created_at', `${today}T23:59:59.999Z`);
 
-      const currentCost = todayRecords?.reduce((sum, record) => 
+      const currentCost = todayRecords?.reduce((sum, record) =>
         sum + (parseFloat(record.cost?.toString() || '0') || 0), 0) || 0;
 
       // Promedio de los últimos 7 días
@@ -204,7 +204,7 @@ export class CostProtectionService {
       });
 
       const days = Object.keys(dailyCosts);
-      const averageCost = days.length > 0 
+      const averageCost = days.length > 0
         ? Object.values(dailyCosts).reduce((sum, cost) => sum + cost, 0) / days.length
         : 0;
 

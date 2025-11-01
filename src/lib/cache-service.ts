@@ -81,7 +81,7 @@ export class CacheService {
     // Incrementar hits
     entry.hits++;
     this.stats.hits++;
-    
+
     return entry.data;
   }
 
@@ -89,7 +89,7 @@ export class CacheService {
   set<T>(namespace: keyof CacheConfig, key: string, value: T, params?: any): void {
     const cacheKey = this.generateKey(namespace, key, params);
     const ttl = CACHE_CONFIG[namespace] * 1000; // Convertir a ms
-    
+
     const entry: CacheEntry<T> = {
       data: value,
       timestamp: Date.now(),
@@ -98,7 +98,7 @@ export class CacheService {
     };
 
     this.cache.set(cacheKey, entry);
-    
+
     // Limpiar entradas expiradas periódicamente
     if (this.cache.size % 100 === 0) {
       this.cleanExpired();
@@ -146,7 +146,7 @@ export class CacheService {
   getStats(): CacheStats {
     const total = this.stats.hits + this.stats.misses;
     const hitRate = total > 0 ? (this.stats.hits / total) * 100 : 0;
-    
+
     // Calcular uso aproximado de memoria
     const entries: Array<[string, CacheEntry<any>]> = [];
     this.cache.forEach((entry, key) => {
@@ -171,8 +171,8 @@ export class CacheService {
 
   // Método helper para cache con callback
   async getOrSet<T>(
-    namespace: keyof CacheConfig, 
-    key: string, 
+    namespace: keyof CacheConfig,
+    key: string,
     fetcher: () => Promise<T>,
     params?: any
   ): Promise<T> {
@@ -184,10 +184,10 @@ export class CacheService {
 
     // Si no está en cache, ejecutar fetcher
     const value = await fetcher();
-    
+
     // Guardar en cache
     this.set(namespace, key, value, params);
-    
+
     return value;
   }
 }
@@ -198,7 +198,7 @@ export class CacheHelpers {
 
   // Cache para respuestas de IA similares
   static async getCachedAIResponse(
-    prompt: string, 
+    prompt: string,
     model: string,
     temperature: number,
     fetcher: () => Promise<any>
@@ -291,7 +291,7 @@ export class AICacheMiddleware {
     // Intentar obtener del cache
     const params = { model, temperature: Math.round(temperature * 10) / 10 };
     const cached = this.cache.get<T>('modelResponses', prompt, params);
-    
+
     if (cached !== null) {
       return { data: cached, fromCache: true };
     }
@@ -299,7 +299,7 @@ export class AICacheMiddleware {
     // Ejecutar fetcher y guardar en cache
     const data = await fetcher();
     this.cache.set('modelResponses', prompt, data, params);
-    
+
     return { data, fromCache: false };
   }
 

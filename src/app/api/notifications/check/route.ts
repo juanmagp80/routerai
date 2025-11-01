@@ -1,11 +1,11 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { auth, currentUser } from '@clerk/nextjs/server';
 import { NotificationService } from '@/services/NotificationService';
+import { auth, currentUser } from '@clerk/nextjs/server';
+import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(req: NextRequest) {
   try {
     const { userId } = await auth();
-    
+
     if (!userId) {
       console.log('❌ Unauthorized request to check notifications');
       return NextResponse.json(
@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
     // Clean up old notifications
     await NotificationService.cleanupOldNotifications(30);
 
-    return NextResponse.json({ 
+    return NextResponse.json({
       success: true,
       message: 'Notification check completed'
     });

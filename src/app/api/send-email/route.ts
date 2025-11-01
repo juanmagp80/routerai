@@ -15,17 +15,17 @@ export async function POST(req: NextRequest) {
     console.log(`📧 Sending email to ${to}: ${subject}`);
 
     // Para desarrollo, usar el dominio por defecto de Resend
-    const fromEmail = process.env.NODE_ENV === 'production' 
-      ? 'Roulyx <notifications@roulyx.com>' 
+    const fromEmail = process.env.NODE_ENV === 'production'
+      ? 'Roulyx <notifications@roulyx.com>'
       : 'Roulyx <onboarding@resend.dev>';
 
     // En desarrollo, Resend solo permite enviar a tu email registrado
-    const targetEmail = process.env.NODE_ENV === 'production' 
-      ? to 
+    const targetEmail = process.env.NODE_ENV === 'production'
+      ? to
       : 'agentroutermcp@gmail.com'; // Tu email registrado en Resend
 
     console.log(`📤 Sending from: ${fromEmail} to: ${targetEmail}`);
-    
+
     if (process.env.NODE_ENV !== 'production' && to !== 'agentroutermcp@gmail.com') {
       console.log(`🔄 Development mode: Redirecting email from ${to} to ${targetEmail}`);
     }

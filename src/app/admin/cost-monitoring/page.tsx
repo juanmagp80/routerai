@@ -52,7 +52,7 @@ export default function CostMonitoringPage() {
 
   useEffect(() => {
     fetchMonitoringData();
-    
+
     if (autoRefresh) {
       const interval = setInterval(fetchMonitoringData, 30000); // Refresh every 30 seconds
       return () => clearInterval(interval);

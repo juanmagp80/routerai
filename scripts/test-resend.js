@@ -3,7 +3,7 @@ const { Resend } = require('resend');
 
 async function testResendConfiguration() {
   console.log('🔍 Testing Resend configuration...');
-  
+
   if (!process.env.RESEND_API_KEY) {
     console.error('❌ RESEND_API_KEY not found in environment variables');
     return;
@@ -14,7 +14,7 @@ async function testResendConfiguration() {
   try {
     // Test 1: Check API key validity
     console.log('1️⃣ Testing API key validity...');
-    
+
     const testEmail = {
       from: 'onboarding@resend.dev', // Resend's default verified domain
       to: ['delivered@resend.dev'], // Resend's test email
@@ -26,7 +26,7 @@ async function testResendConfiguration() {
 
     if (error) {
       console.error('❌ Error sending test email:', error);
-      
+
       if (error.message.includes('domain is not verified')) {
         console.log('\n📋 SOLUTION FOR DOMAIN VERIFICATION:');
         console.log('1. Go to https://resend.com/domains');

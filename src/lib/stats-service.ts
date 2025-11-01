@@ -90,7 +90,7 @@ export class StatsService {
 
                     activeUserCount = userApiKeys?.length || 0;
                     console.log('🔑 User API keys count:', activeUserCount);
-                    
+
                     // Agregar el usuario actual a la lista de debug
                     debugList.push({
                         id: userData.id,
@@ -108,14 +108,14 @@ export class StatsService {
 
                 const uniqueUsers = new Set(allApiKeys?.map(key => key.user_id));
                 activeUserCount = uniqueUsers.size;
-                
+
                 // Si está habilitado el debug, obtener información de usuarios activos
                 if (process.env.NEXT_PUBLIC_STATS_DEBUG === 'true') {
                     const { data: activeUsersData } = await supabase
                         .from('users')
                         .select('id, email, name, clerk_user_id')
                         .in('id', Array.from(uniqueUsers));
-                    
+
                     if (activeUsersData) {
                         debugList.push(...activeUsersData.map(user => ({
                             id: user.id,
