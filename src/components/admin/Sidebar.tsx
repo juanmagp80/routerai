@@ -20,7 +20,7 @@ import { usePathname } from 'next/navigation';
 
 const baseNavigation = [
   { name: 'Dashboard', href: '/admin', icon: LayoutDashboard },
-  { name: 'AI Chat', href: '/admin/chat', icon: MessageSquare },
+  { name: 'API Console', href: '/admin/chat', icon: MessageSquare },
   { name: 'API Keys', href: '/admin/keys', icon: Key },
   { name: 'Analytics', href: '/admin/analytics', icon: BarChart3 },
   { name: 'Billing', href: '/admin/billing', icon: CreditCard },
