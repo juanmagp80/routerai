@@ -1,5 +1,6 @@
 "use client";
 
+import { useDemoBanner } from "@/hooks/useDemoBanner";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import {
@@ -19,6 +20,7 @@ import { useEffect, useState } from "react";
 // Componente de navegación minimalista y única
 const Navigation = () => {
   const [isScrolled, setIsScrolled] = useState(false);
+  const showDemoBanner = useDemoBanner();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -33,7 +35,8 @@ const Navigation = () => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       className={cn(
-        "fixed top-0 w-full z-50 transition-all duration-500",
+        "fixed w-full z-40 transition-all duration-500",
+        showDemoBanner ? "top-10" : "top-0", // Adjust top position if demo banner is shown
         isScrolled
           ? "bg-slate-900/95 backdrop-blur-md border-b border-slate-700/50"
           : "bg-transparent"

@@ -3,7 +3,7 @@ import { Github, Linkedin, TestTube } from "lucide-react";
 
 export function GlobalDemoBanner() {
     return (
-        <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white py-2 px-4">
+        <div className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-blue-600 to-purple-600 text-white py-2 px-4 shadow-sm">
             <div className="max-w-7xl mx-auto flex items-center justify-between text-sm">
                 <div className="flex items-center space-x-3">
                     <TestTube className="w-4 h-4" />
@@ -25,7 +25,7 @@ export function GlobalDemoBanner() {
                         <Github className="w-4 h-4" />
                     </a>
                     <a
-                        href="https://linkedin.com/in/juanmagp80"
+                        href="https://www.linkedin.com/in/jmgpdev/"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="hover:text-blue-200 transition-colors"

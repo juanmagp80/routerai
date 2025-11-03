@@ -1,4 +1,4 @@
-import { GlobalDemoBanner } from "@/components/GlobalDemoBanner";
+import { DemoLayoutWrapper } from "@/components/DemoLayoutWrapper";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { ClerkProvider } from '@clerk/nextjs';
 import type { Metadata } from "next";
@@ -34,9 +34,9 @@ export default function RootLayout({
           className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         >
           <ThemeProvider>
-            {/* Only show demo banner in production */}
-            {process.env.NODE_ENV === 'production' && <GlobalDemoBanner />}
-            {children}
+            <DemoLayoutWrapper>
+              {children}
+            </DemoLayoutWrapper>
             <Toaster
               position="top-right"
               toastOptions={{
