@@ -93,12 +93,12 @@ const Navigation = () => {
                   <path d="M6 10 Q15 15 20 20" stroke="url(#connectionGradient)" strokeWidth="1.5" fill="none" className="animate-pulse" style={{ animationDelay: '0s' }} />
                   <path d="M6 20 L20 20" stroke="url(#connectionGradient)" strokeWidth="1.5" className="animate-pulse" style={{ animationDelay: '0.3s' }} />
                   <path d="M6 30 Q15 25 20 20" stroke="url(#connectionGradient)" strokeWidth="1.5" fill="none" className="animate-pulse" style={{ animationDelay: '0.6s' }} />
-                  
+
                   {/* Center to Layer 2 connections */}
                   <path d="M20 20 Q25 15 34 10" stroke="url(#connectionGradient)" strokeWidth="1.5" fill="none" className="animate-pulse" style={{ animationDelay: '0.9s' }} />
                   <path d="M20 20 L34 20" stroke="url(#connectionGradient)" strokeWidth="1.5" className="animate-pulse" style={{ animationDelay: '1.2s' }} />
                   <path d="M20 20 Q25 25 34 30" stroke="url(#connectionGradient)" strokeWidth="1.5" fill="none" className="animate-pulse" style={{ animationDelay: '1.5s' }} />
-                  
+
                   {/* Cross connections for complexity */}
                   <path d="M6 10 Q12 22 20 20" stroke="url(#connectionGradient)" strokeWidth="0.8" fill="none" className="opacity-40" />
                   <path d="M6 30 Q12 18 20 20" stroke="url(#connectionGradient)" strokeWidth="0.8" fill="none" className="opacity-40" />
@@ -163,7 +163,7 @@ const Navigation = () => {
                   strokeWidth="0.5"
                   className="animate-ping opacity-20"
                 />
-                
+
                 {/* Data Flow Indicators */}
                 <g className="opacity-70">
                   <circle cx="13" cy="15" r="1" fill="#34d399">
@@ -1209,7 +1209,7 @@ const Footer = () => {
                   <path d="M5 8 Q12 12 16 16" stroke="url(#footerConnectionGradient)" strokeWidth="1" fill="none" />
                   <path d="M5 16 L16 16" stroke="url(#footerConnectionGradient)" strokeWidth="1" />
                   <path d="M5 24 Q12 20 16 16" stroke="url(#footerConnectionGradient)" strokeWidth="1" fill="none" />
-                  
+
                   {/* Center to Layer 2 connections */}
                   <path d="M16 16 Q20 12 27 8" stroke="url(#footerConnectionGradient)" strokeWidth="1" fill="none" />
                   <path d="M16 16 L27 16" stroke="url(#footerConnectionGradient)" strokeWidth="1" />

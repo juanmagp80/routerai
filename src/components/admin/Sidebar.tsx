@@ -92,7 +92,7 @@ export function Sidebar({ className }: SidebarProps) {
                 <path d="M5 8 Q12 12 16 16" stroke="url(#sidebarConnectionGradient)" strokeWidth="1" fill="none" />
                 <path d="M5 16 L16 16" stroke="url(#sidebarConnectionGradient)" strokeWidth="1" />
                 <path d="M5 24 Q12 20 16 16" stroke="url(#sidebarConnectionGradient)" strokeWidth="1" fill="none" />
-                
+
                 {/* Center to Layer 2 connections */}
                 <path d="M16 16 Q20 12 27 8" stroke="url(#sidebarConnectionGradient)" strokeWidth="1" fill="none" />
                 <path d="M16 16 L27 16" stroke="url(#sidebarConnectionGradient)" strokeWidth="1" />

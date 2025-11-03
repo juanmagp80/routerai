@@ -39,7 +39,7 @@ export default function HelpPage() {
                 document.body.appendChild(textArea);
                 textArea.focus();
                 textArea.select();
-                
+
                 try {
                     document.execCommand('copy');
                     setCopiedCode(id);

@@ -10,7 +10,6 @@ import {
     BookOpen,
     CheckCircle,
     Clock,
-    Code,
     Copy,
     Key,
     Lock,
