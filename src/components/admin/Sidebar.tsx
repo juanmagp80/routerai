@@ -60,55 +60,78 @@ export function Sidebar({ className }: SidebarProps) {
               width="32"
               height="32"
               viewBox="0 0 32 32"
-              className="transition-all duration-300"
+              className="transition-all duration-300 hover:scale-110"
             >
               <defs>
                 <linearGradient id="sidebarLogoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
                   <stop offset="0%" stopColor="#10b981" />
-                  <stop offset="50%" stopColor="#06b6d4" />
-                  <stop offset="100%" stopColor="#3b82f6" />
+                  <stop offset="30%" stopColor="#06b6d4" />
+                  <stop offset="70%" stopColor="#3b82f6" />
+                  <stop offset="100%" stopColor="#8b5cf6" />
+                </linearGradient>
+                <linearGradient id="sidebarNodeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#34d399" />
+                  <stop offset="100%" stopColor="#06b6d4" />
                 </linearGradient>
                 <linearGradient id="sidebarConnectionGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stopColor="#059669" />
-                  <stop offset="100%" stopColor="#10b981" />
+                  <stop offset="0%" stopColor="#10b981" />
+                  <stop offset="100%" stopColor="#06b6d4" />
                 </linearGradient>
+                <filter id="sidebarGlow">
+                  <feGaussianBlur stdDeviation="1" result="coloredBlur" />
+                  <feMerge>
+                    <feMergeNode in="coloredBlur" />
+                    <feMergeNode in="SourceGraphic" />
+                  </feMerge>
+                </filter>
               </defs>
 
-              {/* Background connection network */}
-              <g className="opacity-30">
-                {/* Horizontal and vertical connection lines */}
-                <path d="M6 16 L26 16" stroke="url(#sidebarConnectionGradient)" strokeWidth="0.8" />
-                <path d="M16 6 L16 26" stroke="url(#sidebarConnectionGradient)" strokeWidth="0.8" />
-
-                {/* Diagonal connection lines */}
-                <path d="M10 10 L22 22" stroke="url(#sidebarConnectionGradient)" strokeWidth="0.6" className="opacity-60" />
-                <path d="M22 10 L10 22" stroke="url(#sidebarConnectionGradient)" strokeWidth="0.6" className="opacity-60" />
+              {/* Neural Network Connections */}
+              <g className="opacity-50" filter="url(#sidebarGlow)">
+                {/* Layer 1 to Center connections */}
+                <path d="M5 8 Q12 12 16 16" stroke="url(#sidebarConnectionGradient)" strokeWidth="1" fill="none" />
+                <path d="M5 16 L16 16" stroke="url(#sidebarConnectionGradient)" strokeWidth="1" />
+                <path d="M5 24 Q12 20 16 16" stroke="url(#sidebarConnectionGradient)" strokeWidth="1" fill="none" />
+                
+                {/* Center to Layer 2 connections */}
+                <path d="M16 16 Q20 12 27 8" stroke="url(#sidebarConnectionGradient)" strokeWidth="1" fill="none" />
+                <path d="M16 16 L27 16" stroke="url(#sidebarConnectionGradient)" strokeWidth="1" />
+                <path d="M16 16 Q20 20 27 24" stroke="url(#sidebarConnectionGradient)" strokeWidth="1" fill="none" />
               </g>
 
-              {/* Main X structure */}
-              <g>
-                {/* Primary X shape */}
-                <path
-                  d="M10 10 L22 22 M22 10 L10 22"
-                  stroke="url(#sidebarLogoGradient)"
-                  strokeWidth="2.5"
-                  strokeLinecap="round"
-                />
+              {/* Input Layer Nodes */}
+              <g filter="url(#sidebarGlow)">
+                <circle cx="5" cy="8" r="2" fill="url(#sidebarNodeGradient)" className="opacity-70" />
+                <circle cx="5" cy="16" r="2" fill="url(#sidebarNodeGradient)" className="opacity-70" />
+                <circle cx="5" cy="24" r="2" fill="url(#sidebarNodeGradient)" className="opacity-70" />
+              </g>
 
-                {/* Central decision node */}
+              {/* Central Router Node */}
+              <g filter="url(#sidebarGlow)">
                 <circle
                   cx="16"
                   cy="16"
-                  r="3"
+                  r="4"
                   fill="url(#sidebarLogoGradient)"
+                  strokeWidth="1.5"
+                  stroke="#10b981"
                   className="opacity-90"
                 />
+                {/* Inner core */}
+                <circle
+                  cx="16"
+                  cy="16"
+                  r="1.5"
+                  fill="#ffffff"
+                  className="opacity-90"
+                />
+              </g>
 
-                {/* Route decision points */}
-                <circle cx="10" cy="10" r="1.5" fill="#34d399" className="opacity-80" />
-                <circle cx="22" cy="10" r="1.5" fill="#34d399" className="opacity-80" />
-                <circle cx="10" cy="22" r="1.5" fill="#34d399" className="opacity-80" />
-                <circle cx="22" cy="22" r="1.5" fill="#34d399" className="opacity-80" />
+              {/* Output Layer Nodes */}
+              <g filter="url(#sidebarGlow)">
+                <circle cx="27" cy="8" r="2" fill="url(#sidebarNodeGradient)" className="opacity-70" />
+                <circle cx="27" cy="16" r="2" fill="url(#sidebarNodeGradient)" className="opacity-70" />
+                <circle cx="27" cy="24" r="2" fill="url(#sidebarNodeGradient)" className="opacity-70" />
               </g>
             </svg>
           </div>

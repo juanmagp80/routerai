@@ -20,6 +20,16 @@ const geistMono = localFont({
 export const metadata: Metadata = {
   title: "Roulyx - Intelligent AI Model Router",
   description: "Smart AI routing platform that automatically selects the best AI model based on cost, speed, and quality",
+  icons: {
+    icon: [
+      {
+        url: '/favicon.svg',
+        type: 'image/svg+xml',
+      },
+    ],
+    shortcut: '/favicon.svg',
+    apple: '/favicon.svg',
+  },
 };
 
 export default function RootLayout({

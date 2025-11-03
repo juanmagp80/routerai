@@ -48,26 +48,38 @@ const Navigation = () => {
             whileHover={{ scale: 1.02 }}
             className="flex items-center space-x-3"
           >
-            {/* Logo Icon - X with Connection Lines */}
+            {/* Logo Icon - Neural Network Router */}
             <div className="relative group">
               <svg
                 width="40"
                 height="40"
                 viewBox="0 0 40 40"
-                className="transition-all duration-300"
+                className="transition-all duration-300 group-hover:scale-110"
               >
                 <defs>
                   <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
                     <stop offset="0%" stopColor="#10b981" />
-                    <stop offset="50%" stopColor="#06b6d4" />
-                    <stop offset="100%" stopColor="#3b82f6" />
+                    <stop offset="30%" stopColor="#06b6d4" />
+                    <stop offset="70%" stopColor="#3b82f6" />
+                    <stop offset="100%" stopColor="#8b5cf6" />
+                  </linearGradient>
+                  <linearGradient id="nodeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#34d399" />
+                    <stop offset="100%" stopColor="#06b6d4" />
                   </linearGradient>
                   <linearGradient id="connectionGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stopColor="#059669" />
-                    <stop offset="100%" stopColor="#10b981" />
+                    <stop offset="0%" stopColor="#10b981" />
+                    <stop offset="100%" stopColor="#06b6d4" />
                   </linearGradient>
                   <filter id="glow">
-                    <feGaussianBlur stdDeviation="2" result="coloredBlur" />
+                    <feGaussianBlur stdDeviation="1.5" result="coloredBlur" />
+                    <feMerge>
+                      <feMergeNode in="coloredBlur" />
+                      <feMergeNode in="SourceGraphic" />
+                    </feMerge>
+                  </filter>
+                  <filter id="centerGlow">
+                    <feGaussianBlur stdDeviation="3" result="coloredBlur" />
                     <feMerge>
                       <feMergeNode in="coloredBlur" />
                       <feMergeNode in="SourceGraphic" />
@@ -75,54 +87,92 @@ const Navigation = () => {
                   </filter>
                 </defs>
 
-                {/* Background connection network */}
-                <g filter="url(#glow)" className="opacity-40">
-                  {/* Horizontal and vertical connection lines */}
-                  <path d="M8 20 L32 20" stroke="url(#connectionGradient)" strokeWidth="1" />
-                  <path d="M20 8 L20 32" stroke="url(#connectionGradient)" strokeWidth="1" />
-
-                  {/* Diagonal connection lines */}
-                  <path d="M12 12 L28 28" stroke="url(#connectionGradient)" strokeWidth="0.8" className="opacity-60" />
-                  <path d="M28 12 L12 28" stroke="url(#connectionGradient)" strokeWidth="0.8" className="opacity-60" />
+                {/* Neural Network Connections */}
+                <g className="opacity-50" filter="url(#glow)">
+                  {/* Layer 1 to Center connections */}
+                  <path d="M6 10 Q15 15 20 20" stroke="url(#connectionGradient)" strokeWidth="1.5" fill="none" className="animate-pulse" style={{ animationDelay: '0s' }} />
+                  <path d="M6 20 L20 20" stroke="url(#connectionGradient)" strokeWidth="1.5" className="animate-pulse" style={{ animationDelay: '0.3s' }} />
+                  <path d="M6 30 Q15 25 20 20" stroke="url(#connectionGradient)" strokeWidth="1.5" fill="none" className="animate-pulse" style={{ animationDelay: '0.6s' }} />
+                  
+                  {/* Center to Layer 2 connections */}
+                  <path d="M20 20 Q25 15 34 10" stroke="url(#connectionGradient)" strokeWidth="1.5" fill="none" className="animate-pulse" style={{ animationDelay: '0.9s' }} />
+                  <path d="M20 20 L34 20" stroke="url(#connectionGradient)" strokeWidth="1.5" className="animate-pulse" style={{ animationDelay: '1.2s' }} />
+                  <path d="M20 20 Q25 25 34 30" stroke="url(#connectionGradient)" strokeWidth="1.5" fill="none" className="animate-pulse" style={{ animationDelay: '1.5s' }} />
+                  
+                  {/* Cross connections for complexity */}
+                  <path d="M6 10 Q12 22 20 20" stroke="url(#connectionGradient)" strokeWidth="0.8" fill="none" className="opacity-40" />
+                  <path d="M6 30 Q12 18 20 20" stroke="url(#connectionGradient)" strokeWidth="0.8" fill="none" className="opacity-40" />
                 </g>
 
-                {/* Main X structure */}
+                {/* Input Layer Nodes */}
                 <g filter="url(#glow)">
-                  {/* Primary X shape */}
-                  <path
-                    d="M12 12 L28 28 M28 12 L12 28"
-                    stroke="url(#logoGradient)"
-                    strokeWidth="3.5"
-                    strokeLinecap="round"
-                    className="animate-pulse"
-                  />
+                  <circle cx="6" cy="10" r="2.5" fill="url(#nodeGradient)" className="opacity-80">
+                    <animate attributeName="r" values="2;3;2" dur="2s" repeatCount="indefinite" begin="0s" />
+                  </circle>
+                  <circle cx="6" cy="20" r="2.5" fill="url(#nodeGradient)" className="opacity-80">
+                    <animate attributeName="r" values="2;3;2" dur="2s" repeatCount="indefinite" begin="0.7s" />
+                  </circle>
+                  <circle cx="6" cy="30" r="2.5" fill="url(#nodeGradient)" className="opacity-80">
+                    <animate attributeName="r" values="2;3;2" dur="2s" repeatCount="indefinite" begin="1.4s" />
+                  </circle>
+                </g>
 
-                  {/* Central decision node */}
+                {/* Central Router Node */}
+                <g filter="url(#centerGlow)">
                   <circle
                     cx="20"
                     cy="20"
-                    r="4"
+                    r="5"
                     fill="url(#logoGradient)"
+                    strokeWidth="2"
+                    stroke="#10b981"
                     className="animate-pulse opacity-90"
                   />
-
-                  {/* Route decision points */}
-                  <circle cx="12" cy="12" r="2" fill="#34d399" className="opacity-80" />
-                  <circle cx="28" cy="12" r="2" fill="#34d399" className="opacity-80" />
-                  <circle cx="12" cy="28" r="2" fill="#34d399" className="opacity-80" />
-                  <circle cx="28" cy="28" r="2" fill="#34d399" className="opacity-80" />
+                  {/* Inner core */}
+                  <circle
+                    cx="20"
+                    cy="20"
+                    r="2"
+                    fill="#ffffff"
+                    className="opacity-90"
+                  >
+                    <animate attributeName="r" values="1.5;2.5;1.5" dur="1.5s" repeatCount="indefinite" />
+                  </circle>
                 </g>
 
-                {/* Animated pulse effect */}
+                {/* Output Layer Nodes */}
+                <g filter="url(#glow)">
+                  <circle cx="34" cy="10" r="2.5" fill="url(#nodeGradient)" className="opacity-80">
+                    <animate attributeName="r" values="2;3;2" dur="2s" repeatCount="indefinite" begin="1s" />
+                  </circle>
+                  <circle cx="34" cy="20" r="2.5" fill="url(#nodeGradient)" className="opacity-80">
+                    <animate attributeName="r" values="2;3;2" dur="2s" repeatCount="indefinite" begin="1.7s" />
+                  </circle>
+                  <circle cx="34" cy="30" r="2.5" fill="url(#nodeGradient)" className="opacity-80">
+                    <animate attributeName="r" values="2;3;2" dur="2s" repeatCount="indefinite" begin="0.4s" />
+                  </circle>
+                </g>
+
+                {/* Outer Neural Pulse */}
                 <circle
                   cx="20"
                   cy="20"
-                  r="6"
+                  r="8"
                   fill="none"
                   stroke="url(#logoGradient)"
-                  strokeWidth="1"
+                  strokeWidth="0.5"
                   className="animate-ping opacity-20"
                 />
+                
+                {/* Data Flow Indicators */}
+                <g className="opacity-70">
+                  <circle cx="13" cy="15" r="1" fill="#34d399">
+                    <animateMotion dur="3s" repeatCount="indefinite" path="M0,0 Q7,5 14,0" />
+                  </circle>
+                  <circle cx="13" cy="25" r="1" fill="#06b6d4">
+                    <animateMotion dur="3s" repeatCount="indefinite" begin="1s" path="M0,0 Q7,-5 14,0" />
+                  </circle>
+                </g>
               </svg>
             </div>
 
@@ -1139,50 +1189,66 @@ const Footer = () => {
                 <defs>
                   <linearGradient id="footerLogoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
                     <stop offset="0%" stopColor="#10b981" />
-                    <stop offset="50%" stopColor="#06b6d4" />
-                    <stop offset="100%" stopColor="#3b82f6" />
+                    <stop offset="30%" stopColor="#06b6d4" />
+                    <stop offset="70%" stopColor="#3b82f6" />
+                    <stop offset="100%" stopColor="#8b5cf6" />
+                  </linearGradient>
+                  <linearGradient id="footerNodeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#34d399" />
+                    <stop offset="100%" stopColor="#06b6d4" />
                   </linearGradient>
                   <linearGradient id="footerConnectionGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stopColor="#059669" />
-                    <stop offset="100%" stopColor="#10b981" />
+                    <stop offset="0%" stopColor="#10b981" />
+                    <stop offset="100%" stopColor="#06b6d4" />
                   </linearGradient>
                 </defs>
 
-                {/* Background connection network */}
-                <g className="opacity-30">
-                  {/* Horizontal and vertical connection lines */}
-                  <path d="M6 16 L26 16" stroke="url(#footerConnectionGradient)" strokeWidth="0.8" />
-                  <path d="M16 6 L16 26" stroke="url(#footerConnectionGradient)" strokeWidth="0.8" />
-
-                  {/* Diagonal connection lines */}
-                  <path d="M10 10 L22 22" stroke="url(#footerConnectionGradient)" strokeWidth="0.6" className="opacity-60" />
-                  <path d="M22 10 L10 22" stroke="url(#footerConnectionGradient)" strokeWidth="0.6" className="opacity-60" />
+                {/* Neural Network Connections */}
+                <g className="opacity-40">
+                  {/* Layer 1 to Center connections */}
+                  <path d="M5 8 Q12 12 16 16" stroke="url(#footerConnectionGradient)" strokeWidth="1" fill="none" />
+                  <path d="M5 16 L16 16" stroke="url(#footerConnectionGradient)" strokeWidth="1" />
+                  <path d="M5 24 Q12 20 16 16" stroke="url(#footerConnectionGradient)" strokeWidth="1" fill="none" />
+                  
+                  {/* Center to Layer 2 connections */}
+                  <path d="M16 16 Q20 12 27 8" stroke="url(#footerConnectionGradient)" strokeWidth="1" fill="none" />
+                  <path d="M16 16 L27 16" stroke="url(#footerConnectionGradient)" strokeWidth="1" />
+                  <path d="M16 16 Q20 20 27 24" stroke="url(#footerConnectionGradient)" strokeWidth="1" fill="none" />
                 </g>
 
-                {/* Main X structure */}
+                {/* Input Layer Nodes */}
                 <g>
-                  {/* Primary X shape */}
-                  <path
-                    d="M10 10 L22 22 M22 10 L10 22"
-                    stroke="url(#footerLogoGradient)"
-                    strokeWidth="2.5"
-                    strokeLinecap="round"
-                  />
+                  <circle cx="5" cy="8" r="2" fill="url(#footerNodeGradient)" className="opacity-70" />
+                  <circle cx="5" cy="16" r="2" fill="url(#footerNodeGradient)" className="opacity-70" />
+                  <circle cx="5" cy="24" r="2" fill="url(#footerNodeGradient)" className="opacity-70" />
+                </g>
 
-                  {/* Central decision node */}
+                {/* Central Router Node */}
+                <g>
                   <circle
                     cx="16"
                     cy="16"
-                    r="3"
+                    r="4"
                     fill="url(#footerLogoGradient)"
+                    strokeWidth="1.5"
+                    stroke="#10b981"
                     className="opacity-90"
                   />
+                  {/* Inner core */}
+                  <circle
+                    cx="16"
+                    cy="16"
+                    r="1.5"
+                    fill="#ffffff"
+                    className="opacity-80"
+                  />
+                </g>
 
-                  {/* Route decision points */}
-                  <circle cx="10" cy="10" r="1.5" fill="#34d399" className="opacity-80" />
-                  <circle cx="22" cy="10" r="1.5" fill="#34d399" className="opacity-80" />
-                  <circle cx="10" cy="22" r="1.5" fill="#34d399" className="opacity-80" />
-                  <circle cx="22" cy="22" r="1.5" fill="#34d399" className="opacity-80" />
+                {/* Output Layer Nodes */}
+                <g>
+                  <circle cx="27" cy="8" r="2" fill="url(#footerNodeGradient)" className="opacity-70" />
+                  <circle cx="27" cy="16" r="2" fill="url(#footerNodeGradient)" className="opacity-70" />
+                  <circle cx="27" cy="24" r="2" fill="url(#footerNodeGradient)" className="opacity-70" />
                 </g>
               </svg>
             </div>

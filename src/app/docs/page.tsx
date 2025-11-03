@@ -85,8 +85,54 @@ curl -X POST https://api.roulyx.com/v1/chat \\
                         className="text-center mb-12"
                     >
                         <div className="flex items-center justify-center mb-6">
-                            <div className="w-12 h-12 bg-emerald-500 rounded-xl flex items-center justify-center mr-4">
-                                <Code className="w-6 h-6 text-white" />
+                            <div className="w-12 h-12 rounded-xl flex items-center justify-center mr-4">
+                                <svg
+                                    width="48"
+                                    height="48"
+                                    viewBox="0 0 40 40"
+                                    className="transition-all duration-300"
+                                >
+                                    <defs>
+                                        <linearGradient id="docsLogoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                            <stop offset="0%" stopColor="#10b981" />
+                                            <stop offset="30%" stopColor="#06b6d4" />
+                                            <stop offset="70%" stopColor="#3b82f6" />
+                                            <stop offset="100%" stopColor="#8b5cf6" />
+                                        </linearGradient>
+                                        <linearGradient id="docsNodeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                            <stop offset="0%" stopColor="#34d399" />
+                                            <stop offset="100%" stopColor="#06b6d4" />
+                                        </linearGradient>
+                                        <linearGradient id="docsConnectionGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                            <stop offset="0%" stopColor="#10b981" />
+                                            <stop offset="100%" stopColor="#06b6d4" />
+                                        </linearGradient>
+                                    </defs>
+
+                                    {/* Neural Network Connections */}
+                                    <g className="opacity-60">
+                                        <path d="M6 10 Q15 15 20 20" stroke="url(#docsConnectionGradient)" strokeWidth="1.5" fill="none" />
+                                        <path d="M6 20 L20 20" stroke="url(#docsConnectionGradient)" strokeWidth="1.5" />
+                                        <path d="M6 30 Q15 25 20 20" stroke="url(#docsConnectionGradient)" strokeWidth="1.5" fill="none" />
+                                        <path d="M20 20 Q25 15 34 10" stroke="url(#docsConnectionGradient)" strokeWidth="1.5" fill="none" />
+                                        <path d="M20 20 L34 20" stroke="url(#docsConnectionGradient)" strokeWidth="1.5" />
+                                        <path d="M20 20 Q25 25 34 30" stroke="url(#docsConnectionGradient)" strokeWidth="1.5" fill="none" />
+                                    </g>
+
+                                    {/* Input Layer Nodes */}
+                                    <circle cx="6" cy="10" r="2.5" fill="url(#docsNodeGradient)" className="opacity-80" />
+                                    <circle cx="6" cy="20" r="2.5" fill="url(#docsNodeGradient)" className="opacity-80" />
+                                    <circle cx="6" cy="30" r="2.5" fill="url(#docsNodeGradient)" className="opacity-80" />
+
+                                    {/* Central Router Node */}
+                                    <circle cx="20" cy="20" r="5" fill="url(#docsLogoGradient)" strokeWidth="2" stroke="#10b981" className="opacity-90" />
+                                    <circle cx="20" cy="20" r="2" fill="#ffffff" className="opacity-90" />
+
+                                    {/* Output Layer Nodes */}
+                                    <circle cx="34" cy="10" r="2.5" fill="url(#docsNodeGradient)" className="opacity-80" />
+                                    <circle cx="34" cy="20" r="2.5" fill="url(#docsNodeGradient)" className="opacity-80" />
+                                    <circle cx="34" cy="30" r="2.5" fill="url(#docsNodeGradient)" className="opacity-80" />
+                                </svg>
                             </div>
                             <span className="text-xl font-bold text-white">Roulyx Docs</span>
                         </div>
