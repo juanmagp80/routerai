@@ -35,10 +35,89 @@ export default function LoginPage() {
                 >
                     <div className="max-w-md">
                         <motion.div className="mb-8" whileHover={{ scale: 1.05 }} transition={{ type: "spring", stiffness: 300 }}>
-                            <div className="w-16 h-16 bg-gradient-to-r from-emerald-400 to-emerald-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg shadow-emerald-500/25">
-                                <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
-                                    <div className="w-4 h-4 bg-emerald-500 rounded-sm" />
-                                </div>
+                            <div className="w-16 h-16 mb-6">
+                                <svg
+                                    width="64"
+                                    height="64"
+                                    viewBox="0 0 64 64"
+                                    className="transition-all duration-300 hover:scale-105"
+                                >
+                                    <defs>
+                                        <linearGradient id="loginLogoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                            <stop offset="0%" stopColor="#10b981" />
+                                            <stop offset="30%" stopColor="#06b6d4" />
+                                            <stop offset="70%" stopColor="#3b82f6" />
+                                            <stop offset="100%" stopColor="#8b5cf6" />
+                                        </linearGradient>
+                                        <linearGradient id="loginNodeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                            <stop offset="0%" stopColor="#34d399" />
+                                            <stop offset="100%" stopColor="#06b6d4" />
+                                        </linearGradient>
+                                        <linearGradient id="loginConnectionGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                            <stop offset="0%" stopColor="#10b981" />
+                                            <stop offset="100%" stopColor="#06b6d4" />
+                                        </linearGradient>
+                                        <filter id="loginGlow" x="-50%" y="-50%" width="200%" height="200%">
+                                            <feGaussianBlur stdDeviation="1.5" result="coloredBlur" />
+                                            <feMerge>
+                                                <feMergeNode in="coloredBlur" />
+                                                <feMergeNode in="SourceGraphic" />
+                                            </feMerge>
+                                        </filter>
+                                    </defs>
+
+                                    {/* Background Circle */}
+                                    <circle 
+                                        cx="32" 
+                                        cy="32" 
+                                        r="30" 
+                                        fill="rgba(15, 23, 42, 0.8)" 
+                                        stroke="rgba(16, 185, 129, 0.3)" 
+                                        strokeWidth="2" 
+                                        className="shadow-lg shadow-emerald-500/25"
+                                    />
+
+                                    {/* Neural Network Connections */}
+                                    <g className="opacity-70" filter="url(#loginGlow)">
+                                        {/* Layer 1 to Center connections */}
+                                        <path d="M12 20 Q24 26 32 32" stroke="url(#loginConnectionGradient)" strokeWidth="2" fill="none" />
+                                        <path d="M12 32 L32 32" stroke="url(#loginConnectionGradient)" strokeWidth="2" />
+                                        <path d="M12 44 Q24 38 32 32" stroke="url(#loginConnectionGradient)" strokeWidth="2" fill="none" />
+                                        
+                                        {/* Center to Layer 2 connections */}
+                                        <path d="M32 32 Q40 26 52 20" stroke="url(#loginConnectionGradient)" strokeWidth="2" fill="none" />
+                                        <path d="M32 32 L52 32" stroke="url(#loginConnectionGradient)" strokeWidth="2" />
+                                        <path d="M32 32 Q40 38 52 44" stroke="url(#loginConnectionGradient)" strokeWidth="2" fill="none" />
+                                    </g>
+
+                                    {/* Input Layer Nodes */}
+                                    <g filter="url(#loginGlow)">
+                                        <circle cx="12" cy="20" r="4" fill="url(#loginNodeGradient)" className="opacity-90" />
+                                        <circle cx="12" cy="32" r="4" fill="url(#loginNodeGradient)" className="opacity-90" />
+                                        <circle cx="12" cy="44" r="4" fill="url(#loginNodeGradient)" className="opacity-90" />
+                                    </g>
+
+                                    {/* Central Router Node */}
+                                    <g filter="url(#loginGlow)">
+                                        <circle
+                                            cx="32"
+                                            cy="32"
+                                            r="8"
+                                            fill="url(#loginLogoGradient)"
+                                            strokeWidth="2"
+                                            stroke="#10b981"
+                                            className="opacity-95"
+                                        />
+                                        <circle cx="32" cy="32" r="3" fill="#ffffff" className="opacity-95" />
+                                    </g>
+
+                                    {/* Output Layer Nodes */}
+                                    <g filter="url(#loginGlow)">
+                                        <circle cx="52" cy="20" r="4" fill="url(#loginNodeGradient)" className="opacity-90" />
+                                        <circle cx="52" cy="32" r="4" fill="url(#loginNodeGradient)" className="opacity-90" />
+                                        <circle cx="52" cy="44" r="4" fill="url(#loginNodeGradient)" className="opacity-90" />
+                                    </g>
+                                </svg>
                             </div>
                         </motion.div>
                         <h1 className="text-4xl font-bold text-white mb-4 leading-tight">

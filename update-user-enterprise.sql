@@ -23,10 +23,10 @@ WHERE email = 'juanmagpdev@gmail.com';
 INSERT INTO plan_limits (plan_name, api_key_limit, monthly_request_limit, rate_limit_per_minute, allowed_models, price_eur, stripe_price_id, features, trial_days) VALUES
 
 -- Plan FREE
-('FREE', 2, 1000, 10, 
- ARRAY['gpt-3.5-turbo', 'gpt-4o-mini', 'claude-3-haiku', 'claude-3.5-sonnet', 'gemini-2.0-flash', 'gemini-2.5-flash', 'gemini-1.5-flash', 'llama-3.1-8b', 'mistral-7b'], 
+('FREE', 1, 100, 5, 
+ ARRAY['gpt-3.5-turbo', 'gpt-4o-mini', 'claude-3-haiku', 'gemini-1.5-flash', 'llama-3.1-8b'], 
  0.00, 'free', 
- ARRAY['9 modelos básicos de IA', '2 API keys', '1,000 requests/mes', '10 requests/minuto', 'Soporte comunitario'], 
+ ARRAY['5 modelos básicos de IA', '1 API key', '100 requests/mes', '5 requests/minuto', 'Soporte comunitario'], 
  7),
 
 -- Plan STARTER

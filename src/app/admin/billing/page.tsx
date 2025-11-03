@@ -34,10 +34,10 @@ const plans: Plan[] = [
     period: 'forever',
     stripeId: 'free',
     features: [
-      '10 requests per month',
-      '3 API keys',
+      '100 requests per month',
+      '1 API key',
       '7-day trial features',
-      'Basic models access',
+      '5 AI models access',
       'Community support'
     ]
   },

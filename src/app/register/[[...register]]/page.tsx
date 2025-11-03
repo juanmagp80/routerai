@@ -3,6 +3,7 @@
 import { SignUp } from '@clerk/nextjs';
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 
 export default function RegisterPage() {
     const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
@@ -35,10 +36,89 @@ export default function RegisterPage() {
                 >
                     <div className="max-w-md">
                         <motion.div className="mb-8" whileHover={{ scale: 1.05 }} transition={{ type: "spring", stiffness: 300 }}>
-                            <div className="w-16 h-16 bg-gradient-to-r from-emerald-400 to-emerald-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg shadow-emerald-500/25">
-                                <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center">
-                                    <div className="w-4 h-4 bg-emerald-500 rounded-sm" />
-                                </div>
+                            <div className="w-16 h-16 mb-6">
+                                <svg
+                                    width="64"
+                                    height="64"
+                                    viewBox="0 0 64 64"
+                                    className="transition-all duration-300 hover:scale-105"
+                                >
+                                    <defs>
+                                        <linearGradient id="registerLogoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                            <stop offset="0%" stopColor="#10b981" />
+                                            <stop offset="30%" stopColor="#06b6d4" />
+                                            <stop offset="70%" stopColor="#3b82f6" />
+                                            <stop offset="100%" stopColor="#8b5cf6" />
+                                        </linearGradient>
+                                        <linearGradient id="registerNodeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                            <stop offset="0%" stopColor="#34d399" />
+                                            <stop offset="100%" stopColor="#06b6d4" />
+                                        </linearGradient>
+                                        <linearGradient id="registerConnectionGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                            <stop offset="0%" stopColor="#10b981" />
+                                            <stop offset="100%" stopColor="#06b6d4" />
+                                        </linearGradient>
+                                        <filter id="registerGlow" x="-50%" y="-50%" width="200%" height="200%">
+                                            <feGaussianBlur stdDeviation="1.5" result="coloredBlur" />
+                                            <feMerge>
+                                                <feMergeNode in="coloredBlur" />
+                                                <feMergeNode in="SourceGraphic" />
+                                            </feMerge>
+                                        </filter>
+                                    </defs>
+
+                                    {/* Background Circle */}
+                                    <circle 
+                                        cx="32" 
+                                        cy="32" 
+                                        r="30" 
+                                        fill="rgba(15, 23, 42, 0.8)" 
+                                        stroke="rgba(16, 185, 129, 0.3)" 
+                                        strokeWidth="2" 
+                                        className="shadow-lg shadow-emerald-500/25"
+                                    />
+
+                                    {/* Neural Network Connections */}
+                                    <g className="opacity-70" filter="url(#registerGlow)">
+                                        {/* Layer 1 to Center connections */}
+                                        <path d="M12 20 Q24 26 32 32" stroke="url(#registerConnectionGradient)" strokeWidth="2" fill="none" />
+                                        <path d="M12 32 L32 32" stroke="url(#registerConnectionGradient)" strokeWidth="2" />
+                                        <path d="M12 44 Q24 38 32 32" stroke="url(#registerConnectionGradient)" strokeWidth="2" fill="none" />
+                                        
+                                        {/* Center to Layer 2 connections */}
+                                        <path d="M32 32 Q40 26 52 20" stroke="url(#registerConnectionGradient)" strokeWidth="2" fill="none" />
+                                        <path d="M32 32 L52 32" stroke="url(#registerConnectionGradient)" strokeWidth="2" />
+                                        <path d="M32 32 Q40 38 52 44" stroke="url(#registerConnectionGradient)" strokeWidth="2" fill="none" />
+                                    </g>
+
+                                    {/* Input Layer Nodes */}
+                                    <g filter="url(#registerGlow)">
+                                        <circle cx="12" cy="20" r="4" fill="url(#registerNodeGradient)" className="opacity-90" />
+                                        <circle cx="12" cy="32" r="4" fill="url(#registerNodeGradient)" className="opacity-90" />
+                                        <circle cx="12" cy="44" r="4" fill="url(#registerNodeGradient)" className="opacity-90" />
+                                    </g>
+
+                                    {/* Central Router Node */}
+                                    <g filter="url(#registerGlow)">
+                                        <circle
+                                            cx="32"
+                                            cy="32"
+                                            r="8"
+                                            fill="url(#registerLogoGradient)"
+                                            strokeWidth="2"
+                                            stroke="#10b981"
+                                            className="opacity-95"
+                                        />
+                                        <circle cx="32" cy="32" r="3" fill="#ffffff" className="opacity-95" />
+                                    </g>
+
+                                    {/* Output Layer Nodes */}
+                                    <g filter="url(#registerGlow)">
+                                        <circle cx="52" cy="20" r="4" fill="url(#registerNodeGradient)" className="opacity-90" />
+                                        <circle cx="52" cy="32" r="4" fill="url(#registerNodeGradient)" className="opacity-90" />
+                                        <circle cx="52" cy="44" r="4" fill="url(#registerNodeGradient)" className="opacity-90" />
+                                    </g>
+                                </svg>
                             </div>
                         </motion.div>
                         <h1 className="text-4xl font-bold text-white mb-4 leading-tight">
@@ -53,15 +133,15 @@ export default function RegisterPage() {
                         <div className="mt-8 space-y-4">
                             <div className="flex items-center space-x-3">
                                 <div className="w-2 h-2 bg-emerald-400 rounded-full"></div>
-                                <span className="text-gray-300">Free tier with 1000 requests</span>
+                                <span className="text-gray-300">Free tier with 100 requests/month</span>
                             </div>
                             <div className="flex items-center space-x-3">
                                 <div className="w-2 h-2 bg-emerald-400 rounded-full"></div>
-                                <span className="text-gray-300">Access to 6+ AI providers</span>
+                                <span className="text-gray-300">Access to 5 AI models</span>
                             </div>
                             <div className="flex items-center space-x-3">
                                 <div className="w-2 h-2 bg-emerald-400 rounded-full"></div>
-                                <span className="text-gray-300">Intelligent cost optimization</span>
+                                <span className="text-gray-300">Intelligent model routing</span>
                             </div>
                         </div>
                     </div>
@@ -92,6 +172,29 @@ export default function RegisterPage() {
                                     colorPrimary: "#10b981"
                                 }
                             }} redirectUrl="/admin" />
+                        </div>
+                        
+                        {/* Already have an account section */}
+                        <div className="mt-6 text-center">
+                            <p className="text-gray-400 mb-4">
+                                Already have an account?
+                            </p>
+                            <Link
+                                href="/login"
+                                className="inline-flex items-center justify-center px-6 py-3 bg-white/5 backdrop-blur-sm border border-white/10 text-white rounded-xl font-medium hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:ring-offset-2 focus:ring-offset-gray-900 transition-all duration-300 group"
+                            >
+                                <span className="group-hover:translate-x-0.5 transition-transform duration-300">
+                                    Sign In
+                                </span>
+                                <svg 
+                                    className="ml-2 w-4 h-4 group-hover:translate-x-0.5 transition-transform duration-300" 
+                                    fill="none" 
+                                    stroke="currentColor" 
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                </svg>
+                            </Link>
                         </div>
                     </div>
                 </div>

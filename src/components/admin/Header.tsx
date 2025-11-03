@@ -11,7 +11,7 @@ import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
 
 export function Header() {
-  const { clerkUser } = useUserSync();
+  const { clerkUser, dbUser } = useUserSync();
   const { getRecentNotifications, unreadCount, markAsRead, deleteNotification } = useNotifications();
   const [showNotifications, setShowNotifications] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
@@ -63,22 +63,48 @@ export function Header() {
     }
   };
 
+  const getPlanDisplayInfo = () => {
+    const plan = dbUser?.plan?.toUpperCase() || 'FREE';
+    switch (plan) {
+      case 'FREE':
+        return '100 requests/month';
+      case 'STARTER':
+        return '10,000 requests/month';
+      case 'PRO':
+        return '100,000 requests/month';
+      case 'ENTERPRISE':
+        return '1,000,000 requests/month';
+      default:
+        return 'Loading...';
+    }
+  };
+
   return (
     <header className="bg-white border-b border-slate-200">
       <div className="px-6 py-4">
         <div className="flex h-10 items-center justify-between">
-          {/* Search */}
+          {/* Plan Status and Usage */}
           <div className="flex flex-1 items-center">
-            <div className="w-full max-w-lg">
-              <div className="relative">
-                <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                  <Search className="h-4 w-4 text-slate-400" />
+            <div className="flex items-center space-x-4">
+              {/* Plan Badge */}
+              <div className="flex items-center space-x-2">
+                <div className="flex items-center px-3 py-1.5 bg-emerald-50 border border-emerald-200 rounded-lg">
+                  <div className="w-2 h-2 bg-emerald-500 rounded-full mr-2"></div>
+                  <span className="text-sm font-medium text-emerald-700 uppercase">
+                    {dbUser?.plan || 'FREE'}
+                  </span>
                 </div>
-                <Input
-                  className="block w-full rounded-md border-slate-300 pl-10 pr-3 py-2 text-sm placeholder-slate-400 focus:border-blue-500 focus:ring-blue-500"
-                  placeholder="Search..."
-                  type="search"
-                />
+              </div>
+              
+              {/* API Status */}
+              <div className="flex items-center text-sm text-slate-600">
+                <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
+                <span className="text-slate-600">API Online</span>
+              </div>
+              
+              {/* Quick Stats */}
+              <div className="text-sm text-slate-400">
+                {getPlanDisplayInfo()}
               </div>
             </div>
           </div>

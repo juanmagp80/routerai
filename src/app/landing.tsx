@@ -962,8 +962,8 @@ const PricingSection = () => {
             {
               name: "FREE",
               price: "€0",
-              tasks: "10 requests/month",
-              features: ["3 API keys", "Forever free", "Basic models access", "Community support"],
+              tasks: "100 requests/month",
+              features: ["1 API key", "Forever free", "5 AI models access", "Community support"],
               highlight: false,
               period: "/forever",
               badge: null
