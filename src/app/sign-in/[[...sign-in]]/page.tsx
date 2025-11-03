@@ -1,7 +1,7 @@
 'use client';
 
-import { SignIn } from '@clerk/nextjs';
 import { AuthLogo } from '@/components/auth/AuthLogo';
+import { SignIn } from '@clerk/nextjs';
 
 export default function SignInPage() {
     return (

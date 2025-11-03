@@ -67,13 +67,13 @@ export default function LoginPage() {
                                     </defs>
 
                                     {/* Background Circle */}
-                                    <circle 
-                                        cx="32" 
-                                        cy="32" 
-                                        r="30" 
-                                        fill="rgba(15, 23, 42, 0.8)" 
-                                        stroke="rgba(16, 185, 129, 0.3)" 
-                                        strokeWidth="2" 
+                                    <circle
+                                        cx="32"
+                                        cy="32"
+                                        r="30"
+                                        fill="rgba(15, 23, 42, 0.8)"
+                                        stroke="rgba(16, 185, 129, 0.3)"
+                                        strokeWidth="2"
                                         className="shadow-lg shadow-emerald-500/25"
                                     />
 
@@ -83,7 +83,7 @@ export default function LoginPage() {
                                         <path d="M12 20 Q24 26 32 32" stroke="url(#loginConnectionGradient)" strokeWidth="2" fill="none" />
                                         <path d="M12 32 L32 32" stroke="url(#loginConnectionGradient)" strokeWidth="2" />
                                         <path d="M12 44 Q24 38 32 32" stroke="url(#loginConnectionGradient)" strokeWidth="2" fill="none" />
-                                        
+
                                         {/* Center to Layer 2 connections */}
                                         <path d="M32 32 Q40 26 52 20" stroke="url(#loginConnectionGradient)" strokeWidth="2" fill="none" />
                                         <path d="M32 32 L52 32" stroke="url(#loginConnectionGradient)" strokeWidth="2" />

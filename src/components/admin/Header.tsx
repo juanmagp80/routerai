@@ -1,12 +1,11 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { useNotifications } from '@/hooks/useNotifications';
 import { useUserSync } from '@/hooks/useUserSync';
 import { getNotificationAction, getNotificationActionSecondary } from '@/lib/notification-actions';
 import { SignOutButton } from '@clerk/nextjs';
-import { Bell, CheckCircle, ExternalLink, LogOut, Search, Trash2, User } from 'lucide-react';
+import { Bell, CheckCircle, ExternalLink, LogOut, Trash2, User } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
 
@@ -95,13 +94,13 @@ export function Header() {
                   </span>
                 </div>
               </div>
-              
+
               {/* API Status */}
               <div className="flex items-center text-sm text-slate-600">
                 <div className="w-2 h-2 bg-green-500 rounded-full mr-2"></div>
                 <span className="text-slate-600">API Online</span>
               </div>
-              
+
               {/* Quick Stats */}
               <div className="text-sm text-slate-400">
                 {getPlanDisplayInfo()}

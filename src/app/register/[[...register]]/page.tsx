@@ -2,8 +2,8 @@
 
 import { SignUp } from '@clerk/nextjs';
 import { motion } from 'framer-motion';
-import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
 
 export default function RegisterPage() {
     const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
@@ -68,13 +68,13 @@ export default function RegisterPage() {
                                     </defs>
 
                                     {/* Background Circle */}
-                                    <circle 
-                                        cx="32" 
-                                        cy="32" 
-                                        r="30" 
-                                        fill="rgba(15, 23, 42, 0.8)" 
-                                        stroke="rgba(16, 185, 129, 0.3)" 
-                                        strokeWidth="2" 
+                                    <circle
+                                        cx="32"
+                                        cy="32"
+                                        r="30"
+                                        fill="rgba(15, 23, 42, 0.8)"
+                                        stroke="rgba(16, 185, 129, 0.3)"
+                                        strokeWidth="2"
                                         className="shadow-lg shadow-emerald-500/25"
                                     />
 
@@ -84,7 +84,7 @@ export default function RegisterPage() {
                                         <path d="M12 20 Q24 26 32 32" stroke="url(#registerConnectionGradient)" strokeWidth="2" fill="none" />
                                         <path d="M12 32 L32 32" stroke="url(#registerConnectionGradient)" strokeWidth="2" />
                                         <path d="M12 44 Q24 38 32 32" stroke="url(#registerConnectionGradient)" strokeWidth="2" fill="none" />
-                                        
+
                                         {/* Center to Layer 2 connections */}
                                         <path d="M32 32 Q40 26 52 20" stroke="url(#registerConnectionGradient)" strokeWidth="2" fill="none" />
                                         <path d="M32 32 L52 32" stroke="url(#registerConnectionGradient)" strokeWidth="2" />
@@ -173,7 +173,7 @@ export default function RegisterPage() {
                                 }
                             }} redirectUrl="/admin" />
                         </div>
-                        
+
                         {/* Already have an account section */}
                         <div className="mt-6 text-center">
                             <p className="text-gray-400 mb-4">
@@ -186,10 +186,10 @@ export default function RegisterPage() {
                                 <span className="group-hover:translate-x-0.5 transition-transform duration-300">
                                     Sign In
                                 </span>
-                                <svg 
-                                    className="ml-2 w-4 h-4 group-hover:translate-x-0.5 transition-transform duration-300" 
-                                    fill="none" 
-                                    stroke="currentColor" 
+                                <svg
+                                    className="ml-2 w-4 h-4 group-hover:translate-x-0.5 transition-transform duration-300"
+                                    fill="none"
+                                    stroke="currentColor"
                                     viewBox="0 0 24 24"
                                 >
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />

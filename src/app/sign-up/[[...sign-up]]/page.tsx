@@ -1,7 +1,7 @@
 'use client';
 
-import { SignUp } from '@clerk/nextjs';
 import { AuthLogo } from '@/components/auth/AuthLogo';
+import { SignUp } from '@clerk/nextjs';
 
 export default function SignUpPage() {
     return (
