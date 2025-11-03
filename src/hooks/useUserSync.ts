@@ -39,7 +39,6 @@ export function useUserSync() {
                     const allowCreate = process.env.NEXT_PUBLIC_SKIP_VERIFY_BEFORE_CREATE === 'true' || emailVerified;
 
                     if (!allowCreate) {
-                        console.log('Usuario no creado en la base de datos: email no verificado y SKIP_VERIFY_BEFORE_CREATE no activo.');
                     } else {
                         // Obtener límites del plan free para nuevos usuarios
                         const { PlanLimitsService } = await import('@/lib/plan-limits-service');
@@ -62,7 +61,6 @@ export function useUserSync() {
 
                         // Si el usuario ya existe (error de duplicado), intentar obtenerlo
                         if (!existingUser) {
-                            console.log('Usuario ya existe, intentando obtenerlo...');
                             existingUser = await UserService.getUserByEmail(primaryEmail);
 
                             if (!existingUser) {
@@ -79,7 +77,6 @@ export function useUserSync() {
                     const userWithClerkId = existingUser as { clerk_user_id?: string };
                     if (!userWithClerkId.clerk_user_id) {
                         updatedData.clerk_user_id = clerkUser.id;
-                        console.log('Vinculando usuario existente con Clerk ID:', clerkUser.id);
                     }
 
                     if (existingUser.name !== currentName && currentName) {

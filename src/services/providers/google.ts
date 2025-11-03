@@ -78,12 +78,10 @@ export class GoogleProvider {
   async isHealthy(): Promise<boolean> {
     try {
       if (!process.env.GEMINI_API_KEY) {
-        console.log('❌ Google: No API key configured');
         return false;
       }
 
       // Just check if we can create the client (don't make actual API calls)
-      console.log('✅ Google: API key found, assuming healthy');
       return true;
     } catch (error) {
       console.error('❌ Google health check error:', error);

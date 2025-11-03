@@ -80,7 +80,6 @@ export default function AdaptiveLearningPage() {
             setLoading(true);
             setError(null);
 
-            console.log('🔄 Fetching learning data...');
             const response = await fetch('/api/admin/learning-stats');
 
             if (!response.ok) {
@@ -90,7 +89,6 @@ export default function AdaptiveLearningPage() {
             }
 
             const result = await response.json();
-            console.log('✅ Learning data received:', result);
             setData(result);
         } catch (err) {
             const errorMessage = err instanceof Error ? err.message : 'Unknown error';

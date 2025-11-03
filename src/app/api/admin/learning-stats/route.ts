@@ -20,21 +20,16 @@ export async function GET() {
                 details: 'This endpoint is restricted to authorized administrators only.'
             }, { status: 403 });
         }
-
-        console.log('🔍 Learning stats API called for user:', userId);
-
         let stats, recommendations;
 
         // Intentar usar funciones SQL optimizadas primero
         try {
-            console.log('🔧 Trying to use SQL functions...');
 
             const { data: statsData, error: statsError } = await supabase
                 .rpc('get_user_learning_stats', { p_user_id: userId });
 
             if (!statsError && statsData) {
                 stats = statsData;
-                console.log('✅ Stats fetched using SQL function');
 
                 // También obtener recomendaciones
                 const { data: recsData, error: recsError } = await supabase
@@ -45,16 +40,13 @@ export async function GET() {
 
                 if (!recsError && recsData) {
                     recommendations = recsData;
-                    console.log('✅ Recommendations fetched using SQL function');
                 }
             }
         } catch (error) {
-            console.log('⚠️ SQL functions not available, falling back to direct queries', error);
         }
 
         // Fallback: usar consultas directas si las funciones no están disponibles
         if (!stats || !recommendations) {
-            console.log('📊 Using direct queries fallback...');
 
             const { data: userPrefs, error: prefsError } = await supabase
                 .from('user_model_preferences')
@@ -68,9 +60,6 @@ export async function GET() {
                     details: prefsError.message
                 }, { status: 500 });
             }
-
-            console.log('✅ User preferences fetched:', userPrefs?.length || 0);
-
             // Calcular estadísticas manualmente
             stats = userPrefs && userPrefs.length > 0 ? {
                 total_models_used: userPrefs.length,
@@ -117,9 +106,6 @@ export async function GET() {
                     .slice(0, 5)
                 : [];
         }
-
-        console.log('✅ Recommendations calculated:', recommendations?.length || 0);
-
         // Obtener feedback reciente
         const { data: recentFeedback, error: feedbackError } = await supabase
             .from('user_model_feedback')
@@ -153,7 +139,6 @@ export async function GET() {
             usageTrends: usageTrends || []
         };
 
-        console.log('✅ Returning learning stats result');
         return NextResponse.json(result);
 
     } catch (error) {

@@ -89,13 +89,11 @@ export class ApiMiddleware {
         try {
             // 🧪 DEMO MODE INFO (non-blocking, just for logging)
             if (DemoLimitManager.isDemoMode()) {
-                console.log('🧪 Demo mode active - provider limits configured for cost protection');
 
                 // Log cost optimization suggestions
                 if (modelName && messageContent) {
                     const suggestions = DemoLimitManager.getCostOptimizationSuggestions(modelName, messageContent.length);
                     if (suggestions.length > 0) {
-                        console.log('💡 Cost optimization suggestions:', suggestions);
                     }
                 }
             }
@@ -138,15 +136,12 @@ export class ApiMiddleware {
 
             // 🧪 DEMO MODE INFO (informative only)
             if (DemoLimitManager.isDemoMode()) {
-                console.log(`🧪 Demo request from user ${userId} - provider limits protect against excessive costs`);
             }
 
             // VERIFICAR LÍMITE DIARIO PERSONALIZADO
             const dailyLimitCheck = await this.checkDailyLimit(userId);
-            console.log(`🚦 Daily limit check for ${userId}:`, dailyLimitCheck);
 
             if (!dailyLimitCheck.allowed) {
-                console.log(`❌ Daily limit exceeded for ${userId}: ${dailyLimitCheck.current}/${dailyLimitCheck.limit}`);
 
                 // Crear notificación de límite diario alcanzado
                 this.createDailyLimitNotification(userId, dailyLimitCheck.current, dailyLimitCheck.limit!);
@@ -282,16 +277,9 @@ export class ApiMiddleware {
                 // Get user email
                 const user = await currentUser();
                 const userEmail = user?.emailAddresses?.[0]?.emailAddress || 'unknown';
-
-                console.log(`🔍 Checking notifications for user: ${userEmail} (${userId})`);
-
                 // Check and create notifications based on actual usage
                 await NotificationService.checkAndCreateUsageNotifications(userId, userEmail);
-
-                console.log(`✅ Notification check completed for ${userEmail}`);
-
             } catch (error) {
-                console.log('⚠️ Error checking notifications:', error);
             }
         }, 100); // Small delay to not block the main response
     }
@@ -313,7 +301,6 @@ export class ApiMiddleware {
                     }
                 });
             } catch (error) {
-                console.log('⚠️ Error creating daily limit notification:', error);
             }
         }, 50);
     }

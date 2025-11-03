@@ -383,7 +383,6 @@ export class PlanLimitsService {
         }
 
         // Calcular uso real desde usage_records (como hace analytics)
-        console.log('🔍 Calculating real usage for user:', clerkUserId);
 
         // Obtener el ID de base de datos del usuario
         const { data: dbUser } = await supabase
@@ -427,9 +426,6 @@ export class PlanLimitsService {
             ]);
             currentUsage = allUsageClerk.data?.length || allUsageDb.data?.length || 0;
         }
-
-        console.log('📊 Real usage calculated:', currentUsage, 'requests');
-
         const limit = planLimits.monthly_request_limit
         const percentage = (currentUsage / limit) * 100
         const allowed = currentUsage < limit

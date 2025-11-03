@@ -6,7 +6,6 @@ export async function POST(req: NextRequest) {
     const { to, subject, message } = await req.json();
 
     if (!process.env.RESEND_API_KEY) {
-      console.log('⚠️ RESEND_API_KEY not configured, skipping email');
       return NextResponse.json({
         success: false,
         message: 'Email service not configured',
@@ -16,9 +15,6 @@ export async function POST(req: NextRequest) {
 
     // Initialize Resend only when API key is available
     const resend = new Resend(process.env.RESEND_API_KEY);
-
-    console.log(`📧 Sending email to ${to}: ${subject}`);
-
     // Para desarrollo, usar el dominio por defecto de Resend
     const fromEmail = process.env.NODE_ENV === 'production'
       ? 'Roulyx <notifications@roulyx.com>'
@@ -28,11 +24,7 @@ export async function POST(req: NextRequest) {
     const targetEmail = process.env.NODE_ENV === 'production'
       ? to
       : 'agentroutermcp@gmail.com'; // Tu email registrado en Resend
-
-    console.log(`📤 Sending from: ${fromEmail} to: ${targetEmail}`);
-
     if (process.env.NODE_ENV !== 'production' && to !== 'agentroutermcp@gmail.com') {
-      console.log(`🔄 Development mode: Redirecting email from ${to} to ${targetEmail}`);
     }
 
     const { data, error } = await resend.emails.send({
@@ -76,7 +68,6 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: false, error: error.message });
     }
 
-    console.log('✅ Email sent successfully:', data?.id);
     return NextResponse.json({ success: true, messageId: data?.id });
 
   } catch (error) {

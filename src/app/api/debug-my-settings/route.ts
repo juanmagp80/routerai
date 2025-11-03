@@ -10,11 +10,7 @@ export async function GET() {
             const authResult = await auth();
             userId = authResult.userId;
         } catch (authError) {
-            console.log('Auth error:', authError);
         }
-
-        console.log('🔍 Auth result - userId:', userId);
-
         // Show all user_settings for debugging
         const { data: allSettings, error: allError } = await supabase
             .from('user_settings')

@@ -3,7 +3,6 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(req: NextRequest) {
   try {
-    console.log('📊 Starting weekly reports generation...');
 
     // Get all users with weekly reports enabled
     const { data: usersWithReports, error: usersError } = await supabase
@@ -22,12 +21,8 @@ export async function POST(req: NextRequest) {
     }
 
     if (!usersWithReports || usersWithReports.length === 0) {
-      console.log('📊 No users have weekly reports enabled');
       return NextResponse.json({ message: 'No users with weekly reports enabled', count: 0 });
     }
-
-    console.log(`📊 Found ${usersWithReports.length} users with weekly reports enabled`);
-
     const results = [];
 
     for (const userSetting of usersWithReports) {
@@ -105,9 +100,6 @@ export async function POST(req: NextRequest) {
           stats: weeklyStats,
           emailSent: emailResult.success
         });
-
-        console.log(`📧 Weekly report sent to ${user.email}:`, weeklyStats);
-
       } catch (error) {
         console.error(`❌ Error generating report for user ${userSetting.user_id}:`, error);
         results.push({
@@ -116,9 +108,6 @@ export async function POST(req: NextRequest) {
         });
       }
     }
-
-    console.log(`✅ Weekly reports generation completed. Processed ${results.length} users`);
-
     return NextResponse.json({
       message: 'Weekly reports generated',
       totalUsers: usersWithReports.length,

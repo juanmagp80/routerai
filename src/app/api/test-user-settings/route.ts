@@ -3,7 +3,6 @@ import { NextResponse } from 'next/server';
 
 export async function GET() {
     try {
-        console.log('Testing user_settings table...');
 
         // Test 1: Verificar si la tabla existe
         const { error: tablesError } = await supabase

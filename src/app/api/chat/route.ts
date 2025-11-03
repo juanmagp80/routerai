@@ -66,16 +66,12 @@ export async function POST(request: NextRequest) {
           routingStrategy: body.routingStrategy || 'auto' // Soporte para routing strategy
         };
 
-        console.log('🚀 Processing AI request:', {
           model: aiRequest.model,
           routingStrategy: aiRequest.routingStrategy,
           userId: userId,
           useAutoRouting: useAutoRouting,
           messageLength: aiRequest.message.length
         });
-
-        console.log('🔍 User ID being sent to AI Router:', userId);
-
         // Get AI router and route the request
         const aiRouter = getAIRouter();
         const response = await aiRouter.generateResponse(aiRequest);

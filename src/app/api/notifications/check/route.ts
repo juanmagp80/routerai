@@ -7,7 +7,6 @@ export async function POST(req: NextRequest) {
     const { userId } = await auth();
 
     if (!userId) {
-      console.log('❌ Unauthorized request to check notifications');
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
@@ -17,9 +16,6 @@ export async function POST(req: NextRequest) {
     // Get user email from Clerk
     const user = await currentUser();
     const userEmail = user?.emailAddresses?.[0]?.emailAddress || 'unknown';
-
-    console.log(`🔍 Checking notifications for user: ${userEmail} (${userId})`);
-
     // Check and create notifications based on actual usage
     await NotificationService.checkAndCreateUsageNotifications(userId, userEmail);
 

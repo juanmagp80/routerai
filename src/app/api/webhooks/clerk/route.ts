@@ -114,7 +114,6 @@ export async function POST(req: NextRequest) {
                     if (error) {
                         console.error('Error creating/upserting user in database:', error);
                     } else {
-                        console.log(`User created/upserted: ${email} with role: ${role} and api_key_limit: ${apiKeyLimit}`);
                     }
                 }
             }

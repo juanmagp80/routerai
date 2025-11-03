@@ -319,9 +319,6 @@ export class CostAlertService {
         // - Slack webhook
         // - Discord webhook
         // - SMS
-
-        console.log(`🚨 ALERTA ${alert.severity.toUpperCase()}: ${alert.message}`);
-
         // TODO: Implementar envío real de notificaciones
         // await sendEmailAlert(alert);
         // await sendSlackAlert(alert);

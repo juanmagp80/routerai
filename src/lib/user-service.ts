@@ -80,7 +80,6 @@ export class UserService {
       if (error) {
         // Si es error de duplicado, no es un error real
         if (error.code === '23505') {
-          console.log('Usuario ya existe, esto es normal')
           return null
         }
         console.error('Error creating user:', error)

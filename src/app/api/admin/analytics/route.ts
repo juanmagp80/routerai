@@ -27,7 +27,6 @@ export async function GET(request: Request) {
 
 async function getUserAnalytics(clerkUserId: string) {
     try {
-        console.log('🔍 Getting analytics for Clerk User ID:', clerkUserId);
 
         // Obtener datos del usuario
         const { data: userData, error: userError } = await supabase
@@ -43,23 +42,14 @@ async function getUserAnalytics(clerkUserId: string) {
                 { status: 404 }
             );
         }
-
-        console.log('✅ Found user:', userData.email, 'Plan:', userData.plan);
-
         // Obtener límites del plan
         const { data: planLimits } = await supabase
             .from('plan_limits')
             .select('*')
             .eq('plan_name', userData.plan)
             .single();
-
-        console.log('📋 Plan limits:', planLimits);
-
         // Calcular fecha de inicio del mes actual
         const startOfMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString();
-        console.log('📅 Searching from:', startOfMonth);
-        console.log('🔍 Searching with Clerk ID:', clerkUserId);
-        console.log('🔍 Searching with Database ID:', userData.id);
 
         // Buscar usage_records con ambos IDs posibles (Clerk ID y Database ID)
         const [usageWithClerkId, usageWithDbId] = await Promise.all([
@@ -74,16 +64,11 @@ async function getUserAnalytics(clerkUserId: string) {
                 .eq('user_id', userData.id)
                 .gte('created_at', startOfMonth)
         ]);
-
-        console.log('📊 Usage with Clerk ID:', usageWithClerkId.data?.length || 0, 'records');
-        console.log('📊 Usage with Database ID:', usageWithDbId.data?.length || 0, 'records');
-
         // Usar los datos que contengan registros, si no hay del mes actual, usar todos los registros
         let finalUsageData = usageWithClerkId.data?.length ? usageWithClerkId.data : usageWithDbId.data;
 
         // Si no encontramos datos del mes actual, buscar TODOS los registros del usuario
         if (!finalUsageData?.length) {
-            console.log('⚠️ No data for current month, searching ALL records...');
             const [allUsageClerk, allUsageDb] = await Promise.all([
                 supabase
                     .from('usage_records')
@@ -98,15 +83,10 @@ async function getUserAnalytics(clerkUserId: string) {
             ]);
 
             finalUsageData = allUsageClerk.data?.length ? allUsageClerk.data : allUsageDb.data;
-            console.log('📊 Using historical records:', finalUsageData?.length || 0);
 
             if (finalUsageData?.length) {
-                console.log('📅 Date range of records:');
-                console.log('   Oldest:', finalUsageData[finalUsageData.length - 1]?.created_at);
-                console.log('   Newest:', finalUsageData[0]?.created_at);
             }
         } else {
-            console.log('✅ Using current month data:', finalUsageData.length, 'records');
         }
 
         // Obtener API keys del usuario
@@ -115,9 +95,6 @@ async function getUserAnalytics(clerkUserId: string) {
             .select('*', { count: 'exact' })
             .eq('user_id', userData.id)
             .eq('is_active', true);
-
-        console.log('🔑 Found API keys:', apiKeysCount || 0);
-
         const totalRequests = finalUsageData?.length || 0;
         const totalApiKeys = apiKeysCount || 0;
 
@@ -126,9 +103,6 @@ async function getUserAnalytics(clerkUserId: string) {
             const cost = parseFloat(record.cost?.toString() || '0') || 0;
             return sum + cost;
         }, 0) || 0;
-
-        console.log('💰 Total cost calculated:', totalCost);
-
         // Top modelos del usuario
         const modelRequestsMap = new Map();
         finalUsageData?.forEach((record: any) => {
@@ -182,7 +156,6 @@ async function getUserAnalytics(clerkUserId: string) {
             } : null
         };
 
-        console.log('📈 Analytics result:', {
             totalRequests: userAnalytics.totalRequests,
             totalCost: userAnalytics.totalCost,
             totalApiKeys: userAnalytics.totalApiKeys,

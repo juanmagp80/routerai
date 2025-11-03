@@ -15,9 +15,6 @@ export async function GET() {
 
     const user = await currentUser();
     const userEmail = user?.emailAddresses?.[0]?.emailAddress || 'unknown';
-
-    console.log(`📊 Getting account info for user: ${userEmail} (${userId})`);
-
     // Obtener información del usuario y su plan
     const { data: userData, error: userError } = await supabase
       .from('users')
@@ -68,9 +65,6 @@ export async function GET() {
       apiKeys: apiKeys?.length || 0,
       memberSince: userData.created_at
     };
-
-    console.log('📊 Account info result:', accountInfo);
-
     return NextResponse.json(accountInfo);
 
   } catch (error) {

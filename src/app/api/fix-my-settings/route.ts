@@ -4,9 +4,6 @@ import { NextResponse } from 'next/server';
 export async function POST() {
     try {
         const userId = "user_33t2Znh2CEyo72pUNBXLCPOiIvK"; // Tu user ID real
-
-        console.log('🔧 Fixing settings for user:', userId);
-
         // Get current settings
         const { data: currentSettings } = await supabase
             .from('user_settings')
@@ -41,10 +38,6 @@ export async function POST() {
             ...settings,
             preferredProviders
         };
-
-        console.log('Original providers:', settings.preferredProviders);
-        console.log('Fixed providers:', fixedSettings.preferredProviders);
-
         // Update the settings
         const { error } = await supabase
             .from('user_settings')

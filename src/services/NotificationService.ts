@@ -26,7 +26,6 @@ export class NotificationService {
         .single();
 
       if (existing) {
-        console.log(`📢 Notification of type ${data.type} already exists for user ${data.userId}`);
         return false;
       }
 
@@ -48,7 +47,6 @@ export class NotificationService {
         return false;
       }
 
-      console.log(`✅ Created notification: ${data.title} for user ${data.userId}`);
       return true;
     } catch (error) {
       console.error('❌ Error in createNotification:', error);
@@ -69,7 +67,6 @@ export class NotificationService {
         .single();
 
       if (!user) {
-        console.log(`⚠️ User ${userId} not found in database`);
         return;
       }
 
@@ -81,7 +78,6 @@ export class NotificationService {
         .single();
 
       if (!planLimits) {
-        console.log(`⚠️ Plan limits not found for plan: ${user.plan}`);
         return;
       }
 
@@ -101,9 +97,6 @@ export class NotificationService {
 
       // Calculate usage percentage
       const usagePercentage = (totalRequests / monthlyLimit) * 100;
-
-      console.log(`📊 Usage check for ${userEmail}: ${totalRequests}/${monthlyLimit} requests (${usagePercentage.toFixed(1)}%)`);
-
       // Obtener configuraciones de notificaciones del usuario
       const { data: userSettings } = await supabase
         .from('user_settings')
@@ -116,7 +109,6 @@ export class NotificationService {
       const emailNotifications = settings.emailNotifications !== false; // Default true
       const customThreshold = settings.usageAlertThreshold || 80; // Default 80%
 
-      console.log(`🔔 Notification settings for ${userEmail}:`, {
         usageAlerts,
         emailNotifications,
         customThreshold,
@@ -125,7 +117,6 @@ export class NotificationService {
 
       // Solo generar notificaciones si el usuario las tiene habilitadas
       if (!usageAlerts) {
-        console.log(`🔕 Usage alerts disabled for ${userEmail}`);
         return;
       }
 
@@ -217,7 +208,6 @@ export class NotificationService {
       if (error) {
         console.error('❌ Error cleaning up old notifications:', error);
       } else {
-        console.log(`🧹 Cleaned up notifications older than ${olderThanDays} days`);
       }
     } catch (error) {
       console.error('❌ Error in cleanupOldNotifications:', error);
@@ -244,12 +234,9 @@ export class NotificationService {
         });
 
         if (response.ok) {
-          console.log(`📧 Email sent to ${email}: ${subject}`);
         } else {
-          console.log(`❌ Failed to send email to ${email}:`, response.status);
         }
       } catch (error) {
-        console.log('❌ Error sending email notification:', error);
       }
     }, 100);
   }

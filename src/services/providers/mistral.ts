@@ -70,14 +70,12 @@ export class MistralProvider {
     async isHealthy(): Promise<boolean> {
         try {
             if (!process.env.MISTRAL_API_KEY) {
-                console.log('❌ Mistral: No API key configured');
                 return false;
             }
 
             // Simple health check - just verify API key format
             const apiKey = process.env.MISTRAL_API_KEY;
             if (apiKey && apiKey.length > 10) {
-                console.log('✅ Mistral: API key found, assuming healthy');
                 return true;
             }
 

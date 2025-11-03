@@ -82,10 +82,8 @@ export class GrokProvider {
   async isHealthy(): Promise<boolean> {
     try {
       if (!process.env.GROK_API_KEY) {
-        console.log('❌ Grok: No API key configured');
         return false;
       }
-      console.log('✅ Grok: API key found, assuming healthy');
       return true;
     } catch (error) {
       console.error('❌ Grok health check error:', error);

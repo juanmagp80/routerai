@@ -52,7 +52,6 @@ export default function SettingsPage() {
   const handleSave = async () => {
     setLoading(true);
     try {
-      console.log('Saving settings:', settings);
 
       const response = await fetch('/api/user/settings', {
         method: 'POST',
@@ -69,7 +68,6 @@ export default function SettingsPage() {
       }
 
       const result = await response.json();
-      console.log('Settings saved successfully:', result);
 
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);
@@ -248,8 +246,6 @@ export default function SettingsPage() {
               />
             </div>
 
-
-
             {settings.usageAlerts && (
               <div>
                 <Label htmlFor="threshold">Umbral de Alerta (%)</Label>
@@ -401,12 +397,10 @@ function AccountInfoSection() {
   useEffect(() => {
     const loadAccountInfo = async () => {
       try {
-        console.log('🔍 Loading account info...');
         const response = await fetch('/api/user/account-info');
 
         if (response.ok) {
           const data = await response.json();
-          console.log('✅ Account info loaded:', data);
 
           setAccountInfo({
             plan: data.plan || 'free',

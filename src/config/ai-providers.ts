@@ -153,8 +153,6 @@ export const MODEL_CONFIGS: ModelConfig[] = [
     priority: 5,
     available: !!process.env.OPENAI_API_KEY
   },
-
-
   // Anthropic Models
   {
     name: 'claude-3-haiku',
@@ -246,8 +244,6 @@ export const MODEL_CONFIGS: ModelConfig[] = [
     priority: 3,
     available: !!process.env.GEMINI_API_KEY
   },
-
-
   // Meta Llama Models
   {
     name: 'llama-3.1-8b',

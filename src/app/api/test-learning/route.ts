@@ -9,9 +9,6 @@ export async function GET() {
         if (!userId) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
-
-        console.log('🧪 Testing learning system for user:', userId);
-
         // Test 1: Verificar que las tablas existen intentando acceder a ellas
         const tablesExist = {
             preferences: false,
@@ -32,9 +29,6 @@ export async function GET() {
                 .limit(1);
 
             tablesExist.feedback = !feedbackTableError;
-
-            console.log('🔍 Tables verification:', { tablesExist, prefsTableError, feedbackTableError });
-
         } catch (error) {
             console.error('❌ Error checking tables:', error);
             return NextResponse.json({
@@ -56,7 +50,6 @@ export async function GET() {
 
         // Test 3: Intentar crear datos de prueba si no existen
         if (!userPrefs || userPrefs.length === 0) {
-            console.log('🔧 No data found, creating test data...');
 
             const { error: insertError } = await supabase
                 .from('user_model_preferences')
@@ -79,7 +72,6 @@ export async function GET() {
             if (insertError) {
                 console.error('❌ Error inserting test data:', insertError);
             } else {
-                console.log('✅ Test data created successfully');
             }
         }
 
@@ -97,7 +89,6 @@ export async function GET() {
             testPassed: tablesExist.preferences && tablesExist.feedback && !finalError
         };
 
-        console.log('✅ Test completed:', result);
         return NextResponse.json(result);
 
     } catch (error) {

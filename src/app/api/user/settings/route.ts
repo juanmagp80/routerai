@@ -51,9 +51,7 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
         }
 
-        console.log('💾 Saving settings for user:', userId);
         const settings = await request.json()
-        console.log('💾 Raw settings received:', settings);
 
         // Validar que los datos sean correctos
         const validatedSettings = {
@@ -66,9 +64,6 @@ export async function POST(request: NextRequest) {
             costProtection: settings.costProtection !== undefined ? Boolean(settings.costProtection) : true,
             autoModelRotation: Boolean(settings.autoModelRotation),
         }
-
-        console.log('💾 Validated settings:', validatedSettings);
-
         // Usar upsert para crear o actualizar
         const { error } = await supabase
             .from('user_settings')

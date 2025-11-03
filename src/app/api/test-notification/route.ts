@@ -4,13 +4,10 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(req: NextRequest) {
   try {
-    console.log('🚀 Starting test notification process...');
 
     const { userId } = await auth();
-    console.log('👤 Auth result:', { userId });
 
     if (!userId) {
-      console.log('❌ No user ID found');
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
@@ -19,9 +16,6 @@ export async function POST(req: NextRequest) {
 
     const user = await currentUser();
     const userEmail = user?.emailAddresses?.[0]?.emailAddress || 'unknown';
-
-    console.log(`🧪 Creating test notification for user: ${userEmail} (${userId})`);
-
     // Crear una notificación de prueba directamente en la base de datos para evitar la verificación de duplicados
     const supabase = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -42,17 +36,11 @@ export async function POST(req: NextRequest) {
       read: false, // Usar 'read' en lugar de 'is_read'
       created_at: new Date().toISOString()
     };
-
-    console.log('📝 Inserting notification data:', testNotificationData);
-
     const { data: notificationData, error: notificationError } = await supabase
       .from('notifications')
       .insert(testNotificationData)
       .select()
       .single();
-
-    console.log('📊 Supabase response:', { data: notificationData, error: notificationError });
-
     if (notificationError) {
       console.error('❌ Error creating test notification:', notificationError);
       return NextResponse.json({
@@ -66,7 +54,6 @@ export async function POST(req: NextRequest) {
     const created = !!notificationData;
 
     if (created) {
-      console.log(`✅ Test notification created for ${userEmail}:`, notificationData.id);
 
       // También enviar email directamente para probar
       try {
@@ -130,7 +117,6 @@ export async function POST(req: NextRequest) {
       }
 
     } else {
-      console.log('❌ Notification was not created - no data returned');
       return NextResponse.json({
         success: false,
         message: 'No se pudo crear la notificación de prueba',

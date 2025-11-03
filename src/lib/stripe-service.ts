@@ -187,7 +187,6 @@ export class StripeService {
                 return false
             }
 
-            console.log(`✅ User ${userId} upgraded to ${planName} plan`)
             return true
         } catch (error) {
             console.error('Error in updateUserPlan:', error)
@@ -212,7 +211,6 @@ export class StripeService {
                     return await this.handlePaymentFailed(event.data.object as Stripe.Invoice)
 
                 default:
-                    console.log(`Unhandled webhook event type: ${event.type}`)
                     return true
             }
         } catch (error) {
@@ -289,7 +287,6 @@ export class StripeService {
     private static async handlePaymentFailed(invoice: Stripe.Invoice): Promise<boolean> {
         try {
             // Aquí podrías enviar una notificación al usuario sobre el fallo de pago
-            console.log(`Payment failed for invoice ${invoice.id}`)
             return true
         } catch (error) {
             console.error('Error in handlePaymentFailed:', error)
@@ -322,7 +319,6 @@ export class StripeService {
                 return false
             }
 
-            console.log(`⬇️ User ${userId} downgraded to free plan`)
             return true
         } catch (error) {
             console.error('Error in downgradeToFree:', error)

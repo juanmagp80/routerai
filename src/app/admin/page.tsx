@@ -176,7 +176,6 @@ export default function AdminDashboard() {
   }
 
   const handleViewDetails = (section: string) => {
-    console.log(`View details for ${section}`);
   };
 
   const handleViewAnalytics = (type?: string) => {
@@ -510,8 +509,6 @@ export default function AdminDashboard() {
           </div>
         </DialogContent>
       </Dialog>
-
-
     </div>
   );
 }

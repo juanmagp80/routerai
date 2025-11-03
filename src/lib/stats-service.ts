@@ -26,7 +26,6 @@ export class StatsService {
     // Obtener estadísticas del dashboard específicas del usuario
     static async getDashboardStats(company?: string, clerkUserId?: string): Promise<DashboardStats> {
         try {
-            console.log('🔍 Getting dashboard stats for Clerk User ID:', clerkUserId);
 
             // Obtener número total de llamadas API del último mes
             const thirtyDaysAgo = new Date();
@@ -57,7 +56,6 @@ export class StatsService {
                 ]);
 
                 usageRecords = clerkIdUsage.data?.length ? clerkIdUsage.data : (dbIdUsage.data || []);
-                console.log('📊 Found usage records for user:', usageRecords.length);
             } else {
                 // Si no hay userId específico, obtener todos los registros
                 const { data } = await supabase.from('usage_records')
@@ -65,10 +63,6 @@ export class StatsService {
                     .gte('created_at', thirtyDaysAgo.toISOString());
                 usageRecords = data || [];
             }
-
-
-
-
             // Para estadísticas específicas del usuario, calculamos API keys activas
             let activeUserCount = 0;
             const debugList: Array<{ id: string; email?: string | null; name?: string | null; source?: string }> = [];
@@ -89,7 +83,6 @@ export class StatsService {
                         .eq('is_active', true);
 
                     activeUserCount = userApiKeys?.length || 0;
-                    console.log('🔑 User API keys count:', activeUserCount);
 
                     // Agregar el usuario actual a la lista de debug
                     debugList.push({
@@ -131,9 +124,6 @@ export class StatsService {
             const activeKeysQuery = supabase.from('api_keys').select('id').eq('is_active', true);
             if (company) activeKeysQuery.eq('company', company as string);
             const { data: activeKeys } = await activeKeysQuery;
-
-            console.log(`Active API keys: ${activeKeys?.length || 0}`);
-
             // Calcular estadísticas
             const totalCalls = usageRecords?.length || 0;
 
@@ -186,7 +176,6 @@ export class StatsService {
 
                     if (planData && planData.allowed_models) {
                         modelsAvailable = planData.allowed_models.length;
-                        console.log('🤖 Models available for plan', userData.plan, ':', modelsAvailable);
                     }
                 }
             }
@@ -204,7 +193,6 @@ export class StatsService {
 
             // Adjuntar debug info si se solicita vía variable de entorno
             if (process.env.NEXT_PUBLIC_STATS_DEBUG === 'true') {
-                console.log('🐛 Debug mode enabled, adding debug_active_users:', debugList.length, 'users');
                 (baseResult as DashboardStats & { debug_active_users?: typeof debugList }).debug_active_users = debugList;
             }
 

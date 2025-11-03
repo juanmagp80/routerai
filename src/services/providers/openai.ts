@@ -89,10 +89,8 @@ export class OpenAIProvider {
   async isHealthy(): Promise<boolean> {
     try {
       if (!process.env.OPENAI_API_KEY) {
-        console.log('❌ OpenAI: No API key configured');
         return false;
       }
-      console.log('✅ OpenAI: API key found, assuming healthy');
       return true;
     } catch (error) {
       console.error('❌ OpenAI health check error:', error);

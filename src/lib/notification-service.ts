@@ -227,7 +227,6 @@ export class NotificationService {
             }
 
             // Log para seguimiento
-            console.log(`📧 Notification sent to user ${notification.userId}: ${notification.title}`)
             return true
         } catch (err) {
             console.error('Error in sendNotification:', err)
@@ -370,7 +369,6 @@ export class NotificationService {
     // Ejecutar verificación de alertas para todos los usuarios (cron job)
     static async runGlobalAlertCheck(): Promise<void> {
         try {
-            console.log('🔄 Running global alert check...')
 
             // Obtener usuarios activos
             const { data: users, error } = await supabase
@@ -384,9 +382,6 @@ export class NotificationService {
             }
 
             if (!users) return
-
-            console.log(`📊 Checking alerts for ${users.length} active users`)
-
             // Verificar alertas para cada usuario
             for (const user of users) {
                 await this.checkAndSendAlerts(user.id)
@@ -394,7 +389,6 @@ export class NotificationService {
                 await new Promise(resolve => setTimeout(resolve, 100))
             }
 
-            console.log('✅ Global alert check completed')
         } catch (err) {
             console.error('Error in runGlobalAlertCheck:', err)
         }
@@ -416,7 +410,6 @@ export class NotificationService {
                 return
             }
 
-            console.log('🧹 Old notifications cleaned up successfully')
         } catch (err) {
             console.error('Error in cleanupOldNotifications:', err)
         }

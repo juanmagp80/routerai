@@ -667,7 +667,6 @@ const DashboardSection = () => {
       console.error('Error fetching metrics:', err);
 
       // Usar datos mock como fallback para la demo
-      console.log('Using fallback mock data for demo...');
       setSummary({
         total_cost: 1.588,
         total_requests: 224,

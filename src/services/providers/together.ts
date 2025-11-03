@@ -13,7 +13,6 @@ export class TogetherProvider {
         const startTime = Date.now();
 
         try {
-            console.log('🔧 Together: Starting request with model:', request.model);
 
             // Map model names to Together API format
             const modelMap: Record<string, string> = {
@@ -25,8 +24,6 @@ export class TogetherProvider {
             };
 
             const togetherModel = modelMap[request.model || 'llama-3.1-8b'] || 'meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo';
-            console.log('🔧 Together: Using model:', togetherModel);
-            console.log('🔧 Together: API key present:', !!process.env.TOGETHER_API_KEY);
 
             const payload = {
                 model: togetherModel,
@@ -38,9 +35,6 @@ export class TogetherProvider {
                 temperature: request.temperature || 0.7,
                 stream: false
             };
-
-            console.log('🔧 Together: Payload:', JSON.stringify(payload, null, 2));
-
             const response = await fetch(`${this.baseUrl}/chat/completions`, {
                 method: 'POST',
                 headers: {
@@ -50,10 +44,6 @@ export class TogetherProvider {
                 body: JSON.stringify(payload),
                 signal: AbortSignal.timeout(60000) // 60 second timeout
             });
-
-            console.log('🔧 Together: Response status:', response.status);
-            console.log('🔧 Together: Response headers:', Object.fromEntries(response.headers.entries()));
-
             if (!response.ok) {
                 const errorText = await response.text();
                 throw new Error(`Together API error: ${response.status} ${errorText}`);
@@ -93,14 +83,12 @@ export class TogetherProvider {
     async isHealthy(): Promise<boolean> {
         try {
             if (!process.env.TOGETHER_API_KEY) {
-                console.log('❌ Together: No API key configured');
                 return false;
             }
 
             // Simple health check - just verify API key format
             const apiKey = process.env.TOGETHER_API_KEY;
             if (apiKey && apiKey.length > 10) {
-                console.log('✅ Together: API key found, assuming healthy');
                 return true;
             }
 

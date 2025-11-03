@@ -82,9 +82,6 @@ export default function ApiKeysPage() {
       // Cargar límites y uso del usuario
       const limitsAndUsage = await PlanLimitsService.getUserLimitsAndUsage(userId);
       setUserLimits(limitsAndUsage);
-
-      console.log('✅ Data reloaded - API Keys:', userApiKeys.length, 'Limits:', limitsAndUsage?.usage?.apiKeys?.current);
-
     } catch (err) {
       console.error('Error loading data:', err);
       setError(err instanceof Error ? err.message : 'Error desconocido');
@@ -189,7 +186,6 @@ export default function ApiKeysPage() {
     try {
       const success = await ApiKeyService.deleteApiKey(keyToDelete.id, userId!);
       if (success) {
-        console.log('🗑️ API Key deleted, reloading data...');
 
         // Recargar todos los datos para actualizar contadores y botones
         await reloadData();
@@ -362,8 +358,6 @@ export default function ApiKeysPage() {
         </Card>
       )}
 
-
-
       {/* Alerta de sincronización cuando los límites son 0/0 */}
       {(userLimits?.usage.apiKeys.limit || 0) === 0 && (
         <Card className="border-blue-200 bg-blue-50">
@@ -404,8 +398,6 @@ export default function ApiKeysPage() {
           </CardContent>
         </Card>
       )}
-
-
 
       {/* API Keys Management */}
       <Card>

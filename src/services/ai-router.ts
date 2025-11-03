@@ -18,62 +18,45 @@ export class AIRouterService {
 
   constructor() {
     // Initialize available providers
-    console.log('🔧 Initializing AI Router with providers:');
 
     if (process.env.OPENAI_API_KEY) {
       this.providers.set('openai', new OpenAIProvider());
-      console.log('✅ OpenAI provider initialized');
     } else {
-      console.log('❌ OpenAI API key not found');
     }
 
     if (process.env.ANTHROPIC_API_KEY) {
       this.providers.set('anthropic', new AnthropicProvider());
-      console.log('✅ Anthropic provider initialized');
     } else {
-      console.log('❌ Anthropic API key not found');
     }
 
     if (process.env.GEMINI_API_KEY) {
       this.providers.set('google', new GoogleProvider());
-      console.log('✅ Google provider initialized');
     } else {
-      console.log('❌ Google API key not found');
     }
 
     if (process.env.GROK_API_KEY) {
       this.providers.set('grok', new GrokProvider());
-      console.log('✅ Grok provider initialized');
     } else {
-      console.log('❌ Grok API key not found');
     }
 
     if (process.env.TOGETHER_API_KEY) {
       this.providers.set('meta', new TogetherProvider());
-      console.log('✅ Together provider initialized');
     } else {
-      console.log('❌ Together API key not found');
     }
 
     if (process.env.MISTRAL_API_KEY) {
       this.providers.set('mistral', new MistralProvider());
-      console.log('✅ Mistral provider initialized');
     } else {
-      console.log('❌ Mistral API key not found');
     }
 
-    console.log(`🎯 Total providers initialized: ${this.providers.size}`);
   }
 
   private async ensureInitialized() {
     if (this.initialized) return;
 
-    console.log('🏥 Running initial health check...');
     try {
       await this.getProviderHealth();
       this.initialized = true;
-      console.log('✅ Initial health check completed');
-      console.log('🚫 Failed providers after health check:', Array.from(this.failedProviders));
     } catch (error) {
       console.error('❌ Initial health check failed:', error);
     }
@@ -87,8 +70,6 @@ export class AIRouterService {
     await this.ensureInitialized();
 
     try {
-      console.log('🤖 AI Router: Starting request processing');
-      console.log('🚫 Failed providers:', Array.from(this.failedProviders));
 
       // Get the best model for this request
       selectedModel = await this.selectBestModel(request);
@@ -97,9 +78,6 @@ export class AIRouterService {
         console.error('❌ No available models for this request');
         throw new Error('No available models for this request');
       }
-
-      console.log('✅ Selected model:', selectedModel.name, 'from provider:', selectedModel.provider);
-
       // Get the provider for this model
       const provider = this.providers.get(selectedModel.provider);
       if (!provider) {
@@ -158,12 +136,6 @@ export class AIRouterService {
     let availableModels = allModels.filter(model =>
       !this.failedProviders.has(model.provider) && this.providers.has(model.provider)
     );
-
-    console.log('🔍 Total models:', allModels.length);
-    console.log('🔍 Failed providers:', Array.from(this.failedProviders));
-    console.log('🔍 Available providers:', Array.from(this.providers.keys()));
-    console.log('🔍 Filtered available models:', availableModels.map(m => `${m.name} (${m.provider})`));
-
     // Apply user preferences if userId is provided
     if (request.userId) {
       try {
@@ -185,14 +157,10 @@ export class AIRouterService {
 
           if (providerFilteredModels.length > 0) {
             availableModels = providerFilteredModels;
-            console.log('🎯 Filtered by preferred providers:', preferredProviders);
-            console.log('🎯 Models after provider filter:', availableModels.map(m => `${m.name} (${m.provider})`));
           } else {
-            console.log('⚠️ No models available from preferred providers, using all available models');
           }
         }
       } catch (error) {
-        console.log('⚠️ Could not load user preferences:', error);
       }
     }
 
@@ -207,11 +175,6 @@ export class AIRouterService {
           const planFilteredModels = availableModels.filter(model =>
             allowedModels.includes(model.name)
           );
-
-          console.log('🔒 User plan:', userLimitsAndUsage.user.plan);
-          console.log('🔒 Allowed models for plan:', allowedModels);
-          console.log('🔒 Plan-filtered available models:', planFilteredModels.map(m => `${m.name} (${m.provider})`));
-
           availableModels = planFilteredModels;
         }
       } catch (error) {
@@ -229,18 +192,14 @@ export class AIRouterService {
     if (request.model) {
       const requestedModel = getModelConfig(request.model);
       if (requestedModel && requestedModel.available && !this.failedProviders.has(requestedModel.provider)) {
-        console.log('✅ Using requested model:', requestedModel.name);
         return requestedModel;
       } else {
-        console.log('⚠️ Requested model unavailable, selecting alternative');
       }
     }
 
     // Si no hay modelo específico, primero intentar usar las preferencias del usuario
     if (!request.model && request.userId) {
       try {
-        console.log('🔍 Loading user preferences for model selection...');
-        console.log('🔍 User ID:', request.userId);
 
         const { data: settingsData, error: settingsError } = await supabase
           .from('user_settings')
@@ -249,34 +208,21 @@ export class AIRouterService {
           .single();
 
         if (settingsError) {
-          console.log('⚠️ Error loading user settings:', settingsError);
         }
-
-        console.log('📋 Raw settings data:', settingsData);
-
         const userSettings = settingsData?.settings || {};
         const defaultModel = userSettings.defaultModel;
         const preferredProviders = userSettings.preferredProviders || [];
-
-        console.log('👤 User settings loaded:', { defaultModel, preferredProviders });
-        console.log('👤 Available models before filtering:', availableModels.map(m => `${m.name} (${m.provider})`));
-
         // Si el usuario tiene un modelo por defecto específico (no "auto"), usarlo solo 40% del tiempo para dar variedad
         const useDefaultModel = Math.random() < 0.4;
-        console.log(`🎲 Default model usage roll: ${useDefaultModel ? 'USE' : 'SKIP'} (${useDefaultModel ? '40%' : '60%'} chance)`);
 
         if (defaultModel && defaultModel !== 'auto' && useDefaultModel) {
           const preferredModel = availableModels.find(m => m.name === defaultModel);
           if (preferredModel) {
-            console.log('🎯 Using user default model preference:', defaultModel);
             return preferredModel;
           } else {
-            console.log('⚠️ User preferred model not available:', defaultModel);
           }
         } else if (defaultModel && defaultModel !== 'auto') {
-          console.log('🎲 Skipping user default model for variety - continuing to intelligent selection');
         } else if (defaultModel === 'auto') {
-          console.log('🤖 User selected auto mode - using intelligent selection');
         }
 
         // Si no tiene modelo por defecto pero tiene proveedores preferidos, 
@@ -287,23 +233,19 @@ export class AIRouterService {
           );
           if (providerModels.length > 0) {
             // Usar el primer modelo disponible del proveedor preferido
-            console.log('🎯 Using model from preferred provider:', providerModels[0].name);
             return providerModels[0];
           }
         }
       } catch (error) {
-        console.log('⚠️ Could not load user preferences:', error);
       }
     }
 
     // Use adaptive learning system if user is provided
     if (request.userId) {
       try {
-        console.log('🧠 Using adaptive learning system for model selection');
 
         // Analyze task context
         const taskContext = AdaptiveLearningService.analyzeTaskContext(request.message);
-        console.log('🔍 Task context:', taskContext);
 
         // Get personalized scores for available models
         const modelScores = await AdaptiveLearningService.calculatePersonalizedScores(
@@ -311,9 +253,6 @@ export class AIRouterService {
           availableModels.map(m => ({ name: m.name, provider: m.provider })),
           taskContext
         );
-
-        console.log('📊 Model scores:', modelScores.map(s => `${s.modelName}: ${s.score.toFixed(3)} (confidence: ${s.confidence.toFixed(2)})`));
-
         // Only use adaptive learning if confidence is high and scores are diverse
         if (modelScores.length > 0) {
           const bestModel = modelScores[0];
@@ -328,14 +267,11 @@ export class AIRouterService {
             const selectedModel = getModelConfig(bestModel.modelName);
 
             if (selectedModel) {
-              console.log('🏆 Selected adaptive model:', selectedModel.name, 'with score:', bestModel.score.toFixed(3));
-              console.log('💡 Reasoning:', bestModel.reasoning.join(', '));
 
               // Store task context for later use in logging
               Object.assign(request, { taskContext }); return selectedModel;
             }
           } else {
-            console.log('🎲 Adaptive learning confidence too low or scores too similar, using fallback strategy');
           }
         }
       } catch (error) {
@@ -345,7 +281,6 @@ export class AIRouterService {
 
     // Fallback to traditional strategy-based selection
     const strategy = request.routingStrategy || 'auto';
-    console.log('🎯 Using fallback routing strategy:', strategy);
 
     switch (strategy) {
       case 'cost':
@@ -355,7 +290,6 @@ export class AIRouterService {
           const bCost = (b.costPer1kTokens.input + b.costPer1kTokens.output) / 2;
           return aCost - bCost;
         });
-        console.log('💰 Selected cheapest model:', cheapModels[0]?.name);
         return cheapModels[0] || null;
 
       case 'speed':
@@ -363,7 +297,6 @@ export class AIRouterService {
         const fastModels = availableModels.filter(m =>
           m.name.includes('gpt-3.5') || m.name.includes('haiku') || m.name.includes('gemini-2.5-flash') || m.name.includes('gemini-2.0-flash')
         );
-        console.log('⚡ Selected fastest model:', fastModels[0]?.name || availableModels[0]?.name);
         return fastModels[0] || availableModels[0];
 
       case 'quality':
@@ -371,7 +304,6 @@ export class AIRouterService {
         const qualityModels = availableModels.filter(m =>
           m.name.includes('gpt-4') || m.name.includes('opus') || m.name.includes('sonnet')
         );
-        console.log('🌟 Selected quality model:', qualityModels[0]?.name || availableModels[0]?.name);
         return qualityModels[0] || availableModels[0];
 
       case 'balanced':
@@ -379,7 +311,6 @@ export class AIRouterService {
         const balancedModels = availableModels.filter(m =>
           m.name.includes('gpt-3.5') || m.name.includes('sonnet') || m.name.includes('gemini-2.5-flash')
         );
-        console.log('⚖️ Selected balanced model:', balancedModels[0]?.name || availableModels[0]?.name);
         return balancedModels[0] || availableModels[0];
 
       case 'auto':
@@ -399,7 +330,6 @@ export class AIRouterService {
           if (codeModels.length > 0) {
             // Add variety - rotate between good coding models
             const selectedIndex = Math.floor(Math.random() * Math.min(2, codeModels.length));
-            console.log('💻 Selected code task model:', codeModels[selectedIndex].name);
             return codeModels[selectedIndex];
           }
         }
@@ -412,7 +342,6 @@ export class AIRouterService {
           );
           if (creativeModels.length > 0) {
             const selectedIndex = Math.floor(Math.random() * Math.min(2, creativeModels.length));
-            console.log('🎨 Selected creative task model:', creativeModels[selectedIndex].name);
             return creativeModels[selectedIndex];
           }
         }
@@ -425,7 +354,6 @@ export class AIRouterService {
           );
           if (complexModels.length > 0) {
             const selectedIndex = Math.floor(Math.random() * Math.min(2, complexModels.length));
-            console.log('🧠 Selected complex task model:', complexModels[selectedIndex].name);
             return complexModels[selectedIndex];
           }
         }
@@ -439,7 +367,6 @@ export class AIRouterService {
           );
           if (balancedModels.length > 0) {
             const randomIndex = Math.floor(Math.random() * Math.min(3, balancedModels.length));
-            console.log('⚖️ Selected balanced model for medium message:', balancedModels[randomIndex].name);
             return balancedModels[randomIndex];
           }
         }
@@ -463,7 +390,6 @@ export class AIRouterService {
 
           if (candidateModels.length > 0) {
             const randomIndex = Math.floor(Math.random() * candidateModels.length);
-            console.log(`🏃 Selected ${useHighQuality ? 'high-quality' : 'budget'} quick model:`, candidateModels[randomIndex].name);
             return candidateModels[randomIndex];
           }
         }
@@ -505,12 +431,10 @@ export class AIRouterService {
 
         if (selectedModels.length > 0) {
           const randomIndex = Math.floor(Math.random() * selectedModels.length);
-          console.log(`🎯 Selected ${tier} default model:`, selectedModels[randomIndex].name);
           return selectedModels[randomIndex];
         }
 
         // Last resort: return first available model
-        console.log('🎲 Selected fallback model:', availableModels[0]?.name);
         return availableModels[0];
     }
   }
@@ -552,13 +476,9 @@ export class AIRouterService {
   }
 
   private async handleFallback(request: AIRequest, originalError: Error): Promise<AIResponse | null> {
-    console.log('🔄 Starting fallback mechanism');
     const availableModels = getAvailableModels().filter(model =>
       !this.failedProviders.has(model.provider)
     );
-
-    console.log('📋 Available models for fallback:', availableModels.map(m => `${m.name} (${m.provider})`));
-
     // Try alternative models (excluding the one that failed)
     const alternativeModels = availableModels.filter(model =>
       model.name !== request.model
@@ -566,10 +486,8 @@ export class AIRouterService {
 
     for (const model of alternativeModels.slice(0, 2)) { // Try max 2 alternatives
       try {
-        console.log(`🔄 Trying fallback to ${model.name} (${model.provider})`);
         const provider = this.providers.get(model.provider);
         if (!provider) {
-          console.log(`❌ Provider ${model.provider} not found`);
           continue;
         }
 
@@ -581,7 +499,6 @@ export class AIRouterService {
         const response = await provider.generateResponse(fallbackRequest);
 
         if (response.success) {
-          console.log(`✅ Fallback successful with ${model.name}`);
           // Add fallback info to response
           response.error = `Primary model failed (${originalError.message}), used fallback: ${model.name}`;
 
@@ -590,7 +507,6 @@ export class AIRouterService {
 
           return response;
         } else {
-          console.log(`❌ Fallback ${model.name} failed:`, response.error);
         }
       } catch (error) {
         console.error(`❌ Fallback model ${model.name} also failed:`, error);
@@ -633,7 +549,6 @@ export class AIRouterService {
           response.success
         );
 
-        console.log('📚 Updated adaptive learning data for model:', response.model);
       }
     } catch (error) {
       console.error('Failed to log usage:', error);

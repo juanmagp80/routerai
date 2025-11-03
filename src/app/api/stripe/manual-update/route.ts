@@ -24,9 +24,6 @@ export async function POST(request: NextRequest) {
         if (userError || !user) {
             return NextResponse.json({ error: 'User not found' }, { status: 404 })
         }
-
-        console.log(`Attempting to update user ${user.id} from ${user.plan} to ${planName}`)
-
         // Simular actualización manual del plan
         const success = await StripeService.updateUserPlan(user.id, planName, 'manual_update_' + Date.now())
 
