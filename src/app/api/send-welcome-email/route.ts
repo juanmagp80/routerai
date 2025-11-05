@@ -4,7 +4,7 @@ import { Resend } from 'resend';
 export async function POST(req: NextRequest) {
   try {
     const { to, name, userId } = await req.json();
-    
+
     console.log(`🔧 Send welcome email API called with:`, { to, name, userId });
     console.log(`🌍 Environment: ${process.env.NODE_ENV}`);
     console.log(`🔑 RESEND_API_KEY configured: ${!!process.env.RESEND_API_KEY}`);
@@ -19,20 +19,20 @@ export async function POST(req: NextRequest) {
     }
 
     const resend = new Resend(process.env.RESEND_API_KEY);
-    
+
     // Usar el dominio verificado roulyx.com para poder enviar a cualquier email
     const fromEmail = 'Roulyx <welcome@roulyx.com>';
 
     // Enviar siempre al email del usuario real
     const targetEmail = to;
-    
+
     console.log(`📧 Email configuration:`, { fromEmail, targetEmail });
 
     const dashboardUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/admin`;
     const docsUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/docs`;
 
     console.log(`📤 Attempting to send email via Resend...`);
-    
+
     const { data, error } = await resend.emails.send({
       from: fromEmail,
       to: [targetEmail],
@@ -212,9 +212,9 @@ export async function POST(req: NextRequest) {
     console.log(`📧 Recipient: ${targetEmail}`);
     console.log(`📨 Message ID: ${data?.id}`);
     console.log(`📤 From: ${fromEmail}`);
-    
-    return NextResponse.json({ 
-      success: true, 
+
+    return NextResponse.json({
+      success: true,
       messageId: data?.id,
       recipient: targetEmail
     });
