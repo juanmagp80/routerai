@@ -64,14 +64,19 @@ export async function POST(req: NextRequest) {
     const eventType = evt.type;
 
     console.log(`🎣 Clerk webhook received: ${eventType}`);
+    console.log(`🎣 Full event data:`, JSON.stringify(evt.data, null, 2));
 
     if (eventType === 'user.created') {
+        console.log(`🎯 Processing user.created event...`);
+        
         const { id, email_addresses, first_name, last_name } = evt.data;
 
         const userEmail = email_addresses[0]?.email_address;
         const userName = `${first_name || ''} ${last_name || ''}`.trim() || 'Usuario';
 
         console.log(`👤 New user registered: ${userName} (${userEmail})`);
+        console.log(`📋 User ID: ${id}`);
+        console.log(`📧 Email addresses:`, email_addresses);
 
         try {
             // Determinar rol automáticamente (primer usuario = admin, resto = developer)
@@ -176,9 +181,9 @@ export async function POST(req: NextRequest) {
 
             // 4. Enviar email de bienvenida
             try {
-                // Determinar la URL base correcta
+                // Determinar la URL base correcta - usar siempre routerai.vercel.app en producción
                 const baseUrl = process.env.NODE_ENV === 'production'
-                    ? 'https://roulyx.com'
+                    ? 'https://routerai.vercel.app'
                     : (process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000');
 
                 console.log(`📧 Attempting to send welcome email to: ${userEmail}`);
