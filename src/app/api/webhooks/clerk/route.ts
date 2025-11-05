@@ -189,9 +189,9 @@ export async function POST(req: NextRequest) {
 
             // 4. Enviar email de bienvenida
             try {
-                // Determinar la URL base correcta - usar siempre routerai.vercel.app en producción
+                // Usar roulyx.com ahora que está configurado como dominio personalizado en Vercel
                 const baseUrl = process.env.NODE_ENV === 'production'
-                    ? 'https://routerai.vercel.app'
+                    ? 'https://roulyx.com'
                     : (process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000');
 
                 console.log(`📧 Attempting to send welcome email to: ${userEmail}`);

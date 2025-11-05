@@ -36,7 +36,7 @@ export async function POST(req: NextRequest) {
 
             // Enviar email de bienvenida directamente
             try {
-                const baseUrl = 'https://routerai.vercel.app';
+                const baseUrl = 'https://roulyx.com';
 
                 console.log(`📧 Attempting to send welcome email to: ${userEmail}`);
 
