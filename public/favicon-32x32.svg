@@ -2,13 +2,12 @@
   <defs>
     <linearGradient id="favicon32Gradient" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#10b981" />
-      <stop offset="30%" stop-color="#06b6d4" />
-      <stop offset="70%" stop-color="#3b82f6" />
-      <stop offset="100%" stop-color="#8b5cf6" />
+      <stop offset="50%" stop-color="#06b6d4" />
+      <stop offset="100%" stop-color="#3b82f6" />
     </linearGradient>
     <linearGradient id="favicon32NodeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#34d399" />
-      <stop offset="100%" stop-color="#06b6d4" />
+      <stop offset="0%" stop-color="#10b981" />
+      <stop offset="100%" stop-color="#059669" />
     </linearGradient>
     <linearGradient id="favicon32ConnectionGradient" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#10b981" />
@@ -42,7 +41,7 @@
   <circle cx="16" cy="16" r="1.5" fill="#ffffff" opacity="0.9"/>
 
   <!-- Output Layer Nodes -->
-  <circle cx="28" cy="8" r="2" fill="url(#favicon32NodeGradient)" opacity="0.8"/>
-  <circle cx="28" cy="16" r="2" fill="url(#favicon32NodeGradient)" opacity="0.8"/>
-  <circle cx="28" cy="24" r="2" fill="url(#favicon32NodeGradient)" opacity="0.8"/>
+  <circle cx="28" cy="8" r="2" fill="#3b82f6"/>
+  <circle cx="28" cy="16" r="2" fill="#3b82f6"/>
+  <circle cx="28" cy="24" r="2" fill="#3b82f6"/>
 </svg>
