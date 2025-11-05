@@ -40,15 +40,15 @@ export async function POST(req: NextRequest) {
     const { data, error } = await resend.emails.send({
       from: fromEmail,
       to: targetEmail,
-      subject: `🚀 ¡Bienvenido a Roulyx, ${name}! Tu puerta al futuro de la IA`,
+      subject: `🚀 Welcome to Roulyx, ${name}! Your gateway to AI's future`,
       html: `
         <!DOCTYPE html>
-        <html lang="es">
+        <html lang="en">
         <head>
           <meta charset="utf-8">
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
           <meta http-equiv="X-UA-Compatible" content="IE=edge">
-          <title>¡Bienvenido a Roulyx!</title>
+          <title>Welcome to Roulyx!</title>
           <!--[if mso]>
           <noscript>
             <xml>
@@ -63,7 +63,7 @@ export async function POST(req: NextRequest) {
           
           <!-- Preheader -->
           <div style="display: none; font-size: 1px; color: #f8fafc; line-height: 1px; max-height: 0px; max-width: 0px; opacity: 0; overflow: hidden;">
-            Tu cuenta en Roulyx está lista. Accede a más de 40 modelos de IA desde una sola API. ¡Comienza ahora!
+            Your Roulyx account is ready. Access 40+ AI models through a single API. Get started now!
           </div>
 
           <!-- Email Container -->
@@ -140,21 +140,21 @@ export async function POST(req: NextRequest) {
                       <!-- Welcome Message -->
                       <div style="text-align: center; margin-bottom: 48px;">
                         <h2 style="color: #0f172a; font-size: 32px; font-weight: 700; margin: 0 0 16px 0; line-height: 1.2;">
-                          ¡Hola ${name}! 👋
+                          Hello ${name}! 👋
                         </h2>
                         <p style="color: #475569; font-size: 20px; margin: 0 0 24px 0; line-height: 1.5;">
-                          Tu cuenta en <strong style="color: #10b981;">Roulyx</strong> está lista
+                          Your <strong style="color: #10b981;">Roulyx</strong> account is ready
                         </p>
                         <p style="color: #64748b; font-size: 16px; margin: 0; line-height: 1.6;">
-                          Ahora tienes acceso a más de <strong>40 modelos de IA</strong> desde una sola API. 
-                          Nuestro sistema inteligente selecciona automáticamente el mejor modelo para cada tarea.
+                          You now have access to over <strong>40 AI models</strong> through a single API. 
+                          Our intelligent system automatically selects the best model for each task.
                         </p>
                       </div>
 
                       <!-- Feature Highlights -->
                       <div style="margin: 48px 0;">
                         <h3 style="color: #0f172a; font-size: 24px; font-weight: 600; margin: 0 0 32px 0; text-align: center;">
-                          ¿Qué puedes hacer ahora?
+                          What can you do now?
                         </h3>
                         
                         <div style="display: block; margin-bottom: 24px;">
@@ -167,10 +167,10 @@ export async function POST(req: NextRequest) {
                               </td>
                               <td style="vertical-align: top;">
                                 <h4 style="color: #0f172a; font-size: 18px; font-weight: 600; margin: 0 0 8px 0;">
-                                  Crea tu primera API Key
+                                  Create your first API Key
                                 </h4>
                                 <p style="color: #64748b; font-size: 15px; margin: 0; line-height: 1.5;">
-                                  Genera una clave API segura en segundos y comienza a hacer requests inmediatamente.
+                                  Generate a secure API key in seconds and start making requests immediately.
                                 </p>
                               </td>
                             </tr>
@@ -187,10 +187,10 @@ export async function POST(req: NextRequest) {
                               </td>
                               <td style="vertical-align: top;">
                                 <h4 style="color: #0f172a; font-size: 18px; font-weight: 600; margin: 0 0 8px 0;">
-                                  Accede a modelos premium
+                                  Access premium models
                                 </h4>
                                 <p style="color: #64748b; font-size: 15px; margin: 0; line-height: 1.5;">
-                                  GPT-4, Claude, Gemini, Grok y muchos más. Un solo endpoint para todos.
+                                  GPT-4, Claude, Gemini, Grok and many more. One endpoint for all.
                                 </p>
                               </td>
                             </tr>
@@ -207,10 +207,10 @@ export async function POST(req: NextRequest) {
                               </td>
                               <td style="vertical-align: top;">
                                 <h4 style="color: #0f172a; font-size: 18px; font-weight: 600; margin: 0 0 8px 0;">
-                                  Routing inteligente
+                                  Intelligent routing
                                 </h4>
                                 <p style="color: #64748b; font-size: 15px; margin: 0; line-height: 1.5;">
-                                  Nuestro sistema selecciona el modelo óptimo basado en costo, velocidad y calidad.
+                                  Our system selects the optimal model based on cost, speed and quality.
                                 </p>
                               </td>
                             </tr>
@@ -226,25 +226,25 @@ export async function POST(req: NextRequest) {
                           </span>
                         </div>
                         <h3 style="color: #0c4a6e; font-size: 20px; font-weight: 700; margin: 0 0 16px 0;">
-                          ¡Tu cuenta está activada! ✨
+                          Your account is activated! ✨
                         </h3>
                         <p style="color: #075985; font-size: 16px; margin: 0 0 24px 0;">
-                          Tienes <strong>100 requests gratuitas</strong> este mes para explorar todos nuestros modelos
+                          You have <strong>100 free requests</strong> this month to explore all our models
                         </p>
                         
                         <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
                           <tr>
                             <td width="33%" style="text-align: center; padding: 0 8px;">
                               <div style="color: #0c4a6e; font-size: 24px; font-weight: 800; margin-bottom: 4px;">100</div>
-                              <div style="color: #0369a1; font-size: 12px; font-weight: 500;">Requests/mes</div>
+                              <div style="color: #0369a1; font-size: 12px; font-weight: 500;">Requests/month</div>
                             </td>
                             <td width="33%" style="text-align: center; padding: 0 8px;">
                               <div style="color: #0c4a6e; font-size: 24px; font-weight: 800; margin-bottom: 4px;">40+</div>
-                              <div style="color: #0369a1; font-size: 12px; font-weight: 500;">Modelos IA</div>
+                              <div style="color: #0369a1; font-size: 12px; font-weight: 500;">AI Models</div>
                             </td>
                             <td width="33%" style="text-align: center; padding: 0 8px;">
                               <div style="color: #0c4a6e; font-size: 24px; font-weight: 800; margin-bottom: 4px;">24/7</div>
-                              <div style="color: #0369a1; font-size: 12px; font-weight: 500;">Disponibilidad</div>
+                              <div style="color: #0369a1; font-size: 12px; font-weight: 500;">Availability</div>
                             </td>
                           </tr>
                         </table>
@@ -257,7 +257,7 @@ export async function POST(req: NextRequest) {
                             <td style="padding: 0 0 16px 0;">
                               <a href="${dashboardUrl}" 
                                  style="background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 16px 40px; text-decoration: none; border-radius: 12px; font-weight: 600; font-size: 16px; display: inline-block; box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.3); transition: all 0.3s ease;">
-                                🚀 Acceder al Dashboard
+                                🚀 Access Dashboard
                               </a>
                             </td>
                           </tr>
@@ -265,7 +265,7 @@ export async function POST(req: NextRequest) {
                             <td>
                               <a href="${docsUrl}" 
                                  style="color: #475569; padding: 12px 24px; text-decoration: none; border: 2px solid #e2e8f0; border-radius: 12px; font-weight: 500; font-size: 14px; display: inline-block; transition: all 0.3s ease;">
-                                📚 Ver Documentación
+                                📚 View Documentation
                               </a>
                             </td>
                           </tr>
@@ -275,11 +275,11 @@ export async function POST(req: NextRequest) {
                       <!-- Support -->
                       <div style="text-align: center; margin: 48px 0 0 0; padding: 32px 0; border-top: 1px solid #e2e8f0;">
                         <p style="color: #64748b; font-size: 16px; margin: 0 0 16px 0; font-weight: 500;">
-                          ¿Necesitas ayuda?
+                          Need help?
                         </p>
                         <p style="color: #94a3b8; font-size: 14px; margin: 0; line-height: 1.5;">
-                          Nuestro equipo está aquí para apoyarte en tu journey con IA.<br>
-                          Responde a este email o visita nuestra documentación.
+                          Our team is here to support you on your AI journey.<br>
+                          Reply to this email or visit our documentation.
                         </p>
                       </div>
                       
@@ -292,11 +292,11 @@ export async function POST(req: NextRequest) {
                   <tr>
                     <td style="padding: 32px 24px; text-align: center;">
                       <p style="color: #94a3b8; font-size: 12px; margin: 0 0 8px 0;">
-                        © 2025 Roulyx. Todos los derechos reservados.
+                        © 2025 Roulyx. All rights reserved.
                       </p>
                       <p style="color: #cbd5e1; font-size: 11px; margin: 0; line-height: 1.4;">
-                        Recibes este email porque te registraste en Roulyx.<br>
-                        Tu información está segura y nunca será compartida.
+                        You're receiving this email because you signed up for Roulyx.<br>
+                        Your information is secure and will never be shared.
                       </p>
                     </td>
                   </tr>
