@@ -189,7 +189,7 @@ export async function POST(req: NextRequest) {
 
             // 4. Enviar email de bienvenida
             try {
-                // Usar roulyx.com ahora que está configurado como dominio personalizado en Vercel
+                // Usar roulyx.com ahora que está funcionando
                 const baseUrl = process.env.NODE_ENV === 'production'
                     ? 'https://roulyx.com'
                     : (process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000');

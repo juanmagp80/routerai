@@ -172,6 +172,21 @@ export default function LoginPage() {
                                 }
                             }} redirectUrl="/admin" />
                         </div>
+                        
+                        {/* Don't have an account? Button */}
+                        <div className="mt-6 text-center">
+                            <p className="text-gray-400 text-sm">
+                                Don't have an account?{' '}
+                                <motion.a
+                                    href="/register"
+                                    className="text-emerald-400 hover:text-emerald-300 font-medium transition-colors duration-200"
+                                    whileHover={{ scale: 1.05 }}
+                                    transition={{ type: "spring", stiffness: 300 }}
+                                >
+                                    Sign up here
+                                </motion.a>
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>
