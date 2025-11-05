@@ -15,34 +15,22 @@ export async function POST(req: NextRequest) {
 
     // Initialize Resend only when API key is available
     const resend = new Resend(process.env.RESEND_API_KEY);
-    // Para desarrollo, usar el dominio por defecto de Resend
-    const fromEmail = process.env.NODE_ENV === 'production'
-      ? 'Roulyx <notifications@roulyx.com>'
-      : 'Roulyx <onboarding@resend.dev>';
+    // Usar el dominio verificado roulyx.com para enviar a cualquier destinatario
+    const fromEmail = 'Roulyx <notifications@roulyx.com>';
 
-    // En desarrollo, Resend solo permite enviar a tu email registrado
-    const targetEmail = process.env.NODE_ENV === 'production'
-      ? to
-      : 'agentroutermcp@gmail.com'; // Tu email registrado en Resend
-    if (process.env.NODE_ENV !== 'production' && to !== 'agentroutermcp@gmail.com') {
-    }
+    // Enviar siempre al email del destinatario real
+    const targetEmail = to;
 
     const { data, error } = await resend.emails.send({
       from: fromEmail,
       to: [targetEmail],
-      subject: `${subject}${targetEmail !== to ? ` (Originally for: ${to})` : ''}`,
+      subject: subject,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
           <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; text-align: center;">
             <h1 style="color: white; margin: 0;">Roulyx</h1>
           </div>
-          ${targetEmail !== to ? `
-          <div style="padding: 15px; background-color: #fff3cd; border: 1px solid #ffeaa7; border-radius: 5px; margin: 10px;">
-            <p style="margin: 0; color: #856404; font-size: 14px;">
-              🚧 <strong>Development Mode:</strong> This email was originally intended for <strong>${to}</strong> but redirected to your registered email for testing.
-            </p>
-          </div>
-          ` : ''}
+
           <div style="padding: 20px; background-color: #f9f9f9;">
             <h2 style="color: #333;">${subject.replace('[Roulyx] ', '').replace(/ \(Originally for:.*\)/, '')}</h2>
             <p style="color: #666; line-height: 1.6;">${message}</p>

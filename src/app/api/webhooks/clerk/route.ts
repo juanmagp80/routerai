@@ -1,130 +1,230 @@
-import { supabaseAdmin, TABLES } from '@/lib/supabase';
-import { headers } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
+import { WebhookEvent } from '@clerk/nextjs/server';
+import { headers } from 'next/headers';
 import { Webhook } from 'svix';
+import { createClient } from '@supabase/supabase-js';
 
-// Webhook para manejar eventos de Clerk (registro de usuarios)
+// Configurar Supabase admin para crear usuarios
+const supabaseAdmin = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!
+);
+
 export async function POST(req: NextRequest) {
+  // Obtener el webhook secret de Clerk desde las variables de entorno
+  const WEBHOOK_SECRET = process.env.CLERK_WEBHOOK_SECRET;
+
+  if (!WEBHOOK_SECRET) {
+    console.error('❌ CLERK_WEBHOOK_SECRET not configured');
+    return NextResponse.json(
+      { error: 'Webhook secret not configured' },
+      { status: 500 }
+    );
+  }
+
+  // Obtener los headers para verificar la signature
+  const headerPayload = headers();
+  const svix_id = headerPayload.get('svix-id');
+  const svix_timestamp = headerPayload.get('svix-timestamp');
+  const svix_signature = headerPayload.get('svix-signature');
+
+  // Si no hay headers de verificación, rechazar la request
+  if (!svix_id || !svix_timestamp || !svix_signature) {
+    return NextResponse.json(
+      { error: 'Error occurred -- no svix headers' },
+      { status: 400 }
+    );
+  }
+
+  // Obtener el body de la request
+  const payload = await req.text();
+  const body = JSON.parse(payload);
+
+  // Crear una nueva instancia de webhook de Svix con el secret
+  const wh = new Webhook(WEBHOOK_SECRET);
+
+  let evt: WebhookEvent;
+
+  // Verificar el webhook
+  try {
+    evt = wh.verify(payload, {
+      'svix-id': svix_id,
+      'svix-timestamp': svix_timestamp,
+      'svix-signature': svix_signature,
+    }) as WebhookEvent;
+  } catch (err) {
+    console.error('❌ Error verifying webhook:', err);
+    return NextResponse.json(
+      { error: 'Error occurred during webhook verification' },
+      { status: 400 }
+    );
+  }
+
+  // Manejar el evento
+  const eventType = evt.type;
+  
+  console.log(`🎣 Clerk webhook received: ${eventType}`);
+
+  if (eventType === 'user.created') {
+    const { id, email_addresses, first_name, last_name } = evt.data;
+    
+    const userEmail = email_addresses[0]?.email_address;
+    const userName = `${first_name || ''} ${last_name || ''}`.trim() || 'Usuario';
+
+    console.log(`👤 New user registered: ${userName} (${userEmail})`);
+
     try {
-        // Verificar que tenemos la clave secreta del webhook
-        const WEBHOOK_SECRET = process.env.CLERK_WEBHOOK_SECRET;
-        if (!WEBHOOK_SECRET) {
-            throw new Error('Please add CLERK_WEBHOOK_SECRET to your .env.local');
+      // Determinar rol automáticamente (primer usuario = admin, resto = developer)
+      let role: 'admin' | 'developer' | 'viewer' = 'developer';
+      
+      try {
+        const { data: admins } = await supabaseAdmin
+          .from('users')
+          .select('id')
+          .eq('role', 'admin')
+          .limit(1);
+
+        if (!admins || admins.length === 0) {
+          role = 'admin';
+          console.log('🔑 First user detected, assigning admin role');
         }
+      } catch (err) {
+        console.error('Error checking existing admins:', err);
+        role = 'developer'; // Fallback seguro
+      }
 
-        // Obtener headers
-        const headerPayload = headers();
-        const svix_id = headerPayload.get('svix-id');
-        const svix_timestamp = headerPayload.get('svix-timestamp');
-        const svix_signature = headerPayload.get('svix-signature');
+      // 1. Crear el usuario en Supabase
+      const { data: userData, error: userError } = await supabaseAdmin
+        .from('users')
+        .insert({
+          clerk_user_id: id,
+          email: userEmail,
+          name: userName,
+          role: role,
+          status: 'active',
+          plan: 'free',
+          department: 'General',
+          api_key_limit: 1, // Plan FREE: 1 API key
+          is_active: true,
+          email_verified: true,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        })
+        .select()
+        .single();
 
-        if (!svix_id || !svix_timestamp || !svix_signature) {
-            return new Response('Error occurred -- no svix headers', {
-                status: 400,
-            });
-        }
-
-        // Obtener el body
-        const body = await req.text();
-
-        // Crear una instancia del webhook
-        const wh = new Webhook(WEBHOOK_SECRET);
-        let evt;
-
-        try {
-            evt = wh.verify(body, {
-                'svix-id': svix_id,
-                'svix-timestamp': svix_timestamp,
-                'svix-signature': svix_signature,
-            }) as { type: string; data: Record<string, unknown> };
-        } catch (err) {
-            console.error('Error verifying webhook:', err);
-            return new Response('Error occurred', {
-                status: 400,
-            });
-        }
-
-        // Manejar el evento de usuario creado
-        if (evt.type === 'user.created') {
-            const userData = evt.data as {
-                id: string;
-                email_addresses: Array<{ email_address: string }>;
-                first_name?: string;
-                last_name?: string;
-            };
-
-            const { id, email_addresses, first_name, last_name } = userData;
-
-            if (email_addresses && email_addresses.length > 0) {
-                const email = email_addresses[0].email_address;
-                const name = `${first_name || ''} ${last_name || ''}`.trim() || email;
-
-                // Determinar rol automáticamente
-                // Por defecto los nuevos usuarios serán 'viewer'.
-                // Si no existe ningún admin en la base de datos, el primer usuario registrado será admin.
-                let role: 'admin' | 'developer' | 'viewer' = 'viewer';
-
-                try {
-                    if (supabaseAdmin) {
-                        const { data: admins } = await supabaseAdmin
-                            .from(TABLES.USERS)
-                            .select('id')
-                            .eq('role', 'admin')
-                            .limit(1);
-
-                        if (!admins || admins.length === 0) {
-                            role = 'admin';
-                        }
-                    } else {
-                        console.warn('supabaseAdmin not initialized, defaulting new user to viewer');
-                        role = 'viewer';
-                    }
-                } catch (err) {
-                    console.error('Error checking existing admins:', err);
-                    // si falla la comprobación, mantener viewer por seguridad
-                    role = 'viewer';
-                }
-
-                // Crear usuario en nuestra base de datos.
-                // IMPORTANT: No crear registros de empresa/tenant automáticamente aquí.
-
-                if (supabaseAdmin) {
-                    // New users get the default free plan and default API key limit.
-                    // Role can be 'admin' for the very first user, but that should not imply an automatic enterprise plan.
-                    const apiKeyLimit = 3;
-
-                    const { error } = await supabaseAdmin
-                        .from(TABLES.USERS)
-                        .upsert({
-                            id: id, // Usar el ID de Clerk como ID principal
-                            clerk_user_id: id,
-                            name,
-                            email,
-                            role,
-                            // No tocar company ni crear equipos aquí: el usuario es nuevo y no debe tener otros usuarios asociados.
-                            api_key_limit: apiKeyLimit,
-                            status: 'active',
-                            plan: 'free',
-                            is_active: true,
-                            email_verified: true,
-                            created_at: new Date().toISOString(),
-                            updated_at: new Date().toISOString(),
-                        });
-
-                    if (error) {
-                        console.error('Error creating/upserting user in database:', error);
-                    } else {
-                    }
-                }
-            }
-        }
-
-        return NextResponse.json({ success: true });
-    } catch (error) {
-        console.error('Webhook error:', error);
+      if (userError) {
+        console.error('❌ Error creating user in database:', userError);
         return NextResponse.json(
-            { error: 'Internal server error' },
-            { status: 500 }
+          { error: 'Error creating user in database' },
+          { status: 500 }
         );
+      }
+
+      console.log('✅ User created in database:', userData);
+
+      // 2. Crear configuraciones por defecto del usuario
+      const { error: settingsError } = await supabaseAdmin
+        .from('user_settings')
+        .insert({
+          user_id: id,
+          settings: {
+            theme: 'light',
+            language: 'es',
+            compactView: false,
+            usageAlerts: true,
+            defaultModel: 'gpt-4o-mini',
+            weeklyReports: true,
+            emailNotifications: true,
+            preferredProviders: ['openai'],
+            usageAlertThreshold: 80,
+            autoModelRotation: false
+          },
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        });
+
+      if (settingsError) {
+        console.error('❌ Error creating user settings:', settingsError);
+      } else {
+        console.log('✅ User settings created');
+      }
+
+      // 3. Crear notificación de bienvenida
+      const { error: notificationError } = await supabaseAdmin
+        .from('notifications')
+        .insert({
+          user_id: id,
+          type: 'welcome',
+          title: '¡Bienvenido a Roulyx! 🎉',
+          message: `¡Hola ${userName}! Gracias por registrarte en Roulyx. Tu cuenta ha sido creada exitosamente. Para comenzar, crea tu primera API key y explora nuestros potentes modelos de IA.`,
+          metadata: {
+            welcome_message: true,
+            user_email: userEmail,
+            registration_date: new Date().toISOString(),
+            assigned_role: role
+          },
+          read: false,
+          created_at: new Date().toISOString()
+        });
+
+      if (notificationError) {
+        console.error('❌ Error creating welcome notification:', notificationError);
+      } else {
+        console.log('✅ Welcome notification created');
+      }
+
+      // 4. Enviar email de bienvenida
+      try {
+        // Determinar la URL base correcta
+        const baseUrl = process.env.NODE_ENV === 'production' 
+          ? 'https://roulyx.com' 
+          : (process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000');
+        
+        console.log(`📧 Attempting to send welcome email to: ${userEmail}`);
+        console.log(`🌐 Using base URL: ${baseUrl}`);
+        
+        const emailResponse = await fetch(`${baseUrl}/api/send-welcome-email`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            to: userEmail,
+            name: userName,
+            userId: id
+          })
+        });
+
+        console.log(`📡 Email API response status: ${emailResponse.status}`);
+        
+        const emailResult = await emailResponse.json();
+        console.log('📧 Email API result:', emailResult);
+
+        if (emailResult.success) {
+          console.log(`✅ Welcome email sent successfully to ${userEmail} - Message ID: ${emailResult.messageId}`);
+        } else {
+          console.error('❌ Error sending welcome email:', emailResult.error);
+        }
+      } catch (emailError) {
+        console.error('❌ Error sending welcome email:', emailError);
+      }
+
+      return NextResponse.json({
+        success: true,
+        message: 'User created and welcome process completed',
+        user: userData
+      });
+
+    } catch (error) {
+      console.error('❌ Error processing user registration:', error);
+      return NextResponse.json(
+        { error: 'Error processing user registration' },
+        { status: 500 }
+      );
     }
+  }
+
+  // Para otros tipos de eventos, solo devolver OK
+  return NextResponse.json({ received: true });
 }
