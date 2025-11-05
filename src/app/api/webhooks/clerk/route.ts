@@ -189,9 +189,9 @@ export async function POST(req: NextRequest) {
 
             // 4. Enviar email de bienvenida
             try {
-                // Usar roulyx.com ahora que está funcionando
+                // Usar www.roulyx.com (el dominio que funciona)
                 const baseUrl = process.env.NODE_ENV === 'production'
-                    ? 'https://roulyx.com'
+                    ? 'https://www.roulyx.com'
                     : (process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000');
 
                 console.log(`📧 Attempting to send welcome email to: ${userEmail}`);

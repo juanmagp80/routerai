@@ -31,7 +31,9 @@ export const metadata: Metadata = {
     apple: [
       { url: '/favicon.svg', sizes: '180x180', type: 'image/svg+xml' }
     ]
-  }
+  },
+  // Forzar el uso de nuestros assets
+  manifest: '/site.webmanifest'
 };
 
 export default function RootLayout({
