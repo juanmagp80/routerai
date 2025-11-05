@@ -28,175 +28,283 @@ export async function POST(req: NextRequest) {
 
     console.log(`📧 Email configuration:`, { fromEmail, targetEmail });
 
-    const dashboardUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/admin`;
-    const docsUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/docs`;
+    // Usar el dominio correcto en producción
+    const baseUrl = process.env.NODE_ENV === 'production' 
+      ? 'https://www.roulyx.com' 
+      : 'http://localhost:3000';
+    const dashboardUrl = `${baseUrl}/admin`;
+    const docsUrl = `${baseUrl}/docs`;
 
     console.log(`📤 Attempting to send email via Resend...`);
 
     const { data, error } = await resend.emails.send({
       from: fromEmail,
-      to: [targetEmail],
-      subject: `¡Bienvenido a Roulyx, ${name}! 🚀`,
+      to: targetEmail,
+      subject: `🚀 ¡Bienvenido a Roulyx, ${name}! Tu puerta al futuro de la IA`,
       html: `
         <!DOCTYPE html>
-        <html>
+        <html lang="es">
         <head>
           <meta charset="utf-8">
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <title>Bienvenido a Roulyx</title>
+          <meta http-equiv="X-UA-Compatible" content="IE=edge">
+          <title>¡Bienvenido a Roulyx!</title>
+          <!--[if mso]>
+          <noscript>
+            <xml>
+              <o:OfficeDocumentSettings>
+                <o:PixelsPerInch>96</o:PixelsPerInch>
+              </o:OfficeDocumentSettings>
+            </xml>
+          </noscript>
+          <![endif]-->
         </head>
-        <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif; line-height: 1.6; color: #333;">
+        <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif; line-height: 1.6; color: #1f2937; background-color: #f8fafc;">
           
-          <!-- Header -->
-          <div style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); padding: 40px 20px; text-align: center;">
-            <div style="max-width: 600px; margin: 0 auto;">
-              <!-- Logo -->
-              <div style="margin-bottom: 20px;">
-                <svg width="48" height="48" viewBox="0 0 64 64" style="display: inline-block;">
-                  <!-- Neural Network Node (Central) -->
-                  <circle cx="32" cy="32" r="6" fill="#ffffff" opacity="0.9"/>
-                  
-                  <!-- Input Layer Nodes -->
-                  <circle cx="12" cy="20" r="4" fill="#ffffff" opacity="0.7"/>
-                  <circle cx="12" cy="32" r="4" fill="#ffffff" opacity="0.7"/>
-                  <circle cx="12" cy="44" r="4" fill="#ffffff" opacity="0.7"/>
-                  
-                  <!-- Output Layer Nodes -->
-                  <circle cx="52" cy="20" r="4" fill="#ffffff" opacity="0.7"/>
-                  <circle cx="52" cy="32" r="4" fill="#ffffff" opacity="0.7"/>
-                  <circle cx="52" cy="44" r="4" fill="#ffffff" opacity="0.7"/>
-                  
-                  <!-- Connections -->
-                  <line x1="16" y1="20" x2="26" y2="32" stroke="#ffffff" stroke-width="2" opacity="0.5"/>
-                  <line x1="16" y1="32" x2="26" y2="32" stroke="#ffffff" stroke-width="2" opacity="0.5"/>
-                  <line x1="16" y1="44" x2="26" y2="32" stroke="#ffffff" stroke-width="2" opacity="0.5"/>
-                  
-                  <line x1="38" y1="32" x2="48" y2="20" stroke="#ffffff" stroke-width="2" opacity="0.5"/>
-                  <line x1="38" y1="32" x2="48" y2="32" stroke="#ffffff" stroke-width="2" opacity="0.5"/>
-                  <line x1="38" y1="32" x2="48" y2="44" stroke="#ffffff" stroke-width="2" opacity="0.5"/>
-                </svg>
-              </div>
-              
-              <h1 style="color: white; margin: 0; font-size: 32px; font-weight: 700; letter-spacing: -0.5px;">
-                Roulyx
-              </h1>
-              <p style="color: rgba(255,255,255,0.9); margin: 10px 0 0 0; font-size: 18px; font-weight: 400;">
-                AI Router Platform
-              </p>
-            </div>
+          <!-- Preheader -->
+          <div style="display: none; font-size: 1px; color: #f8fafc; line-height: 1px; max-height: 0px; max-width: 0px; opacity: 0; overflow: hidden;">
+            Tu cuenta en Roulyx está lista. Accede a más de 40 modelos de IA desde una sola API. ¡Comienza ahora!
           </div>
 
-          <!-- Main Content -->
-          <div style="max-width: 600px; margin: 0 auto; padding: 40px 20px;">
-            
-            <!-- Welcome Message -->
-            <div style="text-align: center; margin-bottom: 40px;">
-              <h2 style="color: #1f2937; font-size: 28px; font-weight: 700; margin: 0 0 16px 0;">
-                ¡Bienvenido, ${name}! 🎉
-              </h2>
-              <p style="color: #4b5563; font-size: 18px; margin: 0; line-height: 1.5;">
-                Tu cuenta en Roulyx ha sido creada exitosamente. Estás a punto de acceder a los modelos de IA más avanzados del mundo.
-              </p>
-            </div>
+          <!-- Email Container -->
+          <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background-color: #f8fafc;">
+            <tr>
+              <td align="center" style="padding: 0;">
+                
+                <!-- Header -->
+                <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="max-width: 600px; background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%); border-radius: 0 0 24px 24px;">
+                  <tr>
+                    <td align="center" style="padding: 48px 24px;">
+                      
+                      <!-- Logo -->
+                      <div style="margin-bottom: 24px;">
+                        <svg width="64" height="64" viewBox="0 0 64 64" style="display: block;">
+                          <defs>
+                            <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                              <stop offset="0%" style="stop-color: #10b981; stop-opacity: 1" />
+                              <stop offset="50%" style="stop-color: #06b6d4; stop-opacity: 1" />
+                              <stop offset="100%" style="stop-color: #3b82f6; stop-opacity: 1" />
+                            </linearGradient>
+                            <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+                              <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+                              <feMerge> 
+                                <feMergeNode in="coloredBlur"/>
+                                <feMergeNode in="SourceGraphic"/>
+                              </feMerge>
+                            </filter>
+                          </defs>
+                          
+                          <!-- Background circle -->
+                          <circle cx="32" cy="32" r="30" fill="rgba(16, 185, 129, 0.1)" stroke="rgba(16, 185, 129, 0.3)" stroke-width="2"/>
+                          
+                          <!-- Neural network connections -->
+                          <g opacity="0.8" filter="url(#glow)">
+                            <path d="M12 20 Q24 26 32 32" stroke="url(#logoGrad)" stroke-width="2.5" fill="none"/>
+                            <path d="M12 32 L32 32" stroke="url(#logoGrad)" stroke-width="2.5"/>
+                            <path d="M12 44 Q24 38 32 32" stroke="url(#logoGrad)" stroke-width="2.5" fill="none"/>
+                            <path d="M32 32 Q40 26 52 20" stroke="url(#logoGrad)" stroke-width="2.5" fill="none"/>
+                            <path d="M32 32 L52 32" stroke="url(#logoGrad)" stroke-width="2.5"/>
+                            <path d="M32 32 Q40 38 52 44" stroke="url(#logoGrad)" stroke-width="2.5" fill="none"/>
+                          </g>
+                          
+                          <!-- Nodes -->
+                          <g filter="url(#glow)">
+                            <circle cx="12" cy="20" r="4" fill="#10b981"/>
+                            <circle cx="12" cy="32" r="4" fill="#10b981"/>
+                            <circle cx="12" cy="44" r="4" fill="#10b981"/>
+                            <circle cx="32" cy="32" r="8" fill="url(#logoGrad)" stroke="#ffffff" stroke-width="2"/>
+                            <circle cx="32" cy="32" r="3" fill="#ffffff"/>
+                            <circle cx="52" cy="20" r="4" fill="#3b82f6"/>
+                            <circle cx="52" cy="32" r="4" fill="#3b82f6"/>
+                            <circle cx="52" cy="44" r="4" fill="#3b82f6"/>
+                          </g>
+                        </svg>
+                      </div>
+                      
+                      <h1 style="color: #ffffff; margin: 0 0 8px 0; font-size: 36px; font-weight: 800; letter-spacing: -1px; text-align: center;">
+                        Roulyx
+                      </h1>
+                      <p style="color: rgba(255,255,255,0.8); margin: 0; font-size: 18px; font-weight: 500; text-align: center;">
+                        Intelligent AI Router Platform
+                      </p>
+                      
+                    </td>
+                  </tr>
+                </table>
 
-            <!-- Getting Started Steps -->
-            <div style="margin: 40px 0;">
-              <h3 style="color: #1f2937; font-size: 20px; font-weight: 600; margin: 0 0 24px 0; text-align: center;">
-                Primeros pasos para comenzar
-              </h3>
-              
-              <div style="background: #f9fafb; border-radius: 12px; padding: 24px; margin-bottom: 16px;">
-                <div style="display: flex; align-items: flex-start;">
-                  <div style="background: #10b981; color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 14px; margin-right: 16px; flex-shrink: 0;">1</div>
-                  <div>
-                    <h4 style="color: #1f2937; font-size: 16px; font-weight: 600; margin: 0 0 8px 0;">Crea tu primera API Key</h4>
-                    <p style="color: #4b5563; font-size: 14px; margin: 0; line-height: 1.4;">Genera una clave API segura para autenticar tus requests a nuestros modelos de IA.</p>
-                  </div>
-                </div>
-              </div>
-              
-              <div style="background: #f9fafb; border-radius: 12px; padding: 24px; margin-bottom: 16px;">
-                <div style="display: flex; align-items: flex-start;">
-                  <div style="background: #10b981; color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 14px; margin-right: 16px; flex-shrink: 0;">2</div>
-                  <div>
-                    <h4 style="color: #1f2937; font-size: 16px; font-weight: 600; margin: 0 0 8px 0;">Explora nuestros modelos</h4>
-                    <p style="color: #4b5563; font-size: 14px; margin: 0; line-height: 1.4;">Accede a GPT-4, Claude, Gemini, Grok y más de 40 modelos desde una sola API.</p>
-                  </div>
-                </div>
-              </div>
-              
-              <div style="background: #f9fafb; border-radius: 12px; padding: 24px;">
-                <div style="display: flex; align-items: flex-start;">
-                  <div style="background: #10b981; color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 14px; margin-right: 16px; flex-shrink: 0;">3</div>
-                  <div>
-                    <h4 style="color: #1f2937; font-size: 16px; font-weight: 600; margin: 0 0 8px 0;">Haz tu primera request</h4>
-                    <p style="color: #4b5563; font-size: 14px; margin: 0; line-height: 1.4;">Usa nuestra API para generar contenido, analizar datos o cualquier tarea de IA.</p>
-                  </div>
-                </div>
-              </div>
-            </div>
+                <!-- Main Content -->
+                <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="max-width: 600px; background-color: #ffffff; border-radius: 24px; margin: 24px 0; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);">
+                  <tr>
+                    <td style="padding: 48px 32px;">
+                      
+                      <!-- Welcome Message -->
+                      <div style="text-align: center; margin-bottom: 48px;">
+                        <h2 style="color: #0f172a; font-size: 32px; font-weight: 700; margin: 0 0 16px 0; line-height: 1.2;">
+                          ¡Hola ${name}! 👋
+                        </h2>
+                        <p style="color: #475569; font-size: 20px; margin: 0 0 24px 0; line-height: 1.5;">
+                          Tu cuenta en <strong style="color: #10b981;">Roulyx</strong> está lista
+                        </p>
+                        <p style="color: #64748b; font-size: 16px; margin: 0; line-height: 1.6;">
+                          Ahora tienes acceso a más de <strong>40 modelos de IA</strong> desde una sola API. 
+                          Nuestro sistema inteligente selecciona automáticamente el mejor modelo para cada tarea.
+                        </p>
+                      </div>
 
-            <!-- Plan Info -->
-            <div style="background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); border: 1px solid #bfdbfe; border-radius: 12px; padding: 24px; margin: 32px 0;">
-              <div style="text-align: center;">
-                <h3 style="color: #1e40af; font-size: 18px; font-weight: 600; margin: 0 0 12px 0;">
-                  Plan FREE Activado ✨
-                </h3>
-                <p style="color: #1e40af; font-size: 14px; margin: 0 0 16px 0;">
-                  Tienes acceso a <strong>100 requests gratuitas</strong> este mes para probar nuestros modelos.
-                </p>
-                <div style="display: flex; justify-content: center; gap: 24px; text-align: center;">
-                  <div>
-                    <div style="color: #1e40af; font-size: 20px; font-weight: 700;">100</div>
-                    <div style="color: #3b82f6; font-size: 12px;">Requests/mes</div>
-                  </div>
-                  <div>
-                    <div style="color: #1e40af; font-size: 20px; font-weight: 700;">1</div>
-                    <div style="color: #3b82f6; font-size: 12px;">API Key</div>
-                  </div>
-                  <div>
-                    <div style="color: #1e40af; font-size: 20px; font-weight: 700;">5</div>
-                    <div style="color: #3b82f6; font-size: 12px;">Req/minuto</div>
-                  </div>
-                </div>
-              </div>
-            </div>
+                      <!-- Feature Highlights -->
+                      <div style="margin: 48px 0;">
+                        <h3 style="color: #0f172a; font-size: 24px; font-weight: 600; margin: 0 0 32px 0; text-align: center;">
+                          ¿Qué puedes hacer ahora?
+                        </h3>
+                        
+                        <div style="display: block; margin-bottom: 24px;">
+                          <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+                            <tr>
+                              <td width="48" style="vertical-align: top; padding-right: 16px;">
+                                <div style="width: 48px; height: 48px; background: linear-gradient(135deg, #10b981, #059669); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+                                  <span style="color: white; font-size: 24px; font-weight: bold;">🔑</span>
+                                </div>
+                              </td>
+                              <td style="vertical-align: top;">
+                                <h4 style="color: #0f172a; font-size: 18px; font-weight: 600; margin: 0 0 8px 0;">
+                                  Crea tu primera API Key
+                                </h4>
+                                <p style="color: #64748b; font-size: 15px; margin: 0; line-height: 1.5;">
+                                  Genera una clave API segura en segundos y comienza a hacer requests inmediatamente.
+                                </p>
+                              </td>
+                            </tr>
+                          </table>
+                        </div>
 
-            <!-- Action Buttons -->
-            <div style="text-align: center; margin: 40px 0;">
-              <a href="${dashboardUrl}" 
-                 style="background: #10b981; color: white; padding: 16px 32px; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px; display: inline-block; margin: 8px;">
-                Ir al Dashboard 🚀
-              </a>
-              <br>
-              <a href="${docsUrl}" 
-                 style="background: #6b7280; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: 500; font-size: 14px; display: inline-block; margin: 8px;">
-                Ver Documentación 📚
-              </a>
-            </div>
+                        <div style="display: block; margin-bottom: 24px;">
+                          <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+                            <tr>
+                              <td width="48" style="vertical-align: top; padding-right: 16px;">
+                                <div style="width: 48px; height: 48px; background: linear-gradient(135deg, #3b82f6, #2563eb); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+                                  <span style="color: white; font-size: 24px; font-weight: bold;">🤖</span>
+                                </div>
+                              </td>
+                              <td style="vertical-align: top;">
+                                <h4 style="color: #0f172a; font-size: 18px; font-weight: 600; margin: 0 0 8px 0;">
+                                  Accede a modelos premium
+                                </h4>
+                                <p style="color: #64748b; font-size: 15px; margin: 0; line-height: 1.5;">
+                                  GPT-4, Claude, Gemini, Grok y muchos más. Un solo endpoint para todos.
+                                </p>
+                              </td>
+                            </tr>
+                          </table>
+                        </div>
 
+                        <div style="display: block;">
+                          <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+                            <tr>
+                              <td width="48" style="vertical-align: top; padding-right: 16px;">
+                                <div style="width: 48px; height: 48px; background: linear-gradient(135deg, #8b5cf6, #7c3aed); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+                                  <span style="color: white; font-size: 24px; font-weight: bold;">🎯</span>
+                                </div>
+                              </td>
+                              <td style="vertical-align: top;">
+                                <h4 style="color: #0f172a; font-size: 18px; font-weight: 600; margin: 0 0 8px 0;">
+                                  Routing inteligente
+                                </h4>
+                                <p style="color: #64748b; font-size: 15px; margin: 0; line-height: 1.5;">
+                                  Nuestro sistema selecciona el modelo óptimo basado en costo, velocidad y calidad.
+                                </p>
+                              </td>
+                            </tr>
+                          </table>
+                        </div>
+                      </div>
 
+                      <!-- Plan Info -->
+                      <div style="background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); border: 2px solid #0ea5e9; border-radius: 16px; padding: 32px; margin: 48px 0; text-align: center;">
+                        <div style="margin-bottom: 16px;">
+                          <span style="background: #0ea5e9; color: white; padding: 8px 16px; border-radius: 20px; font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">
+                            Plan FREE
+                          </span>
+                        </div>
+                        <h3 style="color: #0c4a6e; font-size: 20px; font-weight: 700; margin: 0 0 16px 0;">
+                          ¡Tu cuenta está activada! ✨
+                        </h3>
+                        <p style="color: #075985; font-size: 16px; margin: 0 0 24px 0;">
+                          Tienes <strong>100 requests gratuitas</strong> este mes para explorar todos nuestros modelos
+                        </p>
+                        
+                        <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+                          <tr>
+                            <td width="33%" style="text-align: center; padding: 0 8px;">
+                              <div style="color: #0c4a6e; font-size: 24px; font-weight: 800; margin-bottom: 4px;">100</div>
+                              <div style="color: #0369a1; font-size: 12px; font-weight: 500;">Requests/mes</div>
+                            </td>
+                            <td width="33%" style="text-align: center; padding: 0 8px;">
+                              <div style="color: #0c4a6e; font-size: 24px; font-weight: 800; margin-bottom: 4px;">40+</div>
+                              <div style="color: #0369a1; font-size: 12px; font-weight: 500;">Modelos IA</div>
+                            </td>
+                            <td width="33%" style="text-align: center; padding: 0 8px;">
+                              <div style="color: #0c4a6e; font-size: 24px; font-weight: 800; margin-bottom: 4px;">24/7</div>
+                              <div style="color: #0369a1; font-size: 12px; font-weight: 500;">Disponibilidad</div>
+                            </td>
+                          </tr>
+                        </table>
+                      </div>
 
-            <!-- Support -->
-            <div style="text-align: center; margin: 40px 0 20px 0;">
-              <p style="color: #6b7280; font-size: 14px; margin: 0;">
-                ¿Necesitas ayuda? Estamos aquí para apoyarte en tu journey con IA.
-              </p>
-            </div>
-          </div>
+                      <!-- CTA Buttons -->
+                      <div style="text-align: center; margin: 48px 0;">
+                        <table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin: 0 auto;">
+                          <tr>
+                            <td style="padding: 0 0 16px 0;">
+                              <a href="${dashboardUrl}" 
+                                 style="background: linear-gradient(135deg, #10b981, #059669); color: white; padding: 16px 40px; text-decoration: none; border-radius: 12px; font-weight: 600; font-size: 16px; display: inline-block; box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.3); transition: all 0.3s ease;">
+                                🚀 Acceder al Dashboard
+                              </a>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td>
+                              <a href="${docsUrl}" 
+                                 style="color: #475569; padding: 12px 24px; text-decoration: none; border: 2px solid #e2e8f0; border-radius: 12px; font-weight: 500; font-size: 14px; display: inline-block; transition: all 0.3s ease;">
+                                📚 Ver Documentación
+                              </a>
+                            </td>
+                          </tr>
+                        </table>
+                      </div>
 
-          <!-- Footer -->
-          <div style="background: #f9fafb; padding: 32px 20px; text-align: center; border-top: 1px solid #e5e7eb;">
-            <div style="max-width: 600px; margin: 0 auto;">
-              <p style="color: #6b7280; font-size: 12px; margin: 0 0 8px 0;">
-                © 2025 Roulyx. Todos los derechos reservados.
-              </p>
-              <p style="color: #9ca3af; font-size: 11px; margin: 0;">
-                Recibes este email porque te registraste en Roulyx. 
-                Tu información está segura y nunca será compartida.
-              </p>
-            </div>
-          </div>
+                      <!-- Support -->
+                      <div style="text-align: center; margin: 48px 0 0 0; padding: 32px 0; border-top: 1px solid #e2e8f0;">
+                        <p style="color: #64748b; font-size: 16px; margin: 0 0 16px 0; font-weight: 500;">
+                          ¿Necesitas ayuda?
+                        </p>
+                        <p style="color: #94a3b8; font-size: 14px; margin: 0; line-height: 1.5;">
+                          Nuestro equipo está aquí para apoyarte en tu journey con IA.<br>
+                          Responde a este email o visita nuestra documentación.
+                        </p>
+                      </div>
+                      
+                    </td>
+                  </tr>
+                </table>
+
+                <!-- Footer -->
+                <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="max-width: 600px;">
+                  <tr>
+                    <td style="padding: 32px 24px; text-align: center;">
+                      <p style="color: #94a3b8; font-size: 12px; margin: 0 0 8px 0;">
+                        © 2025 Roulyx. Todos los derechos reservados.
+                      </p>
+                      <p style="color: #cbd5e1; font-size: 11px; margin: 0; line-height: 1.4;">
+                        Recibes este email porque te registraste en Roulyx.<br>
+                        Tu información está segura y nunca será compartida.
+                      </p>
+                    </td>
+                  </tr>
+                </table>
+                
+              </td>
+            </tr>
+          </table>
         </body>
         </html>
       `
