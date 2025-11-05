@@ -156,12 +156,6 @@ async function getUserAnalytics(clerkUserId: string) {
             } : null
         };
 
-            totalRequests: userAnalytics.totalRequests,
-            totalCost: userAnalytics.totalCost,
-            totalApiKeys: userAnalytics.totalApiKeys,
-            userPlan: userAnalytics.userPlan
-        });
-
         return NextResponse.json(userAnalytics);
     } catch (error) {
         console.error('❌ Error getting user analytics:', error);

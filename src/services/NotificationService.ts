@@ -109,6 +109,7 @@ export class NotificationService {
       const emailNotifications = settings.emailNotifications !== false; // Default true
       const customThreshold = settings.usageAlertThreshold || 80; // Default 80%
 
+      console.log('🔔 Usage alert settings:', {
         usageAlerts,
         emailNotifications,
         customThreshold,

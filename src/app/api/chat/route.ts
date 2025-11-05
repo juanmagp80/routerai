@@ -66,6 +66,7 @@ export async function POST(request: NextRequest) {
           routingStrategy: body.routingStrategy || 'auto' // Soporte para routing strategy
         };
 
+        console.log('🚀 Chat request details:', {
           model: aiRequest.model,
           routingStrategy: aiRequest.routingStrategy,
           userId: userId,
