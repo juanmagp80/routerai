@@ -47,13 +47,21 @@ export async function POST(req: NextRequest) {
 
     // Verificar el webhook
     try {
+        console.log('🔐 Attempting webhook verification...');
+        console.log('🔐 Webhook secret configured:', !!WEBHOOK_SECRET);
+        console.log('🔐 Headers present:', { svix_id: !!svix_id, svix_timestamp: !!svix_timestamp, svix_signature: !!svix_signature });
+        
         evt = wh.verify(payload, {
             'svix-id': svix_id,
             'svix-timestamp': svix_timestamp,
             'svix-signature': svix_signature,
         }) as WebhookEvent;
+        
+        console.log('✅ Webhook verification successful');
     } catch (err) {
         console.error('❌ Error verifying webhook:', err);
+        console.error('❌ Webhook secret length:', WEBHOOK_SECRET?.length);
+        console.error('❌ Payload preview:', payload.substring(0, 200));
         return NextResponse.json(
             { error: 'Error occurred during webhook verification' },
             { status: 400 }
@@ -231,5 +239,6 @@ export async function POST(req: NextRequest) {
     }
 
     // Para otros tipos de eventos, solo devolver OK
-    return NextResponse.json({ received: true });
+    console.log(`🔄 Non-user.created event received: ${eventType}`);
+    return NextResponse.json({ received: true, eventType });
 }
