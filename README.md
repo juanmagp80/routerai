@@ -156,15 +156,10 @@ src/
 
 ## 🤝 Contact & Portfolio
 
-**Developer**: Juan Manuel
-- **LinkedIn**: [Your LinkedIn]
-- **GitHub**: [Your GitHub]
-- **Portfolio**: [Your Portfolio Site]
+**Developer**: Juan Manuel Garrido
+- **LinkedIn**: https://www.linkedin.com/in/jmgpdev/
+- **GitHub**: https://github.com/juanmagp80
+- **Portfolio**: https://portfolio-juangpdev.vercel.app/
 
 ---
 
-> 💡 **For Employers**: This is a comprehensive demonstration of modern SaaS development practices. The application is fully functional but runs in safe test mode. I'm available to discuss the technical architecture, business logic, and implementation details.
-
----
-
-**Note**: This project demonstrates enterprise-level development skills while maintaining safety through test mode integrations. No real financial transactions can occur.
