@@ -120,9 +120,7 @@ The application is production-ready with:
 
 ---
 
-**Built by**: [Your Name]  
-**Portfolio**: [Your Portfolio URL]  
-**LinkedIn**: [Your LinkedIn]  
-**GitHub**: [Your GitHub]
-
-*This project showcases modern SaaS development practices and is available for technical review by potential employers and collaborators.*
+**Built by**: Juan Manuel Garrido  
+**Portfolio**: https://portfolio-juangpdev.vercel.app/ 
+**LinkedIn**: https://www.linkedin.com/in/jmgpdev/
+**GitHub**: https://github.com/juanmagp80 
