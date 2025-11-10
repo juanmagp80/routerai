@@ -10,16 +10,19 @@ import {
   Brain,
   CheckCircle,
   Code,
+  Menu,
   RefreshCw,
   Target,
   Timer,
-  TrendingDown
+  TrendingDown,
+  X
 } from "lucide-react";
 import { useEffect, useState } from "react";
 
 // Componente de navegación minimalista y única
 const Navigation = () => {
   const [isScrolled, setIsScrolled] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const showDemoBanner = useDemoBanner();
 
   useEffect(() => {
@@ -208,7 +211,48 @@ const Navigation = () => {
               Sign Up
             </motion.a>
           </div>
+
+          {/* Mobile Menu Button */}
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="md:hidden text-slate-300 hover:text-emerald-400 transition-colors p-2"
+            aria-label="Toggle menu"
+          >
+            {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
         </div>
+
+        {/* Mobile Menu */}
+        {mobileMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            className="md:hidden border-t border-slate-700/50 bg-slate-900/95 backdrop-blur-md py-4"
+          >
+            <div className="flex flex-col space-y-4">
+              <a href="#features" className="text-slate-300 hover:text-emerald-400 transition-colors font-medium px-4 py-2">Features</a>
+              <a href="#ahorro" className="text-slate-300 hover:text-emerald-400 transition-colors font-medium px-4 py-2">Savings</a>
+              <a href="#dashboard" className="text-slate-300 hover:text-emerald-400 transition-colors font-medium px-4 py-2">Dashboard</a>
+              <a href="/docs" className="text-slate-300 hover:text-emerald-400 transition-colors font-medium px-4 py-2">API Docs</a>
+              <a href="#precios" className="text-slate-300 hover:text-emerald-400 transition-colors font-medium px-4 py-2">Pricing</a>
+              <div className="border-t border-slate-700/50 pt-4 space-y-2 px-4">
+                <a
+                  href="/login"
+                  className="block text-center text-slate-300 hover:text-emerald-400 transition-colors font-medium px-4 py-2 rounded-lg hover:bg-slate-800/50"
+                >
+                  Sign In
+                </a>
+                <a
+                  href="/register"
+                  className="block text-center bg-emerald-500 text-slate-900 px-6 py-2 rounded-lg font-bold shadow-lg hover:bg-emerald-600 transition-colors"
+                >
+                  Sign Up
+                </a>
+              </div>
+            </div>
+          </motion.div>
+        )}
       </div>
     </motion.nav>
   );
