@@ -2,7 +2,7 @@
 
 > **🎯 Portfolio Project**: A full-stack SaaS application demonstrating advanced AI routing, billing integration, and modern web development practices.
 
-**Live Demo**: [Your Vercel URL] | **GitHub**: [Repository URL]
+**Live Demo**: https://roulyx.com/ | **GitHub**: https://github.com/juanmagp80/routerai
 
 ## 🧪 Demo Mode Features
 
